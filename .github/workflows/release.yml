@@ -1,0 +1,24 @@
+name: Release
+
+# main only moves through release PRs (dev → main, merge commit): CI → semantic-release.
+# The production deploy starts when this workflow is green (deploy.yml).
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    uses: Keimelion/Keimelion-Infra/.github/workflows/node-ci.yml@v0.5.0
+
+  release:
+    needs: ci
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    uses: Keimelion/Keimelion-Infra/.github/workflows/release.yml@v0.5.0
+    secrets: inherit
