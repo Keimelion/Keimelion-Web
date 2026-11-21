@@ -1,0 +1,737 @@
+# Coding Standards — Keimelion Web
+
+These standards apply to all TypeScript source code in the web app. They are identical to the Keimelion-Backoffice standards, so an agent can switch repos without re-learning anything. The Dev agent follows them when implementing and enforces them during its own self-review pass.
+
+They are shared with the Keimelion API. Rules that only apply on the backend (Drizzle repositories, Hono routes) are omitted here. React/Next-specific rules are appended at the end.
+
+---
+
+## Strict inputs and outputs
+
+### Explicit return types on every function
+
+All functions — exported or private — must declare their return type explicitly. Never rely on inference for function signatures. This includes React components: they return `React.JSX.Element` (or `Promise<React.JSX.Element>` for async server components).
+
+```typescript
+// ❌
+async function fetchUser(id: string) {
+  const response = await apiGet(`/users/${id}`)
+  return response
+}
+
+// ✅
+async function fetchUser(id: string): Promise<ApiUser> {
+  const response = await apiGet<ApiUser>(`/users/${id}`)
+  return response
+}
+```
+
+### Avoid optional properties — prefer explicit types
+
+`field?: string` means the field may be completely absent from the object. This is ambiguous: does it mean "not yet set", "not applicable", or "forgotten"? Be explicit instead.
+
+- Use **required fields** on domain types — if a value must exist after creation, it is required
+- Use **separate input types** for creation/update where some fields are genuinely optional
+- Use **`T | null`** (not `T | undefined`) when a value is intentionally absent — `null` is deliberate, `undefined` is accidental
+
+```typescript
+// ❌ — unclear which fields are truly optional vs just not always set
+interface Item {
+  id: string
+  name?: string
+  reservedBy?: string
+  deletedAt?: Date
+}
+
+// ✅ — domain type is fully required; inputs are separate; nullable fields are explicit
+interface Item {
+  id: string
+  name: string
+  reservedBy: string | null   // null = not reserved, intentional absence
+  deletedAt: Date | null      // null = not deleted
+}
+
+interface CreateItemInput {
+  name: string                // required to create
+  listId: string
+}
+
+interface UpdateItemInput {
+  name?: string               // optional on update — field may or may not be changed
+}
+```
+
+### Validate all external inputs with Zod at the boundary
+
+Every input entering the app from outside — form submissions, API responses, URL params, localStorage — must be validated with a Zod schema at the boundary. Downstream code receives already-typed, already-validated data.
+
+```typescript
+// ❌ — form values passed straight to a mutation, no runtime check
+function LoginForm(): React.JSX.Element {
+  const login = useLogin()
+  return <form onSubmit={(event) => login.mutate(new FormData(event.currentTarget))} />
+}
+
+// ✅ — Zod parses at the boundary, mutation receives clean types
+const loginSchema = z.object({
+  email: z.string().email().transform((value) => value.toLowerCase().trim()),
+  password: z.string().min(MIN_PASSWORD_LENGTH),
+})
+
+type LoginInput = z.infer<typeof loginSchema>
+
+function LoginForm(): React.JSX.Element {
+  const login = useLogin()
+
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>): void {
+    event.preventDefault()
+    const parsed = loginSchema.safeParse(Object.fromEntries(new FormData(event.currentTarget)))
+    if (!parsed.success) return
+    login.mutate(parsed.data)
+  }
+
+  return <form onSubmit={handleSubmit}>...</form>
+}
+```
+
+### `null` over `undefined` for intentional absence
+
+`undefined` means a value was never set. `null` means it was explicitly set to nothing. In domain types, use `null` for intentional absence — it is deliberate and serializes correctly in JSON (`undefined` disappears).
+
+```typescript
+// ❌
+interface List {
+  deletedAt: Date | undefined
+}
+
+// ✅
+interface List {
+  deletedAt: Date | null
+}
+```
+
+---
+
+## Early return — no `else`
+
+Fail fast. Handle error cases and guard clauses first, then write the happy path without nesting. **`else` is never allowed** — if the `if` block returns, the `else` is redundant; if it doesn't, extract a function.
+
+```typescript
+// ❌
+function renderList(list: List | null): React.JSX.Element {
+  if (list) {
+    if (!list.deletedAt) {
+      return <ListView list={list} />
+    } else {
+      return <NotFound />
+    }
+  } else {
+    return <NotFound />
+  }
+}
+
+// ✅
+function renderList(list: List | null): React.JSX.Element {
+  if (!list || list.deletedAt) return <NotFound />
+  return <ListView list={list} />
+}
+```
+
+---
+
+## No abbreviations
+
+Use full, descriptive names. Abbreviations save keystrokes but cost clarity.
+
+| ❌ Avoid | ✅ Use |
+|---|---|
+| `req`, `res` | `request`, `response` |
+| `err` | `error` |
+| `usr`, `u` | `user` |
+| `msg` | `message` |
+| `val` | `value` |
+| `ctx` | `context` |
+| `cb` | `callback` |
+| `idx`, `i` | use descriptive loop variable or `.map()` / `.filter()` |
+| `e` (in handlers) | `event` |
+
+Exception: well-known, unambiguous domain acronyms (`id`, `url`, `uuid`, `http`, `jsx`) are acceptable.
+
+---
+
+## No comments — self-explaining names
+
+If you feel the need to explain what code does, the code is wrong. Rename functions, variables, or extract a helper — never annotate. This applies to "what" comments *and* "why" comments: a block explaining why we call `clearSession()` after a reset should be replaced by a named helper like `wipeSessionForRefreshedAuth()`, not documented in prose.
+
+```typescript
+// ❌
+// Only show the delete button if the user owns the list
+if (list.userId === currentUser.id) { ... }
+
+// ✅
+function isListOwnedByUser(list: List, userId: string): boolean {
+  return list.userId === userId
+}
+if (isListOwnedByUser(list, currentUser.id)) { ... }
+```
+
+The only acceptable comments are:
+- Workarounds for external library bugs (with a link to the issue)
+- Non-obvious legal or compliance requirements
+
+JSDoc is not exempt — a JSDoc block on `useCurrentUser` that says "Read the current user from the TanStack Query cache" is exactly the case to delete. The identifier already carries that meaning.
+
+---
+
+## Minimal parameters
+
+- **Max 3 parameters** for a function. Beyond that, group related params into an object.
+- Boolean parameters are a smell — they usually mean the function does two things. Split it.
+
+```typescript
+// ❌
+function createItem(name: string, listId: string, userId: string, isPublic: boolean, quantity: number) { ... }
+
+// ✅
+interface CreateItemInput {
+  name: string
+  listId: string
+  userId: string
+  isPublic: boolean
+  quantity: number
+}
+function createItem(input: CreateItemInput) { ... }
+```
+
+React components with many props follow the same rule — group into a `ComponentProps` interface (see React/Next addendum below).
+
+---
+
+## Maximum function length: 25 lines
+
+A function body should not exceed 25 lines (excluding the signature and closing brace). If it does, extract sub-functions with descriptive names. This applies to React components too — extract sub-components rather than growing a single component.
+
+---
+
+## Single responsibility
+
+Each function does exactly one thing. The name should describe it completely without "and" or "or".
+
+```typescript
+// ❌ — does two things
+async function validateAndCreateUser(email: string, password: string) { ... }
+
+// ✅ — each function has one job
+async function validateUserInput(email: string, password: string) { ... }
+async function createUser(email: string, hashedPassword: string) { ... }
+```
+
+---
+
+## `switch/case` over `if/else if` chains
+
+When branching on a single value with 3 or more cases, use `switch/case`. It is more readable and exhaustiveness-checkable by TypeScript.
+
+```typescript
+// ❌
+function getErrorMessage(code: ErrorCode) {
+  if (code === ErrorCode.NOT_FOUND) {
+    return 'Resource not found'
+  } else if (code === ErrorCode.UNAUTHORIZED) {
+    return 'Unauthorized'
+  } else if (code === ErrorCode.FORBIDDEN) {
+    return 'Forbidden'
+  } else {
+    return 'Internal server error'
+  }
+}
+
+// ✅
+function getErrorMessage(code: ErrorCode): string {
+  switch (code) {
+    case ErrorCode.NOT_FOUND:
+      return 'Resource not found'
+    case ErrorCode.UNAUTHORIZED:
+      return 'Unauthorized'
+    case ErrorCode.FORBIDDEN:
+      return 'Forbidden'
+    default:
+      return 'Internal server error'
+  }
+}
+```
+
+Combined with TypeScript's exhaustiveness checking: if `default` should never be reached, use `satisfies never` to get a compile error when a case is missing.
+
+---
+
+## Shared enums — no magic strings or numbers
+
+Never use raw string or number literals for values that carry semantic meaning. Define a `const` object with `as const` and derive the type from it.
+
+```typescript
+// ❌
+if (item.status === 'reserved') { ... }
+
+// ✅ — define once, reuse everywhere
+export const ItemStatuses = {
+  AVAILABLE: 'available',
+  RESERVED: 'reserved',
+  PURCHASED: 'purchased',
+} as const
+
+export type ItemStatus = (typeof ItemStatuses)[keyof typeof ItemStatuses]
+
+if (item.status === ItemStatuses.RESERVED) { ... }
+```
+
+Enums shared with the API come from `@keimelion/sdk/enums` — never redeclare them locally. See CLAUDE.md → *API contract: `@keimelion/sdk`*.
+
+When a dedicated helper exists for a specific enum check (e.g. `isKnownRole(role)` in `data-access/_shared/auth-storage`), prefer it over an inline enum comparison — it centralises the semantic and reads better at the call site. Only fall back to an inline enum comparison when no helper exists yet.
+
+```typescript
+// ❌ — magic strings
+if (['user', 'moderator', 'admin'].includes(cookieValue)) { ... }
+
+// ⚠️ — enum comparison, acceptable if no helper exists
+if ((Object.values(UserRoles) as string[]).includes(cookieValue)) { ... }
+
+// ✅ — dedicated helper
+import { isKnownRole } from '@/data-access/_shared/auth-storage'
+if (isKnownRole(cookieValue)) { ... }
+```
+
+---
+
+## No magic numbers or strings — local constants
+
+Any literal that is not immediately obvious from context must be named. Define it as a `const` at the top of the file.
+
+```typescript
+// ❌
+if (name.length > 50) { ... }
+setTimeout(callback, 3000)
+if (retries >= 3) { ... }
+
+// ✅
+const MAX_NAME_LENGTH = 50
+const RETRY_DELAY_MS = 3000
+const MAX_RETRIES = 3
+
+if (name.length > MAX_NAME_LENGTH) { ... }
+setTimeout(callback, RETRY_DELAY_MS)
+if (retries >= MAX_RETRIES) { ... }
+```
+
+---
+
+## `const` over `let`, never `var`
+
+Default to `const`. Use `let` only when the variable genuinely needs to be reassigned. If you find yourself reaching for `let`, first ask whether a `.map()` / `.filter()` / ternary would remove the need for mutation.
+
+`var` is never acceptable.
+
+---
+
+## Array methods over `for` loops
+
+Prefer declarative array methods over imperative loops. They express intent, not mechanics.
+
+```typescript
+// ❌
+const names: string[] = []
+for (let i = 0; i < users.length; i++) {
+  if (users[i].isActive) {
+    names.push(users[i].name)
+  }
+}
+
+// ✅
+const names = users.filter((user) => user.isActive).map((user) => user.name)
+```
+
+Use `.map()`, `.filter()`, `.find()`, `.some()`, `.every()`, `.reduce()`. A `for` loop is acceptable only when you need `break` / `continue` semantics that can't be expressed otherwise.
+
+---
+
+## No nested ternaries
+
+A single ternary for a simple inline condition is fine (including inside JSX). Two levels of nesting: extract a function or a sub-component.
+
+```typescript
+// ❌
+const label = isOwner ? 'owner' : isAdmin ? 'admin' : 'member'
+
+// ✅
+function resolveUserLabel(isOwner: boolean, isAdmin: boolean): string {
+  if (isOwner) return 'owner'
+  if (isAdmin) return 'admin'
+  return 'member'
+}
+```
+
+---
+
+## `async/await` only — no `.then()` / `.catch()`
+
+All async code uses `async/await`. Never chain `.then()` or `.catch()` — it mixes paradigms and makes control flow harder to follow.
+
+```typescript
+// ❌
+function fetchUser(id: string) {
+  return apiGet(`/users/${id}`)
+    .then((user) => ({ data: user }))
+    .catch((error) => ({ error }))
+}
+
+// ✅
+async function fetchUser(id: string): Promise<ApiUser> {
+  return apiGet<ApiUser>(`/users/${id}`)
+}
+```
+
+---
+
+## Named exports only — no default exports
+
+Always use named exports. Default exports make refactoring harder (the import name is not enforced) and reduce discoverability.
+
+```typescript
+// ❌
+export default function UserForm() { ... }
+
+// ✅
+export function UserForm(): React.JSX.Element { ... }
+```
+
+**Exception**: Next.js App Router requires default exports for `page.tsx`, `layout.tsx`, `loading.tsx`, `error.tsx`, `not-found.tsx`, `template.tsx`, `default.tsx`, and `route.ts` handlers. In those files, use a default export **only** for the route entry point and named exports for everything else in the file (metadata, generateMetadata, etc.).
+
+---
+
+## No `any` in template literals — explicit types only
+
+`@typescript-eslint/restrict-template-expressions` forbids values typed as `any`, `null`, `undefined`, or object types inside template literals. Only `string`, `number`, `boolean`, and `bigint` are allowed directly.
+
+Common triggers:
+- Optional env vars typed `string | undefined`
+- Properties of objects with `any` index signatures (e.g. untyped external payloads)
+- Values that haven't been narrowed yet
+
+Fix by narrowing, converting, or avoiding template literals where possible:
+
+```typescript
+// ❌ — string | undefined, any, or object
+const message = `Status: ${maybeNull}`
+const url = `${process.env.NEXT_PUBLIC_API_URL}/path`  // if undefined at build time
+
+// ✅ — narrow or convert before interpolating
+const message = `Status: ${maybeNull ?? 'unknown'}`
+const message = `Code: ${String(value)}`
+
+// ✅ — for URLs, prefer the URL constructor
+const endpoint = new URL('/users/me', process.env.NEXT_PUBLIC_API_URL).href
+```
+
+---
+
+## `??` over `||` for nullish coalescing
+
+Use `??` when you want to fall back only on `null` or `undefined`. `||` also coerces `0`, `""`, and `false` — which is almost never what you want in business logic.
+
+```typescript
+// ❌ — falls back when quantity is 0
+const quantity = item.quantity || 1
+
+// ✅ — falls back only when quantity is null/undefined
+const quantity = item.quantity ?? 1
+```
+
+---
+
+## Natural reading order
+
+Functions and components in a file should read top-to-bottom in the order a reader would want to understand them:
+
+1. **The exported component or main function first** — what the module is *for*
+2. **Private helpers after** — implementation details, in the order they are called
+3. **Sub-components used only here go below the main component** — never above it
+
+A reader opening the file sees the intent at the top and drills into details below.
+
+---
+
+## Naming conventions
+
+- **Functions**: `verb + noun` in camelCase — `getUserById`, `fetchUsers`, `deleteItem`
+- **React components**: PascalCase noun — `UserForm`, `UsersTable`, `ListHeader`
+- **Custom hooks**: `use` prefix, camelCase — `useUsers`, `useLogin`, `useDeleteUser`
+- **Booleans**: `is` / `has` / `can` prefix — `isDeleted`, `hasPermission`, `canEdit`
+- **Interfaces**: PascalCase noun — `UserForm`, `CreateListInput`, `ListResult`; component props: `<ComponentName>Props`
+- **Constants**: SCREAMING_SNAKE_CASE for true constants — `MAX_ITEMS_PER_LIST`
+- **File names**: kebab-case matching the exported symbol — `user-form.tsx` exports `UserForm`, `use-users.ts` exports `useUsers`
+- No single-letter variables except in well-understood math contexts
+
+---
+
+## API payload keys — camelCase everywhere
+
+All keys in HTTP request bodies, response bodies, and query params consumed from the Keimelion API are **camelCase**. This matches TypeScript identifiers so the same key flows from `data-access/` → hooks → components without any rename layer.
+
+Form state, TanStack Query cache keys, and local component state also use camelCase. The only place snake_case ever appears is in URL path segments (`/change-password`, `/verify-email`) — that's a REST convention, not a data convention.
+
+---
+
+## Specific error codes — no generic fallbacks
+
+When surfacing an API error to the UI, distinguish specific failure modes from generic ones. SDK `ApiError` instances carry a `code` field (see `ErrorCode` in `@keimelion/sdk/enums`, plus the client codes `NETWORK_ERROR`, `TIMEOUT`, `ABORTED`, `INVALID_RESPONSE`) — use it to show a targeted message.
+
+```typescript
+// ❌
+if (error) return <div>Something went wrong</div>
+
+// ✅
+if (error?.code === ErrorCode.INVALID_CREDENTIALS) return <div>Wrong email or password</div>
+if (error?.code === ErrorCode.RATE_LIMITED) return <div>Too many attempts — try again in a minute</div>
+if (error) return <div>Unexpected error — please retry</div>
+```
+
+---
+
+## Trust the validation layer
+
+Components and hooks receive already-validated, already-typed data from Zod parsers or from the API's typed response. Do not re-check constraints downstream.
+
+- If a Zod form schema guarantees `password` is at least 8 chars, do not re-check length inside the mutation
+- If the API guarantees `email` is lowercased, do not lowercase it again before display
+
+---
+
+## Normalise inputs at the Zod boundary
+
+Data normalisation (lowercasing emails, trimming whitespace) belongs in the Zod schema via `.transform()` or `.trim()`, not in components or hooks.
+
+```typescript
+// ❌ — normalisation scattered in the component
+const email = formData.email.toLowerCase().trim()
+
+// ✅ — normalised once at the boundary
+const loginSchema = z.object({
+  email: z.string().email().transform((value) => value.toLowerCase().trim()),
+})
+```
+
+---
+
+## Generic result types — avoid repeated interfaces
+
+Reuse shared types from `@keimelion/sdk/schemas` (`PaginatedResponse<T>`) and `@keimelion/sdk/client` (`ApiError`) instead of redeclaring them. Only name a new result type when the shape is unique enough to be meaningful on its own.
+
+---
+
+## Avoid overkill interfaces
+
+Do not create an interface for a shape used in exactly one place. Inline the type or pass values directly.
+
+```typescript
+// ❌ — interface for a 2-field object used once
+interface DeleteUserButtonHandlers {
+  onConfirm: () => void
+  onCancel: () => void
+}
+
+// ✅ — just declare props inline in the component
+interface DeleteUserButtonProps {
+  onConfirm: () => void
+  onCancel: () => void
+}
+function DeleteUserButton({ onConfirm, onCancel }: DeleteUserButtonProps): React.JSX.Element { ... }
+```
+
+---
+
+## Prefer inline over premature dispatchers
+
+A `Record<K, V>` lookup table, a helper function, or a config object is worth its abstraction only when it removes real duplication. A 2-entry dispatcher for two mutually-exclusive branches is not real duplication — it is ceremony.
+
+```typescript
+// ❌ — two entries, two lookups, two indirections for two cases
+const REASON_TOASTS: Record<string, { message: string; id: string }> = {
+  'invalid-link': { message: 'This reset link is invalid…', id: 'reset-link-invalid' },
+  'expired-link': { message: 'This reset link has expired…', id: 'reset-link-expired' },
+}
+const entry = REASON_TOASTS[reason ?? '']
+if (entry) notify.error(entry.message, { persistent: true, id: entry.id })
+
+// ✅ — inline the pair, or better: encode the message directly in the URL and read it back
+const message = searchParams.get('notice')
+if (message) notify.error(message, { persistent: true, id: message })
+```
+
+Prefer the direct form until the case count justifies the table (typically 4+ genuinely-similar cases). "We might add more later" is not a reason.
+
+---
+
+## Delete unused exports — do not hoard scaffolding
+
+An export with no consumer is dead code, even if it looks like it *might* be needed later. Delete it; recreate it when the actual consumer arrives. Git history is the scaffolding archive — the working tree is not.
+
+The exception is a public API surface with external consumers outside the repo (this project has none).
+
+---
+
+## Private helpers — ordering within the private section
+
+Within the private section of a file (after all exported functions and components), order helpers in the order they are first called — top to bottom mirrors the call flow.
+
+---
+
+# React / Next.js addendum
+
+The rules below are specific to the Next.js apps (web app and BackOffice) and complement the general TypeScript rules above. Where they conflict with the general rules, these take precedence.
+
+## Server Components by default
+
+Every component in the App Router is a Server Component unless it explicitly opts into client rendering with `'use client'` at the top of the file. Only opt in when you actually need one of:
+
+- Browser-only APIs (`window`, `localStorage`, `IntersectionObserver`)
+- React hooks (`useState`, `useEffect`, `useMemo`, custom hooks) — including all TanStack Query hooks
+- Event handlers on interactive elements (`onClick`, `onSubmit`, `onChange`)
+- Third-party components that themselves use hooks (shadcn/ui interactive primitives, Radix state)
+
+Push the `'use client'` boundary **as low in the tree as possible**. A page can stay a Server Component even if it renders a small interactive island — the island wraps the interactive part, not the whole page.
+
+```tsx
+// ✅ — page stays a Server Component; only the form is a client island
+// app/(app)/lists/page.tsx
+import { ListsGrid } from '@/features/lists/components/lists-grid'
+import { CreateListButton } from '@/features/lists/components/create-list-button'  // 'use client' island
+
+export default async function ListsPage(): Promise<React.JSX.Element> {
+  return (
+    <>
+      <CreateListButton />
+      <ListsGrid />
+    </>
+  )
+}
+```
+
+## Explicit component return type
+
+Every component declares its return type: `React.JSX.Element` (sync) or `Promise<React.JSX.Element>` (async Server Component). Never rely on inference.
+
+## Props via `interface`, one per component
+
+Component props go in an `interface` named `<ComponentName>Props`, declared just above the component. Never inline the props type or use `type`.
+
+```tsx
+// ❌
+export function UserRow(props: { user: ApiUser; onEdit: () => void }): React.JSX.Element { ... }
+
+// ✅
+interface UserRowProps {
+  user: ApiUser
+  onEdit: () => void
+}
+
+export function UserRow({ user, onEdit }: UserRowProps): React.JSX.Element { ... }
+```
+
+## One component per file
+
+The file name matches the exported component in kebab-case. `user-form.tsx` exports `UserForm`. Small purely-presentational sub-components used only inside one parent may stay in the same file, ordered below the parent.
+
+## Hooks prefix and colocation
+
+All custom hooks start with `use` and live under `src/features/<feature>/hooks/`. TanStack Query hooks wrap `data-access/` functions and are the only place `useQuery` / `useMutation` are called — components never call them directly.
+
+```ts
+// src/features/users/hooks/use-users.ts
+'use client'
+import { useQuery } from '@tanstack/react-query'
+import { fetchUsers } from '@/data-access/users/users.api'
+import type { UserDetailParsed, PaginatedResponse } from '@keimelion/sdk/schemas'
+
+export function useUsers(page: number): ReturnType<typeof useQuery<PaginatedResponse<UserDetailParsed>>> {
+  return useQuery({
+    queryKey: ['users', page],
+    queryFn: () => fetchUsers(page),
+  })
+}
+```
+
+## One form component for create + update
+
+When a resource needs both a create and an edit form, write a **single component** with a `mode: 'create' | 'edit'` discriminated union prop. Never split into two parallel components — the shared shell (`<Form>`, `handleSubmit`, dirty-state effect, root-error rendering, submit button) and the shared field JSX dwarf the mode-specific parts. Splitting also doubles the surface for later drift.
+
+- Type the internal `useForm` on the **create shape** (the superset). In edit mode, `defaultValues` come from the resource prop; extract the subset at submit (`{ role: submitted.role }`).
+- Use the create schema as the resolver so field-level validation still runs. Gate the submit button by picking the appropriate schema in the `isFormValid` computation (`isEdit ? updateSchema.safeParse({ role }).success : createSchema.safeParse(values).success`).
+- Render create-only fields under `{isEdit ? null : (<>...</>)}`; edit-only affordances (like a role-change warning) under `{isEdit && isDirty ? ... : null}`.
+- Inline the submit label ternary in the button JSX — don't extract a `resolveSubmitLabel` helper (see the "Prefer inline over premature dispatchers" rule above).
+
+Reference implementations (in Keimelion-Backoffice until this repo has its own): `src/features/users/components/user-form/user-form.tsx` and `src/features/occasion-types/components/occasion-type-form/occasion-type-form.tsx`.
+
+---
+
+## `data-access/` never touches React
+
+Files under `src/data-access/` export plain async functions that call the Keimelion API through `apiClient` from `src/data-access/_shared/client`. They import no React, no hooks, no TanStack Query. Types returned from these functions are the source of truth for what the UI receives.
+
+## `apiClient` is the only way to reach the API
+
+Every network call to the Keimelion API goes through the single `apiClient` from `src/data-access/_shared/client`, created with `@keimelion/sdk`. No raw `fetch` in `data-access/`, no raw `fetch` in components. This centralises auth headers, locale, session refresh and `ApiError` mapping. Contract changes ship in the SDK first, then consumers bump the pinned version.
+
+## Loading, empty, and error states are first-class
+
+Every screen that reads remote data renders three states explicitly — never leave a loading spinner as a fallback for "no data". Use TanStack Query's `isLoading`, `isError`, and `data`; render a dedicated component for each.
+
+```tsx
+// ✅
+function UsersScreen(): React.JSX.Element {
+  const query = useUsers(1)
+  if (query.isLoading) return <UsersTableSkeleton />
+  if (query.isError) return <UsersErrorState error={query.error} />
+  if (query.data.items.length === 0) return <UsersEmptyState />
+  return <UsersTable users={query.data.items} />
+}
+```
+
+## Never render user-controlled HTML
+
+Never pass user-controlled strings to `dangerouslySetInnerHTML`. If rich formatting is required, use a sanitiser (DOMPurify) or render Markdown through a component that escapes by default.
+
+## Env vars: `NEXT_PUBLIC_*` only for browser-safe values
+
+Any variable prefixed `NEXT_PUBLIC_` is inlined into the client bundle at build time and shipped to every visitor. Never put secrets (API keys, tokens) in a `NEXT_PUBLIC_*` var. Server-only secrets go in a non-prefixed var and are read exclusively from Server Components, Server Actions, or route handlers.
+
+## No `useEffect` for data fetching
+
+TanStack Query owns all remote data. `useEffect` is reserved for genuinely imperative browser side-effects (setting up event listeners, syncing to a non-React library). If you find yourself writing `useEffect(() => { fetch(...) }, [])`, replace it with a `useQuery`.
+
+## shadcn/ui components under `components/ui/` are not edited manually
+
+Anything generated by `npx shadcn add` lives under `src/components/ui/` and is treated as generated code — do not edit it in place. If a variant is missing, extend it via a wrapper component in `src/components/shared/` or the feature folder.
+
+## Styling: Tailwind first, plain CSS for the rest, no SCSS
+
+Style with Tailwind utilities. Colors, radius and other design values come from the CSS variables in `src/styles/tokens.css` (`:root` for light, `.dark` for dark), exposed to Tailwind via `@theme inline` in `src/app/globals.css` — add a token there, never a hardcoded hex in a component. When a rule cannot be expressed with utilities (third-party DOM like sonner toasts, pseudo-elements, global element selectors), write it in a plain `.css` file colocated with the component, using native CSS nesting, and import it from `src/app/layout.tsx`. Sass/SCSS is not used: no `.scss` files, no `sass` dependency.
+
+## End-to-end smoke specs
+
+Playwright specs live in `e2e/*.spec.ts` and run against the production build (`npm run build && npm run test:e2e`). The API is never called for real: `e2e/support/mock-api.ts` intercepts every API request and answers from `e2e/support/api-fixtures.ts`, typed with the SDK `*Input` response types so a contract change breaks the fixtures at typecheck. A request without a fixture fails the test. Import `test`, `expect` and `signIn` from `e2e/support/test.ts`, query by role and label as a user would, and keep specs to smoke paths — business rules stay covered by Vitest.
+
+## Class strings: use `cn()` — no string concatenation
+
+Combine Tailwind classes through the `cn()` helper from `src/lib/utils.ts` (or wherever shadcn puts it). Never concatenate class strings by hand, never use ternaries that produce class strings directly in JSX.
+
+```tsx
+// ❌
+<div className={`text-sm ${isActive ? 'font-bold' : ''}`} />
+
+// ✅
+<div className={cn('text-sm', isActive && 'font-bold')} />
+```
+
+## Accessibility is not optional
+
+Every interactive element has a name, a role, and keyboard support. Buttons are `<button>`, links are `<Link>`, form inputs have a `<label>` linked by `htmlFor`. shadcn/ui primitives handle most of this — the moment you build a custom interactive component, wire up the ARIA attributes yourself.

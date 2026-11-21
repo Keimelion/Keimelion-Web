@@ -1,0 +1,36 @@
+# dependencies
+node_modules/
+
+# next.js
+.next/
+out/
+
+# production
+build/
+
+# playwright
+playwright-report/
+test-results/
+
+# env
+.env
+.env.local
+.env.*.local
+
+# debug
+npm-debug.log*
+
+# misc
+.DS_Store
+*.pem
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# local design exports and scratch files (temp/design/*.html are visual specs, never imported)
+temp/
+
+# IDE
+.idea/
+.vscode/
