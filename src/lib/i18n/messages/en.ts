@@ -1,5 +1,6 @@
 import auth from './en/auth.json'
 import common from './en/common.json'
+import dev from './en/dev.json'
 import errorMessages from './en/error.json'
 import home from './en/home.json'
 import invites from './en/invites.json'
@@ -14,6 +15,7 @@ export const enMessages = {
   ...invites,
   ...errorMessages,
   ...query,
+  ...dev,
 } satisfies Record<string, string>
 
 export type MessageId = keyof typeof enMessages

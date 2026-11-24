@@ -1,0 +1,13 @@
+{
+  "dev.tokens.title": "Design tokens",
+  "dev.tokens.description": "Every colour, paper, type style, radius and effect of the Keimelion theme, side by side by day and at night. Only available in development builds.",
+  "dev.tokens.day": "Day",
+  "dev.tokens.night": "Night",
+  "dev.tokens.colors": "Colours",
+  "dev.tokens.papers": "Occasion and gift papers",
+  "dev.tokens.type_scale": "Type scale",
+  "dev.tokens.type_sample": "Léa & Axel's wedding",
+  "dev.tokens.radii": "Radii",
+  "dev.tokens.effects": "Effects",
+  "dev.tokens.reserved_sample": "Reserved"
+}

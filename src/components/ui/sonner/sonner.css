@@ -6,6 +6,10 @@
   border-radius: 12px;
   gap: 12px;
   align-items: flex-start;
+  background: var(--inverse);
+  color: var(--on-inverse);
+  border-color: var(--inverse);
+  box-shadow: var(--elevation-float);
 
   [data-icon] {
     display: flex;
@@ -13,6 +17,15 @@
     justify-content: center;
     height: 20px;
     margin: 0;
+    color: currentColor;
+
+    svg {
+      color: currentColor;
+    }
+  }
+
+  [data-description] {
+    color: inherit;
   }
 
   [data-close-button] {
@@ -29,13 +42,13 @@
     border-radius: 9999px;
     background: transparent;
     border: 1px solid transparent;
-    color: var(--muted-foreground);
+    color: currentColor;
     opacity: 0.7;
     transition: all 150ms ease-out;
 
     &:hover {
       opacity: 1;
-      background: var(--muted);
+      background: color-mix(in srgb, currentColor 12%, transparent);
     }
 
     svg {
@@ -51,7 +64,7 @@
     left: 0;
     right: 0;
     height: 4px;
-    background: var(--muted-foreground);
+    background: currentColor;
     opacity: 0.6;
     transform-origin: left;
     animation: keimelion-toast-shrink 5000ms linear forwards;
@@ -59,38 +72,6 @@
 
   &:hover::after {
     animation-play-state: paused;
-  }
-
-  &[data-type='error'] {
-    --toast-variant: var(--variant-error);
-  }
-
-  &[data-type='success'] {
-    --toast-variant: var(--variant-success);
-  }
-
-  &[data-type='warning'] {
-    --toast-variant: var(--variant-warning);
-  }
-
-  &[data-type='info'] {
-    --toast-variant: var(--variant-info);
-  }
-
-  &:is([data-type='error'], [data-type='success'], [data-type='warning'], [data-type='info']) {
-    [data-close-button] {
-      color: var(--toast-variant);
-      opacity: 1;
-
-      &:hover {
-        background: color-mix(in srgb, var(--toast-variant) 12%, transparent);
-      }
-    }
-
-    &::after {
-      background: var(--toast-variant);
-      opacity: 1;
-    }
   }
 }
 

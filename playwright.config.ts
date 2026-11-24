@@ -18,6 +18,7 @@ export default defineConfig({
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
   webServer: {
     command: 'npm run start',
+    env: { ENABLE_DEV_PAGES: 'true' },
     url: BASE_URL,
     reuseExistingServer: !isCi,
   },

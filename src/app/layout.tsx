@@ -5,7 +5,7 @@ import { getRequestLocale, getServerTranslate } from '@/lib/i18n/server-translat
 import './globals.css'
 import '@/styles/tokens.css'
 import '@/components/ui/sonner/sonner.css'
-import '@/components/shared/theme-toggle/theme-toggle.css'
+import '@/components/shared/theme-picker/theme-picker.css'
 
 const displayFont = Bricolage_Grotesque({
   subsets: ['latin'],

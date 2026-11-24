@@ -1,3 +1,4 @@
+import type { Page } from '@playwright/test'
 import { expect, expectNoAccessibilityViolations, test } from './support/test'
 
 const SESSION_COOKIE_NAME = 'keimelion_web_session'
@@ -9,6 +10,7 @@ const PAGES = [
   { path: '/auth/verify-email', heading: 'Verify your email' },
   { path: '/auth/reset-password', heading: 'Choose a new password' },
   { path: '/invites/accept', heading: 'Join a list' },
+  { path: '/dev/tokens', heading: 'Design tokens' },
 ]
 
 const COLOR_SCHEMES = ['light', 'dark'] as const
@@ -47,15 +49,25 @@ test('a signed-in user reaches the signed-in pages', async ({ page, context, bas
   await expect(page.getByRole('heading', { level: 1, name: 'My lists' })).toBeVisible()
 })
 
-test('the theme toggle switches between light and dark', async ({ page }) => {
+test('the theme picker switches between light, dark and system and keeps the choice', async ({
+  page,
+}) => {
+  await page.emulateMedia({ colorScheme: 'dark' })
   await page.goto('/')
   const root = page.locator('html')
-  await expect(root).not.toHaveClass(/dark/)
-
-  await page.getByRole('button', { name: 'Toggle theme' }).click()
   await expect(root).toHaveClass(/dark/)
 
-  await page.getByRole('button', { name: 'Toggle theme' }).click()
+  await selectTheme(page, 'Light')
+  await expect(root).not.toHaveClass(/dark/)
+
+  await page.reload({ waitUntil: 'domcontentloaded' })
+  await expect(root).not.toHaveClass(/dark/)
+
+  await selectTheme(page, 'Dark')
+  await expect(root).toHaveClass(/dark/)
+
+  await page.emulateMedia({ colorScheme: 'light' })
+  await selectTheme(page, 'System')
   await expect(root).not.toHaveClass(/dark/)
 })
 
@@ -91,3 +103,8 @@ test.describe('first visit from a French browser', () => {
     await expect(page.locator('html')).toHaveAttribute('lang', 'fr')
   })
 })
+
+async function selectTheme(page: Page, themeLabel: string): Promise<void> {
+  await page.getByRole('button', { name: 'Choose theme' }).click()
+  await page.getByRole('menuitemradio', { name: themeLabel }).click()
+}
