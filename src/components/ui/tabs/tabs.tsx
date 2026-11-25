@@ -42,7 +42,7 @@ const TabsList = React.forwardRef<
   <TabsPrimitive.List
     ref={ref}
     className={cn(
-      'inline-grid h-9 max-w-full auto-cols-[minmax(0,1fr)] grid-flow-col items-center rounded-pill bg-sunken p-[3px]',
+      'inline-grid h-9 w-fit max-w-full auto-cols-[minmax(0,1fr)] grid-flow-col items-center rounded-pill bg-sunken p-[3px]',
       className,
     )}
     {...props}

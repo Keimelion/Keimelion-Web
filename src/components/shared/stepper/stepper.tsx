@@ -25,7 +25,7 @@ export const Stepper = React.forwardRef<HTMLInputElement, StepperProps>(
     return (
       <div
         className={cn(
-          'inline-flex h-11 shrink-0 items-center rounded-pill shadow-[inset_0_0_0_1.5px_var(--rule)] has-[[aria-invalid=true]]:shadow-[inset_0_0_0_2px_var(--danger)]',
+          'inline-flex h-11 w-fit shrink-0 items-center self-start justify-self-start rounded-pill shadow-[inset_0_0_0_1.5px_var(--rule)] has-[[aria-invalid=true]]:shadow-[inset_0_0_0_2px_var(--danger)]',
           disabled && 'bg-sunken shadow-none',
           className,
         )}

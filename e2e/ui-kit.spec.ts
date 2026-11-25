@@ -119,6 +119,39 @@ test.describe('with reduced motion', () => {
   })
 })
 
+for (const width of [390, 1440]) {
+  test(`inline controls hug their content at ${String(width)} px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 })
+    await page.goto(KIT_PATH)
+
+    const stretchedControls = await page.evaluate(findStretchedInlineControls)
+
+    expect(stretchedControls).toEqual([])
+  })
+}
+
+function findStretchedInlineControls(): string[] {
+  const roots = [
+    ...Array.from(
+      document.querySelectorAll('input[type="number"]'),
+      (input) => input.parentElement,
+    ),
+    ...Array.from(document.querySelectorAll('[role="tablist"]')),
+  ].filter((root): root is HTMLElement => root instanceof HTMLElement)
+  return roots
+    .filter((root) => !root.classList.contains('w-full'))
+    .filter((root) => {
+      const childrenWidth = Array.from(root.children).reduce(
+        (total, child) => total + child.getBoundingClientRect().width,
+        0,
+      )
+      const style = getComputedStyle(root)
+      const chrome = parseFloat(style.paddingLeft) + parseFloat(style.paddingRight)
+      return root.getBoundingClientRect().width > childrenWidth + chrome + 2
+    })
+    .map((root) => root.outerHTML.slice(0, 100))
+}
+
 test.describe('on a phone', () => {
   test.use({ viewport: { width: 390, height: 844 } })
 
