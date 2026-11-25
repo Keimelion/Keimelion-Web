@@ -26,10 +26,13 @@ interface FormFieldContextValue {
 interface FormItemContextValue {
   id: string
   requiredRef: React.MutableRefObject<boolean>
+  hasDescription: boolean
+  registerDescription: () => () => void
 }
 
 interface FieldIds {
   item: string
+  description: string
   message: string
 }
 
@@ -37,6 +40,7 @@ interface FormFieldState {
   ids: FieldIds
   error: FieldError | undefined
   required: boolean
+  hasDescription: boolean
   markRequired: () => void
 }
 
@@ -57,6 +61,7 @@ function FormField<
 function buildFieldIds(baseId: string): FieldIds {
   return {
     item: `${baseId}-form-item`,
+    description: `${baseId}-form-item-description`,
     message: `${baseId}-form-item-message`,
   }
 }
@@ -88,6 +93,7 @@ function useFormField(): FormFieldState {
     ids: buildFieldIds(itemContext.id),
     error: fieldState.error,
     required: itemContext.requiredRef.current,
+    hasDescription: itemContext.hasDescription,
     markRequired: () => {
       itemContext.requiredRef.current = true
     },
@@ -99,8 +105,16 @@ const FormItem = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivEl
     const id = React.useId()
     const requiredRef = React.useRef<boolean>(false)
     requiredRef.current = false
+    const [descriptionCount, setDescriptionCount] = React.useState(0)
+    const registerDescription = React.useCallback(() => {
+      setDescriptionCount((count) => count + 1)
+      return () => {
+        setDescriptionCount((count) => count - 1)
+      }
+    }, [])
+    const hasDescription = descriptionCount > 0
     return (
-      <FormItemContext.Provider value={{ id, requiredRef }}>
+      <FormItemContext.Provider value={{ id, requiredRef, hasDescription, registerDescription }}>
         <div ref={ref} className={cn('flex min-w-0 flex-col gap-1.5', className)} {...props} />
       </FormItemContext.Provider>
     )
@@ -132,7 +146,7 @@ const FormControl = React.forwardRef<
   React.ComponentRef<typeof Slot>,
   React.ComponentPropsWithoutRef<typeof Slot>
 >((props, ref) => {
-  const { error, ids, required } = useFormField()
+  const { error, ids, required, hasDescription } = useFormField()
   const hasError = error !== undefined
   return (
     <Slot
@@ -140,19 +154,39 @@ const FormControl = React.forwardRef<
       id={ids.item}
       aria-invalid={hasError}
       aria-required={required ? true : undefined}
-      aria-describedby={hasError ? ids.message : undefined}
+      aria-describedby={buildDescribedBy(ids, hasDescription, hasError)}
       {...props}
     />
   )
 })
 FormControl.displayName = 'FormControl'
 
+function buildDescribedBy(
+  ids: FieldIds,
+  hasDescription: boolean,
+  hasError: boolean,
+): string | undefined {
+  const describedBy = [hasDescription ? ids.description : null, hasError ? ids.message : null]
+    .filter((id) => id !== null)
+    .join(' ')
+  return describedBy === '' ? undefined : describedBy
+}
+
 const FormDescription = React.forwardRef<
   HTMLParagraphElement,
   React.HTMLAttributes<HTMLParagraphElement>
->(({ className, ...props }, ref) => (
-  <p ref={ref} className={cn('text-small text-muted-foreground', className)} {...props} />
-))
+>(({ className, ...props }, ref) => {
+  const { id, registerDescription } = useItemContext()
+  React.useEffect(registerDescription, [registerDescription])
+  return (
+    <p
+      ref={ref}
+      id={buildFieldIds(id).description}
+      className={cn('text-small text-muted-foreground', className)}
+      {...props}
+    />
+  )
+})
 FormDescription.displayName = 'FormDescription'
 
 const FormMessage = React.forwardRef<

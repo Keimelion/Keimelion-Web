@@ -125,6 +125,28 @@
     var(--ease-standard), var(--ease-standard), var(--ease-standard), var(--ease-spring);
 }
 
+@layer components {
+  .touch-target {
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: max(100%, 44px);
+      height: max(100%, 44px);
+      transform: translate(-50%, -50%);
+    }
+
+    @media (width >= 64rem) {
+      &::before {
+        content: none;
+      }
+    }
+  }
+}
+
 @layer base {
   html,
   body {

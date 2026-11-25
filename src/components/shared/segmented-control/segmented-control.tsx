@@ -111,7 +111,7 @@ function SegmentButton<TValue extends string>({
       tabIndex={isSelected ? 0 : -1}
       onClick={onSelect}
       className={cn(
-        'relative inline-flex cursor-pointer items-center gap-1.5 rounded-pill px-[13px] text-[13px] font-bold whitespace-nowrap text-muted-foreground transition-colors duration-200 outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus',
+        'touch-target inline-flex cursor-pointer items-center gap-1.5 rounded-pill px-[13px] text-[13px] font-bold whitespace-nowrap text-muted-foreground transition-colors duration-200 outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus',
         isSelected && 'text-on-inverse',
       )}
     >

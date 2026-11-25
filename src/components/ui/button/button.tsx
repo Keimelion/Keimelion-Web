@@ -22,9 +22,9 @@ const buttonVariants = cva(
       },
       size: {
         md: 'min-h-12 px-[22px] text-base leading-5 [&_svg]:size-5',
-        sm: 'min-h-9 px-3.5 text-sm leading-5 [&_svg]:size-4',
+        sm: 'touch-target min-h-9 px-3.5 text-sm leading-5 [&_svg]:size-4',
         icon: 'size-12 [&_svg]:size-5',
-        'icon-sm': 'size-9 [&_svg]:size-4',
+        'icon-sm': 'touch-target size-9 [&_svg]:size-4',
       },
     },
     defaultVariants: {

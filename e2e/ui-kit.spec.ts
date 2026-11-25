@@ -53,3 +53,37 @@ test.describe('with reduced motion', () => {
     await expect(page.getByText('Finished once')).toHaveCount(2)
   })
 })
+
+test.describe('on a phone', () => {
+  test.use({ viewport: { width: 390, height: 844 } })
+
+  test('every interactive element offers at least a 44 × 44 px touch target', async ({ page }) => {
+    await page.goto(KIT_PATH)
+
+    const undersizedTargets = await page.evaluate(findUndersizedTouchTargets, MIN_TOUCH_TARGET_PX)
+
+    expect(undersizedTargets).toEqual([])
+  })
+})
+
+const MIN_TOUCH_TARGET_PX = 44
+
+function findUndersizedTouchTargets(minimumSize: number): string[] {
+  const selector = 'a[href], button, input, textarea, [role="radio"], [role="switch"], [role="tab"]'
+  return Array.from(document.querySelectorAll<HTMLElement>(selector))
+    .filter(
+      (element) =>
+        element.getClientRects().length > 0 &&
+        element.closest('.sr-only') === null &&
+        element.getAttribute('aria-hidden') !== 'true',
+    )
+    .filter((element) => {
+      const box = element.getBoundingClientRect()
+      const extension = getComputedStyle(element, '::before')
+      const hasExtension = extension.content !== 'none' && extension.position === 'absolute'
+      const width = Math.max(box.width, hasExtension ? parseFloat(extension.width) : 0)
+      const height = Math.max(box.height, hasExtension ? parseFloat(extension.height) : 0)
+      return Math.round(width) < minimumSize || Math.round(height) < minimumSize
+    })
+    .map((element) => element.outerHTML.slice(0, 120))
+}

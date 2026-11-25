@@ -13,7 +13,10 @@ export async function SiteShell({ children }: SiteShellProps): Promise<React.JSX
   return (
     <div className="flex min-h-screen flex-col">
       <header className="mx-auto flex w-full items-center justify-between gap-4 px-4 py-4 md:max-w-tablet lg:max-w-desktop lg:px-10">
-        <Link href={AppPaths.HOME} className="font-display text-2xl font-extrabold tracking-tight">
+        <Link
+          href={AppPaths.HOME}
+          className="touch-target font-display text-2xl font-extrabold tracking-tight"
+        >
           {t('common.app_name')}
         </Link>
         <div className="flex items-center gap-2">
