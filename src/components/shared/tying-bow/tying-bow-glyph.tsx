@@ -23,7 +23,11 @@ export function TyingBowGlyph({ delay, onDone }: TyingBowGlyphProps): React.JSX.
         initial={{ scaleY: 0 }}
         animate={{ scaleY: 1 }}
         style={{ originY: 0 }}
-        transition={{ duration: TieTiming.TAILS_S, delay, ease: MotionEasings.STANDARD }}
+        transition={{
+          duration: TieTiming.TAILS_S,
+          delay: delay + TieTiming.TAILS_DELAY_S,
+          ease: MotionEasings.STANDARD,
+        }}
       />
       <motion.g
         initial={{ scaleX: 1, scaleY: 1 }}
