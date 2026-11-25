@@ -1,6 +1,8 @@
 'use client'
 
 import { useEffect } from 'react'
+import '@/app/globals.css'
+import '@/styles/tokens.css'
 
 interface GlobalErrorProps {
   error: Error & { digest?: string }
@@ -14,33 +16,15 @@ export default function GlobalError({ error, reset }: GlobalErrorProps): React.J
 
   return (
     <html lang="en">
-      <body
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          minHeight: '100vh',
-          gap: '1rem',
-          padding: '2rem',
-          fontFamily: 'system-ui, sans-serif',
-          textAlign: 'center',
-        }}
-      >
-        <h1 style={{ fontSize: '1.5rem', fontWeight: 700 }}>Something went wrong</h1>
-        <p style={{ maxWidth: '32rem', color: '#666' }}>
+      <body className="flex min-h-screen flex-col items-center justify-center gap-4 bg-surface p-8 text-center font-sans text-ink">
+        <h1 className="text-title">Something went wrong</h1>
+        <p className="max-w-lg text-body text-muted-foreground">
           A critical error prevented the application from loading. Please refresh the page.
         </p>
         <button
           type="button"
           onClick={reset}
-          style={{
-            padding: '0.5rem 1rem',
-            borderRadius: '0.5rem',
-            border: '1px solid #ccc',
-            background: '#fff',
-            cursor: 'pointer',
-          }}
+          className="cursor-pointer rounded-pill border border-rule-strong bg-raised px-4 py-2"
         >
           Try again
         </button>

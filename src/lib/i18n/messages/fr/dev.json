@@ -1,0 +1,13 @@
+{
+  "dev.tokens.title": "Design tokens",
+  "dev.tokens.description": "Toutes les couleurs, les papiers, les styles de texte, les arrondis et les effets du thème Keimelion, côte à côte, de jour comme de nuit. Disponible uniquement en développement.",
+  "dev.tokens.day": "Jour",
+  "dev.tokens.night": "Nuit",
+  "dev.tokens.colors": "Couleurs",
+  "dev.tokens.papers": "Papiers d'occasion et papiers cadeaux",
+  "dev.tokens.type_scale": "Échelle typographique",
+  "dev.tokens.type_sample": "Le mariage de Léa & Axel",
+  "dev.tokens.radii": "Arrondis",
+  "dev.tokens.effects": "Effets",
+  "dev.tokens.reserved_sample": "Réservé"
+}

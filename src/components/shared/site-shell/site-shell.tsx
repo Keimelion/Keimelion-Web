@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { LocalePicker } from '@/components/shared/locale-picker'
-import { ThemeToggle } from '@/components/shared/theme-toggle'
+import { ThemePicker } from '@/components/shared/theme-picker'
 import { AppPaths } from '@/lib/app-paths'
 import { getServerTranslate } from '@/lib/i18n/server-translate'
 
@@ -18,7 +18,7 @@ export async function SiteShell({ children }: SiteShellProps): Promise<React.JSX
         </Link>
         <div className="flex items-center gap-2">
           <LocalePicker />
-          <ThemeToggle />
+          <ThemePicker />
         </div>
       </header>
       <main className="mx-auto flex w-full flex-1 flex-col px-4 pb-12 md:max-w-tablet lg:max-w-desktop lg:px-10">

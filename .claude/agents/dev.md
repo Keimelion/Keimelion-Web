@@ -86,7 +86,7 @@ src/
         page.tsx              # Server Component — orchestrates feature components
   components/
     ui/                       # shadcn/ui generated — DO NOT edit manually
-    shared/                   # App-level reusable components (site-shell, locale-picker, theme-toggle…)
+    shared/                   # App-level reusable components (site-shell, locale-picker, theme-picker…)
   data-access/                # Direct API calls through apiClient (@keimelion/sdk) — no React, no hooks, no TanStack Query
     lists/
       lists.api.ts            # fetchLists(), fetchList(), createList(), updateList()…

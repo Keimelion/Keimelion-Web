@@ -1,6 +1,7 @@
 import type { MessageId } from './en'
 import auth from './fr/auth.json'
 import common from './fr/common.json'
+import dev from './fr/dev.json'
 import errorMessages from './fr/error.json'
 import home from './fr/home.json'
 import invites from './fr/invites.json'
@@ -15,4 +16,5 @@ export const frMessages = {
   ...invites,
   ...errorMessages,
   ...query,
+  ...dev,
 } satisfies Record<MessageId, string>

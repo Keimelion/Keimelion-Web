@@ -2,6 +2,9 @@
   "common.app_name": "Keimelion",
   "common.metadata.description": "Des listes d'envies collaboratives pour toutes les occasions : partagez votre liste, laissez vos proches réserver un cadeau, gardez la surprise.",
   "common.locale_picker.select_language": "Choisir la langue",
-  "common.theme_toggle.toggle": "Changer de thème",
+  "common.theme_picker.select_theme": "Choisir le thème",
+  "common.theme_picker.light": "Clair",
+  "common.theme_picker.dark": "Sombre",
+  "common.theme_picker.system": "Système",
   "common.placeholder.coming_soon": "Cette page arrive bientôt."
 }

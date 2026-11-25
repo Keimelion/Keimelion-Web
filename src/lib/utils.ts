@@ -1,5 +1,15 @@
 import { clsx, type ClassValue } from 'clsx'
-import { twMerge } from 'tailwind-merge'
+import { extendTailwindMerge } from 'tailwind-merge'
+
+const twMerge = extendTailwindMerge({
+  extend: {
+    theme: {
+      text: ['display-xl', 'display-m', 'title', 'body', 'small', 'label', 'kicker'],
+      radius: ['card', 'sheet', 'field', 'thumb', 'pill'],
+      shadow: ['card', 'float'],
+    },
+  },
+})
 
 export function cn(...inputs: ClassValue[]): string {
   return twMerge(clsx(inputs))

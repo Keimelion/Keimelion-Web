@@ -5,6 +5,7 @@ export const AppPaths = {
   RESET_PASSWORD: '/auth/reset-password',
   LISTS: '/lists',
   ACCEPT_LIST_INVITE: '/invites/accept',
+  DEV_TOKENS: '/dev/tokens',
 } as const
 
 export const SIGNED_IN_PATH_PREFIXES: readonly string[] = [AppPaths.LISTS]

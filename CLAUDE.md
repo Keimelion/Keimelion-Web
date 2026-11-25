@@ -55,6 +55,10 @@ Design boards are exported as HTML and dropped in `temp/design/` (git-ignored, n
 
 `SiteShell` (`src/components/shared/site-shell/`) already applies this column rule to the header and `<main>`.
 
+### Design tokens
+
+Brand tokens live in `src/styles/tokens.css` (`:root, .light` by day, `.dark` at night) and are exposed through `@theme inline` in `globals.css`: `surface`, `raised`, `sunken`, `rule`, `rule-strong`, `ink`, `muted` (as `text-muted-foreground`), `brand`, `brand-deep`, `hand`, `danger`, `success`, `focus`, `on-brand`, `on-danger`, `inverse`/`on-inverse` (toasts, selected chip, Edit/Guest knob), `paper-*` (occasion papers), `gift-*` + `gift-ribbon` (wrapped gifts), `shadow-card`/`shadow-float` (none at night), `opacity-(--reserved-opacity)` and `brightness-(--photo-brightness)`. Type scale: `text-display-xl`, `text-display-m`, `text-title`, `text-body`, `text-small`, `text-label`, `text-kicker`. Radii: `rounded-card` (22), `rounded-t-sheet` (28), `rounded-field` (16), `rounded-thumb` (16), `rounded-pill`. Map an occasion slug to its paper with `getOccasionPaper()` (`src/lib/occasions/occasion-paper.ts`). Hex colours are forbidden outside `tokens.css` (ESLint `no-restricted-syntax` + `scripts/check-no-hex-colors.mjs`, both in `npm run lint`). Run `npm run dev` and open `/dev/tokens` to see every token in both themes.
+
 ## Coding standards
 
 See `.claude/coding-standards.md` for the full standards. They are derived from the API's rules (universal TypeScript patterns) with a React/Next addendum at the end.
@@ -76,7 +80,7 @@ Summary of rules that matter most in this codebase:
 Every user-facing string is rendered through `react-intl`. There is no hardcoded UI copy — page titles, labels, buttons, headers, placeholders, toast bodies, empty states, error messages, `aria-label`, and metadata all go through catalog keys.
 
 - **Library**: `react-intl` (FormatJS, ICU). Client provider at `src/lib/i18n/i18n-provider/`, mounted inside `Providers` in `src/components/providers.tsx`.
-- **Catalogs**: split per-namespace under `src/lib/i18n/messages/{en,fr}/*.json` (`common.json`, `home.json`, `auth.json`, `lists.json`, `invites.json`, `error.json`, `query.json`). Each locale is re-exported as a single flat catalog via `messages/en.ts` and `messages/fr.ts`; `messages/index.ts` exposes `MESSAGES` (per locale) and the `MessageId` type. Add a new string in the file that matches its namespace prefix — in BOTH locales. A new feature namespace gets a new pair of files, wired into `en.ts` and `fr.ts`.
+- **Catalogs**: split per-namespace under `src/lib/i18n/messages/{en,fr}/*.json` (`common.json`, `home.json`, `auth.json`, `lists.json`, `invites.json`, `error.json`, `query.json`, `dev.json`). Each locale is re-exported as a single flat catalog via `messages/en.ts` and `messages/fr.ts`; `messages/index.ts` exposes `MESSAGES` (per locale) and the `MessageId` type. Add a new string in the file that matches its namespace prefix — in BOTH locales. A new feature namespace gets a new pair of files, wired into `en.ts` and `fr.ts`.
 - **Key convention**: `<feature>.<component>.<purpose>` — e.g. `lists.overview.title`, `common.locale_picker.select_language`, `auth.login.title`.
 - **Adding a new string**: add the key to BOTH `en` and `fr` in the same PR. A PR that ships a new English string without the French counterpart (or vice versa) is blocked (`fr.ts` enforces it at typecheck through `satisfies Record<MessageId, string>`).
 - **Interpolation**: use ICU syntax (`{name}`, `{count, plural, one {# gift} other {# gifts}}`), never string concatenation.
@@ -119,7 +123,7 @@ src/
     (app)/              # Signed-in pages (owners, editors): /lists… — gated by src/middlewares/require-session.ts
   components/
     ui/                 # shadcn/ui generated components — do not edit manually
-    shared/             # Reusable app-level components (site-shell, locale-picker, theme-toggle…)
+    shared/             # Reusable app-level components (site-shell, locale-picker, theme-picker…)
   data-access/          # All API calls — mirrors db/ in the API
     _shared/            # Shared infra used across resources (not itself a resource)
       client/           # apiClient: the single SDK client (locale, token, session refresh)
@@ -204,5 +208,6 @@ npm run test:e2e   # Playwright smoke specs (e2e/) against the built app; run `n
 
 - `NEXT_PUBLIC_API_URL` — base URL of the Keimelion API (e.g. `http://localhost:3000`). Required, inlined at build time.
 - `NEXT_PUBLIC_WEB_APP_URL` — public origin of this app (e.g. `http://localhost:3002`), used as `metadataBase` and for absolute share links. Must match the API's `WEB_APP_URL`.
+- `ENABLE_DEV_PAGES` — server-only, read at runtime. Dev builds always serve the developer pages under `/dev` (`/dev/tokens`); a production build returns 404 for them unless this is `true`. Only the Playwright smoke run sets it, never a deployed environment.
 
 Node 24 (`.nvmrc`).

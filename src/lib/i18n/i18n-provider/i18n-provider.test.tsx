@@ -5,9 +5,9 @@ import { useLocaleStore } from '@/lib/i18n/locale-store'
 import { useTranslate } from '@/lib/i18n/use-translate'
 import { I18nProvider } from './i18n-provider'
 
-function ThemeToggleLabel(): React.JSX.Element {
+function ThemePickerLabel(): React.JSX.Element {
   const t = useTranslate()
-  return <p>{t('common.theme_toggle.toggle')}</p>
+  return <p>{t('common.theme_picker.select_theme')}</p>
 }
 
 beforeEach(() => {
@@ -19,35 +19,35 @@ describe('I18nProvider', () => {
     useLocaleStore.setState({ locale: 'fr' })
     const html = renderToString(
       <I18nProvider requestLocale="en">
-        <ThemeToggleLabel />
+        <ThemePickerLabel />
       </I18nProvider>,
     )
-    expect(html).toContain('Toggle theme')
+    expect(html).toContain('Choose theme')
   })
 
   it('renders the catalog of the store locale', () => {
     useLocaleStore.setState({ locale: 'fr' })
     render(
       <I18nProvider requestLocale="en">
-        <ThemeToggleLabel />
+        <ThemePickerLabel />
       </I18nProvider>,
     )
-    expect(screen.getByText('Changer de thème')).toBeInTheDocument()
+    expect(screen.getByText('Choisir le thème')).toBeInTheDocument()
   })
 
   it('switches catalog and document language when the locale changes', () => {
     render(
       <I18nProvider requestLocale="en">
-        <ThemeToggleLabel />
+        <ThemePickerLabel />
       </I18nProvider>,
     )
-    expect(screen.getByText('Toggle theme')).toBeInTheDocument()
+    expect(screen.getByText('Choose theme')).toBeInTheDocument()
 
     act(() => {
       useLocaleStore.getState().setLocale('fr')
     })
 
-    expect(screen.getByText('Changer de thème')).toBeInTheDocument()
+    expect(screen.getByText('Choisir le thème')).toBeInTheDocument()
     expect(document.documentElement.lang).toBe('fr')
   })
 })

@@ -9,32 +9,90 @@
   --font-mono: var(--font-dm-mono), ui-monospace, monospace;
   --font-hand: var(--font-caveat), cursive;
 
+  --text-display-xl: 52px;
+  --text-display-xl--line-height: 56px;
+  --text-display-xl--letter-spacing: -0.035em;
+  --text-display-xl--font-weight: 800;
+  --text-display-m: 32px;
+  --text-display-m--line-height: 36px;
+  --text-display-m--letter-spacing: -0.035em;
+  --text-display-m--font-weight: 800;
+  --text-title: 20px;
+  --text-title--line-height: 24px;
+  --text-title--letter-spacing: -0.035em;
+  --text-title--font-weight: 800;
+  --text-body: 16px;
+  --text-body--line-height: 24px;
+  --text-small: 13px;
+  --text-small--line-height: 18px;
+  --text-label: 12px;
+  --text-label--line-height: 16px;
+  --text-label--letter-spacing: 0.1em;
+  --text-label--font-weight: 500;
+  --text-kicker: 28px;
+  --text-kicker--line-height: 28px;
+  --text-kicker--font-weight: 600;
+
   --container-tablet: 720px;
   --container-desktop: 1440px;
 
-  --color-brand-navy: var(--brand-navy);
-  --color-brand-amber: var(--brand-amber);
+  --color-surface: var(--surface);
+  --color-raised: var(--raised);
+  --color-sunken: var(--sunken);
+  --color-rule: var(--rule);
+  --color-rule-strong: var(--rule-strong);
+  --color-ink: var(--ink);
+  --color-brand: var(--brand);
+  --color-brand-deep: var(--brand-deep);
+  --color-hand: var(--hand);
+  --color-danger: var(--danger);
+  --color-success: var(--success);
+  --color-focus: var(--focus);
+  --color-on-brand: var(--on-brand);
+  --color-on-danger: var(--on-danger);
+  --color-inverse: var(--inverse);
+  --color-on-inverse: var(--on-inverse);
 
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-destructive-foreground: var(--destructive-foreground);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
+  --color-paper-lilac: var(--paper-lilac);
+  --color-paper-rose: var(--paper-rose);
+  --color-paper-sky: var(--paper-sky);
+  --color-paper-mustard: var(--paper-mustard);
+  --color-paper-mint: var(--paper-mint);
+  --color-gift-lilac: var(--gift-lilac);
+  --color-gift-rose: var(--gift-rose);
+  --color-gift-sky: var(--gift-sky);
+  --color-gift-mustard: var(--gift-mustard);
+  --color-gift-mint: var(--gift-mint);
+  --color-gift-ribbon: var(--gift-ribbon);
 
+  --color-background: var(--surface);
+  --color-foreground: var(--ink);
+  --color-card: var(--raised);
+  --color-card-foreground: var(--ink);
+  --color-popover: var(--raised);
+  --color-popover-foreground: var(--ink);
+  --color-primary: var(--brand);
+  --color-primary-foreground: var(--on-brand);
+  --color-secondary: var(--sunken);
+  --color-secondary-foreground: var(--ink);
+  --color-muted: var(--sunken);
+  --color-muted-foreground: var(--muted);
+  --color-accent: var(--sunken);
+  --color-accent-foreground: var(--ink);
+  --color-destructive: var(--danger);
+  --color-destructive-foreground: var(--on-danger);
+  --color-border: var(--rule);
+  --color-input: var(--rule);
+  --color-ring: var(--focus);
+
+  --shadow-card: var(--elevation-card);
+  --shadow-float: var(--elevation-float);
+
+  --radius-card: 22px;
+  --radius-sheet: 28px;
+  --radius-field: 16px;
+  --radius-thumb: 16px;
+  --radius-pill: 999px;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -44,8 +102,8 @@
 @layer base {
   html,
   body {
-    background-color: var(--background);
-    color: var(--foreground);
+    background-color: var(--surface);
+    color: var(--ink);
     transition:
       background-color 400ms ease-in-out,
       color 400ms ease-in-out;
