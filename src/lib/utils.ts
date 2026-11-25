@@ -8,6 +8,9 @@ const twMerge = extendTailwindMerge({
       radius: ['card', 'sheet', 'field', 'thumb', 'pill'],
       shadow: ['card', 'float'],
     },
+    classGroups: {
+      transition: [{ transition: ['press'] }],
+    },
   },
 })
 

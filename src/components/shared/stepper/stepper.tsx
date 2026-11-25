@@ -63,7 +63,7 @@ function StepButton({ label, isDisabled, onPress, children }: StepButtonProps): 
       type="button"
       disabled={isDisabled}
       onClick={onPress}
-      className="inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-pill text-ink transition-[background-color,transform] duration-200 ease-spring outline-none hover:bg-sunken focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus active:scale-[0.94] disabled:cursor-not-allowed disabled:text-rule-strong disabled:hover:bg-transparent"
+      className="inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-pill text-ink transition-press outline-none hover:bg-sunken focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus active:scale-[0.94] disabled:cursor-not-allowed disabled:text-rule-strong disabled:hover:bg-transparent"
     >
       {children}
       <span className="sr-only">{label}</span>

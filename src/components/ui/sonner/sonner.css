@@ -1,12 +1,25 @@
 [data-sonner-toaster] [data-sonner-toast][data-styled='true'] {
-  position: relative;
-  overflow: hidden;
+  --normal-bg: var(--inverse);
+  --normal-bg-hover: color-mix(in srgb, var(--on-inverse) 12%, var(--inverse));
+  --normal-border: transparent;
+  --normal-border-hover: transparent;
+  --normal-text: var(--on-inverse);
+  --gray2: var(--normal-bg-hover);
+  --gray5: transparent;
   padding: 12px 44px 12px 12px;
   min-height: 48px;
   border-radius: 24px;
   gap: 10px;
   align-items: center;
-  background: var(--inverse);
+  background-color: var(--inverse);
+  background-image: linear-gradient(
+    color-mix(in srgb, currentColor 60%, transparent),
+    color-mix(in srgb, currentColor 60%, transparent)
+  );
+  background-repeat: no-repeat;
+  background-position: left bottom;
+  background-size: 100% 3px;
+  animation: keimelion-toast-shrink 4000ms linear forwards;
   color: var(--on-inverse);
   border-color: var(--inverse);
   box-shadow: var(--elevation-float);
@@ -59,29 +72,20 @@
     }
   }
 
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: currentColor;
-    opacity: 0.6;
-    transform-origin: left;
-    animation: keimelion-toast-shrink 4000ms linear forwards;
+  &:hover {
+    animation-play-state: paused;
   }
 
-  &:hover::after {
-    animation-play-state: paused;
+  &[data-expanded='false'][data-front='false'] {
+    background-image: none;
   }
 }
 
 @keyframes keimelion-toast-shrink {
   from {
-    transform: scaleX(1);
+    background-size: 100% 3px;
   }
   to {
-    transform: scaleX(0);
+    background-size: 0% 3px;
   }
 }

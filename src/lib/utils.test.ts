@@ -17,4 +17,8 @@ describe('cn', () => {
   it('lets a token shadow override a default shadow', () => {
     expect(cn('shadow-md', 'shadow-card')).toBe('shadow-card')
   })
+
+  it('lets a transition override the press transition', () => {
+    expect(cn('transition-press', 'transition-none')).toBe('transition-none')
+  })
 })

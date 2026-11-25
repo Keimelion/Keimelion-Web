@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils'
 const LUCIDE_BRAND_STROKE_WIDTH = 1.75
 
 const buttonVariants = cva(
-  'inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-pill font-sans font-bold transition-[background-color,color,box-shadow,transform] duration-200 ease-spring outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus active:scale-[0.94] active:duration-120 disabled:pointer-events-none disabled:bg-sunken disabled:text-rule-strong disabled:shadow-none aria-busy:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0',
+  'inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-pill font-sans font-bold transition-press outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus active:scale-[0.94] active:duration-120 disabled:pointer-events-none disabled:bg-sunken disabled:text-rule-strong disabled:shadow-none aria-busy:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0',
   {
     variants: {
       variant: {

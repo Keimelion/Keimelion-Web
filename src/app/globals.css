@@ -118,6 +118,13 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
+@utility transition-press {
+  transition-property: background-color, color, box-shadow, transform;
+  transition-duration: 200ms;
+  transition-timing-function:
+    var(--ease-standard), var(--ease-standard), var(--ease-standard), var(--ease-spring);
+}
+
 @layer base {
   html,
   body {
