@@ -27,5 +27,10 @@
   "common.date_picker.value": "{date, date, ::EEEEyMMMMd}",
   "common.date_picker.today": "Today, {date, date, ::EEEEyMMMMd}",
   "common.password_input.show": "Show password",
-  "common.tag_input.remove": "Remove {tag}"
+  "common.tag_input.remove": "Remove {tag}",
+  "common.copy_field.copy": "Copy",
+  "common.copy_field.copied": "Copied",
+  "common.copy_field.failed": "Couldn't copy the link. It's selected: copy it with your keyboard.",
+  "common.copy_field.copied_announcement": "Copied to the clipboard",
+  "common.copy_field.failed_announcement": "Couldn't copy. The text is selected: copy it with your keyboard."
 }

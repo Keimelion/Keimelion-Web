@@ -27,5 +27,10 @@
   "common.date_picker.value": "{date, date, ::EEEEyMMMMd}",
   "common.date_picker.today": "Aujourd'hui, {date, date, ::EEEEyMMMMd}",
   "common.password_input.show": "Afficher le mot de passe",
-  "common.tag_input.remove": "Retirer {tag}"
+  "common.tag_input.remove": "Retirer {tag}",
+  "common.copy_field.copy": "Copier",
+  "common.copy_field.copied": "Copié",
+  "common.copy_field.failed": "Impossible de copier le lien. Il est sélectionné : copiez-le avec le clavier.",
+  "common.copy_field.copied_announcement": "Copié dans le presse-papiers",
+  "common.copy_field.failed_announcement": "Impossible de copier. Le texte est sélectionné : copiez-le avec le clavier."
 }

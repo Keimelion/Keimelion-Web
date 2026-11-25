@@ -197,5 +197,22 @@
   "dev.kit.form_controls.filter": "Afficher",
   "dev.kit.form_controls.all": "Tout",
   "dev.kit.form_controls.reserved": "Réservés",
-  "dev.kit.form_controls.occasions": "Occasions"
+  "dev.kit.form_controls.occasions": "Occasions",
+  "dev.kit.navigation.title": "Menus et navigation",
+  "dev.kit.navigation.kicker": "tout à portée de main",
+  "dev.kit.navigation.more_menu": "Menu « Plus »",
+  "dev.kit.navigation.more_actions": "Plus d'actions",
+  "dev.kit.navigation.rename": "Renommer",
+  "dev.kit.navigation.share": "Partager",
+  "dev.kit.navigation.duplicate": "Dupliquer",
+  "dev.kit.navigation.delete": "Supprimer",
+  "dev.kit.navigation.send_feedback": "Donner mon avis",
+  "dev.kit.navigation.copy_field": "Champ à copier",
+  "dev.kit.navigation.share_link": "Lien de partage",
+  "dev.kit.navigation.scroll_spy": "Navigation par section, dès 1024 px",
+  "dev.kit.navigation.profile": "Sections du profil",
+  "dev.kit.navigation.account": "Compte",
+  "dev.kit.navigation.appearance": "Apparence",
+  "dev.kit.navigation.privacy": "Confidentialité",
+  "dev.kit.navigation.section_body": "Faites défiler la page : la navigation suit la section affichée."
 }

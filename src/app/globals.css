@@ -54,6 +54,7 @@
   --color-on-brand: var(--on-brand);
   --color-on-danger: var(--on-danger);
   --color-on-warning: var(--on-warning);
+  --color-on-success: var(--on-success);
   --color-inverse: var(--inverse);
   --color-on-inverse: var(--on-inverse);
 

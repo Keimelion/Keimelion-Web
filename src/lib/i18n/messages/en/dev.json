@@ -197,5 +197,22 @@
   "dev.kit.form_controls.filter": "Show",
   "dev.kit.form_controls.all": "All",
   "dev.kit.form_controls.reserved": "Reserved",
-  "dev.kit.form_controls.occasions": "Occasions"
+  "dev.kit.form_controls.occasions": "Occasions",
+  "dev.kit.navigation.title": "Menus and navigation",
+  "dev.kit.navigation.kicker": "everything within reach",
+  "dev.kit.navigation.more_menu": "More menu",
+  "dev.kit.navigation.more_actions": "More actions",
+  "dev.kit.navigation.rename": "Rename",
+  "dev.kit.navigation.share": "Share",
+  "dev.kit.navigation.duplicate": "Duplicate",
+  "dev.kit.navigation.delete": "Delete",
+  "dev.kit.navigation.send_feedback": "Send feedback",
+  "dev.kit.navigation.copy_field": "Copy field",
+  "dev.kit.navigation.share_link": "Share link",
+  "dev.kit.navigation.scroll_spy": "Section nav, from 1024 px",
+  "dev.kit.navigation.profile": "Profile sections",
+  "dev.kit.navigation.account": "Account",
+  "dev.kit.navigation.appearance": "Appearance",
+  "dev.kit.navigation.privacy": "Privacy",
+  "dev.kit.navigation.section_body": "Scroll the page: the side nav follows the section in view."
 }

@@ -12,6 +12,7 @@ import { GiftSection } from './gift-section'
 import { IconSection } from './icon-section'
 import { ListCardSection } from './list-card-section'
 import { MotionSection } from './motion-section'
+import { NavigationSection } from './navigation-section'
 import { OccasionSection } from './occasion-section'
 import { OverlaySection } from './overlay-section'
 
@@ -30,6 +31,7 @@ export function UiKitBoard(): React.JSX.Element {
       <CardSection />
       <ListCardSection />
       <OverlaySection />
+      <NavigationSection />
       <MotionSection />
       <GiftSection />
       <CountdownSection />
