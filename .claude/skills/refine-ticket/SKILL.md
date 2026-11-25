@@ -84,7 +84,7 @@ Dev agent tasks — the Dev wears all three hats (Lead Dev, DevOps, Tester):
 **Lead Dev hat — approach and architecture**
 - Which files need to be created or modified (`data-access`, hooks, components, page)?
 - Are there Server/Client boundary decisions to lock in now?
-- Which shadcn primitives are needed — any missing?
+- Which UI kit components (`.claude/ui-kit.md`) cover the screens — anything missing that should be added to the kit rather than built in the feature?
 - Does this touch shared components or providers that could ripple through the app?
 - Are the acceptance criteria technically testable in a browser?
 - Does the description name its design boards (`DESIGN EXPORT → temp/design/: …`), and do they cover both the mobile (390 px) and desktop (1440 px) layouts?
@@ -149,7 +149,7 @@ Based on both perspectives and the user's input, update the Notion ticket with:
 **Technical approach** — agreed implementation plan:
 - Files to create/modify following the layered structure (`data-access` → hooks → components → page)
 - Server/Client boundary decisions
-- Which shadcn primitives to add/reuse
+- Which UI kit components to reuse, and which new reusable ones to add to the kit (with `/dev/kit` and `.claude/ui-kit.md`)
 - TanStack Query invalidation targets
 
 **Security & infra constraints** — from the Dev's DevOps-hat review:

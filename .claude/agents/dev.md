@@ -180,11 +180,11 @@ Follow-up commits on the same branch (self-review fixes, smoke-test fixes) reuse
 3. **Sync `dev`** — `git fetch origin dev && git checkout dev && git merge --ff-only origin/dev`. If the fast-forward fails, stop and report — do NOT force-update or rebase without explicit user approval.
 4. **Create the branch** from up-to-date `dev` following the naming convention.
 5. **Notion: mark In Progress** — `set-status <id> "In Progress"` + `add-comment <id> "Starting implementation on <branch>"`.
-6. **Read existing files** to understand patterns before writing any code (existing feature under `src/features/`, similar page under `src/app/`, shared components under `src/components/shared/`), and open every design board the ticket names in `temp/design/`. If a pattern is missing here, check how Keimelion-Backoffice does it before inventing one.
+6. **Read existing files** to understand patterns before writing any code (existing feature under `src/features/`, similar page under `src/app/`, shared components under `src/components/shared/`), read `.claude/ui-kit.md` (the UI kit catalog — reuse or extend a kit component before writing any UI) and open every design board the ticket names in `temp/design/`. If a pattern is missing here, check how Keimelion-Backoffice does it before inventing one.
 7. **Implement** in order: `data-access` → hooks → components → page wiring in `src/app/`.
    - **Tests are mandatory** for every new hook, form, and non-trivial component (branching logic, error handling, business rules). Colocate them with the feature: `src/features/<feature>/<feature>.test.tsx`. Framework: Vitest + React Testing Library — see `vitest.config.ts` and `src/test/setup.ts`. Pure presentational components with no logic do not require tests.
    - Every screen must handle loading/empty/error states explicitly.
-   - shadcn primitives: add with `npx shadcn add <component>`; do not edit files under `src/components/ui/` manually.
+   - New primitives: add with `npx shadcn add <component>` only if it does not exist yet, then restyle it with the tokens and list it in `.claude/ui-kit.md`; existing `src/components/ui/` files are owned code — edit them, never regenerate them.
 8. **Self-review** — walk the checklist below in full. Fix every blocker before moving on. Do not push code you would reject as a reviewer.
 9. **Static checks** — all must be clean before smoke-testing:
    - `npm test`
@@ -231,7 +231,9 @@ Walk this before pushing. A blocker is a blocker whether or not anyone else will
 - [ ] Feature components in `src/features/<feature>/components/`, hooks in `src/features/<feature>/hooks/`
 - [ ] API calls in `src/data-access/<entity>/<entity>.api.ts` — no React, no hooks, no TanStack Query
 - [ ] All network calls go through `apiClient` from `src/data-access/_shared/client` — no raw `fetch`
-- [ ] shadcn files under `src/components/ui/` untouched — variants live in `components/shared/` or the feature folder
+- [ ] UI built from the kit (`.claude/ui-kit.md`); no look-alike of an existing kit component in a feature
+- [ ] Any new reusable component is in `ui/` or `shared/`, on `/dev/kit` in every state, tested, and listed in `.claude/ui-kit.md`
+- [ ] Nothing in `src/components/` imports from `src/features/` or `src/data-access/`; `npx shadcn add` never re-run over an existing `ui/` file
 - [ ] Reuse over duplication — no logic copied from another feature with minor tweaks
 - [ ] Shared enums, schemas and types imported from `@keimelion/sdk`; never redeclare an API enum or contract shape locally
 

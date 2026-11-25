@@ -46,6 +46,24 @@ export default tseslint.config(
     },
   },
   {
+    files: ['src/components/**/*.{ts,tsx}'],
+    ignores: ['src/components/**/*.test.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['@/features/*', '@/features/**', '@/data-access/*', '@/data-access/**'],
+              message:
+                'src/components is the feature-agnostic UI kit: pass data and callbacks through props instead of importing features or data-access (see .claude/ui-kit.md).',
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
     ignores: ['.next/**', 'node_modules/**'],
   },
   {
