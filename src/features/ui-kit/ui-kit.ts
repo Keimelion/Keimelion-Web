@@ -1,5 +1,7 @@
 import {
   BedIcon,
+  CalendarIcon,
+  MoreIcon,
   BikeIcon,
   BookIcon,
   CakeIcon,
@@ -55,6 +57,7 @@ export const LINE_ICONS: readonly NamedLineIcon[] = [
   { name: 'BikeIcon', icon: BikeIcon },
   { name: 'BookIcon', icon: BookIcon },
   { name: 'CakeIcon', icon: CakeIcon },
+  { name: 'CalendarIcon', icon: CalendarIcon },
   { name: 'CameraIcon', icon: CameraIcon },
   { name: 'CandleIcon', icon: CandleIcon },
   { name: 'CasseroleIcon', icon: CasseroleIcon },
@@ -79,6 +82,7 @@ export const LINE_ICONS: readonly NamedLineIcon[] = [
   { name: 'LockIcon', icon: LockIcon },
   { name: 'MailIcon', icon: MailIcon },
   { name: 'MinusIcon', icon: MinusIcon },
+  { name: 'MoreIcon', icon: MoreIcon },
   { name: 'PlantIcon', icon: PlantIcon },
   { name: 'PlateIcon', icon: PlateIcon },
   { name: 'PlusIcon', icon: PlusIcon },

@@ -21,5 +21,6 @@
   "common.countdown.today": "Today, {date, date, ::MMMMd}",
   "common.countdown.today_note": "Reservations stay open all day.",
   "common.countdown.past_kicker": "thank you all!",
-  "common.countdown.past": "The big day was {date, date, ::MMMMd}. You can still offer a gift: the list stays open."
+  "common.countdown.past": "The big day was {date, date, ::MMMMd}. You can still offer a gift: the list stays open.",
+  "common.confirm_dialog.cancel": "Cancel"
 }

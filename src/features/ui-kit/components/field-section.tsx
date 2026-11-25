@@ -12,6 +12,8 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
+import { SearchIcon } from '@/components/icons'
+import { IconInput } from '@/components/shared/icon-input'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { useTranslate } from '@/lib/i18n/use-translate'
@@ -23,6 +25,7 @@ interface KitFieldValues {
   title: string
   disabled: string
   note: string
+  search: string
 }
 
 export function FieldSection(): React.JSX.Element {
@@ -34,6 +37,7 @@ export function FieldSection(): React.JSX.Element {
       title: t('dev.kit.fields.long_value'),
       disabled: t('dev.kit.fields.disabled_value'),
       note: '',
+      search: '',
     },
   })
   useShowcasedError(form, t('dev.kit.fields.password_error'))
@@ -98,6 +102,23 @@ export function FieldSection(): React.JSX.Element {
                 <FormLabel>{t('dev.kit.fields.disabled')}</FormLabel>
                 <FormControl>
                   <Input disabled {...field} />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="search"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t('dev.kit.fields.search')}</FormLabel>
+                <FormControl>
+                  <IconInput
+                    type="search"
+                    icon={SearchIcon}
+                    placeholder={t('dev.kit.fields.search_placeholder')}
+                    {...field}
+                  />
                 </FormControl>
               </FormItem>
             )}

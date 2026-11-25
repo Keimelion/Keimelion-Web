@@ -4,7 +4,7 @@ import { motion } from 'motion/react'
 import { useEffect, useId } from 'react'
 import { BowGlyph } from '@/components/icons'
 import { useShouldReduceMotion } from '@/lib/motion'
-import { OccasionPapers } from '@/lib/occasions/occasion-paper'
+import { OCCASION_PAPER_CLASS_NAMES } from '@/lib/occasions/occasion-paper'
 import type { OccasionPaper } from '@/lib/occasions/occasion-paper'
 import { cn } from '@/lib/utils'
 import { UNWRAP_TIMELINE, WRAP_TIMELINE } from './gift-timelines'
@@ -17,14 +17,6 @@ export const WrappedGiftModes = {
 } as const
 
 export type WrappedGiftMode = (typeof WrappedGiftModes)[keyof typeof WrappedGiftModes]
-
-const GIFT_FILL_CLASS_NAMES: Readonly<Record<OccasionPaper, string>> = {
-  [OccasionPapers.LILAC]: 'fill-gift-lilac',
-  [OccasionPapers.ROSE]: 'fill-gift-rose',
-  [OccasionPapers.SKY]: 'fill-gift-sky',
-  [OccasionPapers.MUSTARD]: 'fill-gift-mustard',
-  [OccasionPapers.MINT]: 'fill-gift-mint',
-}
 
 const NO_MOTION: GiftTimeline = { paper: {}, verticalRibbon: {}, horizontalRibbon: {}, bow: {} }
 
@@ -112,7 +104,7 @@ function GiftWrapping({
           <rect
             width={DOT_PATTERN_SIZE}
             height={DOT_PATTERN_SIZE}
-            className={GIFT_FILL_CLASS_NAMES[paper]}
+            className={OCCASION_PAPER_CLASS_NAMES[paper].giftFill}
           />
           <circle cx="4" cy="4" r={DOT_RADIUS} className="fill-gift-ribbon" />
           <circle cx="12" cy="12" r={DOT_RADIUS} className="fill-gift-ribbon" />
