@@ -26,12 +26,27 @@ for (const colorScheme of COLOR_SCHEMES) {
 
     test('the dialog opens, passes axe and closes with Escape', async ({ page }) => {
       await page.goto(KIT_PATH)
-      await page.getByRole('button', { name: 'Dialog' }).click()
+      await page.getByRole('button', { name: 'Dialog', exact: true }).click()
 
       await expect(page.getByRole('dialog', { name: 'Cancel this reservation?' })).toBeVisible()
       await expectNoAccessibilityViolations(page)
       await page.keyboard.press('Escape')
       await expect(page.getByRole('dialog')).toBeHidden()
+    })
+
+    test('the responsive dialog and the confirm dialog pass axe', async ({ page }) => {
+      await page.goto(KIT_PATH)
+      await page.getByRole('button', { name: 'Responsive dialog' }).click()
+      await expect(page.getByRole('dialog', { name: 'Invite an editor' })).toBeVisible()
+      await expectNoAccessibilityViolations(page)
+      await page.keyboard.press('Escape')
+
+      await page.getByRole('button', { name: 'Confirm dialog' }).click()
+      const confirm = page.getByRole('alertdialog', { name: /Delete/ })
+      await expect(confirm).toBeVisible()
+      await expectNoAccessibilityViolations(page)
+      await confirm.getByRole('button', { name: 'Delete the list' }).click()
+      await expect(confirm).toBeHidden()
     })
 
     test('the bottom sheet rises, passes axe and closes from its action', async ({ page }) => {

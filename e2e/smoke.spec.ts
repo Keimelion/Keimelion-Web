@@ -106,6 +106,10 @@ test.describe('first visit from a French browser', () => {
 })
 
 async function selectTheme(page: Page, themeLabel: string): Promise<void> {
-  await page.getByRole('button', { name: 'Choose theme' }).click()
-  await page.getByRole('menuitemradio', { name: themeLabel }).click()
+  const option = page.getByRole('menuitemradio', { name: themeLabel })
+  await expect(async () => {
+    await page.getByRole('button', { name: 'Choose theme' }).click()
+    await expect(option).toBeVisible({ timeout: 1000 })
+  }).toPass()
+  await option.click()
 }
