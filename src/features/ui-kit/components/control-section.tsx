@@ -2,11 +2,10 @@
 
 import { useId, useState } from 'react'
 import { EditIcon, EyeIcon } from '@/components/icons'
-import { SegmentedControl } from '@/components/shared/segmented-control'
-import type { SegmentedOption } from '@/components/shared/segmented-control'
 import { Stepper } from '@/components/shared/stepper'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useTranslate } from '@/lib/i18n/use-translate'
 import { KitSection } from './kit-section'
 import { KitSpecimen } from './kit-specimen'
@@ -27,10 +26,6 @@ export function ControlSection(): React.JSX.Element {
   const [isGivenShown, setIsGivenShown] = useState(true)
   const [quantity, setQuantity] = useState(STEPPER_MIN)
   const [view, setView] = useState<ListView>(ListViews.EDIT)
-  const viewOptions: readonly SegmentedOption<ListView>[] = [
-    { value: ListViews.EDIT, label: t('dev.kit.controls.edit'), icon: EditIcon },
-    { value: ListViews.GUEST, label: t('dev.kit.controls.guest_view'), icon: EyeIcon },
-  ]
   return (
     <KitSection title={t('dev.kit.controls.title')} kicker={null}>
       <div className="grid gap-6 md:grid-cols-3">
@@ -48,13 +43,30 @@ export function ControlSection(): React.JSX.Element {
             onValueChange={setQuantity}
           />
         </KitSpecimen>
-        <KitSpecimen label={t('dev.kit.controls.segmented')}>
-          <SegmentedControl
-            label={t('dev.kit.controls.view')}
-            options={viewOptions}
+        <KitSpecimen label={t('dev.kit.controls.segmented')} className="flex-col items-start">
+          <Tabs
             value={view}
-            onValueChange={setView}
-          />
+            onValueChange={(nextView) => {
+              setView(nextView === ListViews.GUEST ? ListViews.GUEST : ListViews.EDIT)
+            }}
+          >
+            <TabsList aria-label={t('dev.kit.controls.view')}>
+              <TabsTrigger value={ListViews.EDIT}>
+                <EditIcon />
+                {t('dev.kit.controls.edit')}
+              </TabsTrigger>
+              <TabsTrigger value={ListViews.GUEST}>
+                <EyeIcon />
+                {t('dev.kit.controls.guest_view')}
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value={ListViews.EDIT} className="text-small text-muted-foreground">
+              {t('dev.kit.controls.edit_panel')}
+            </TabsContent>
+            <TabsContent value={ListViews.GUEST} className="text-small text-muted-foreground">
+              {t('dev.kit.controls.guest_panel')}
+            </TabsContent>
+          </Tabs>
         </KitSpecimen>
       </div>
     </KitSection>

@@ -61,13 +61,13 @@
   "dev.kit.fields.note": "A note for your guests",
   "dev.kit.fields.note_placeholder": "The red one, if they still have it!",
   "dev.kit.fields.note_help": "Shown in handwriting under the gift.",
-  "dev.kit.controls.title": "Toggle, stepper, segmented control",
+  "dev.kit.controls.title": "Toggle, stepper, tabs",
   "dev.kit.controls.toggle": "Toggle",
   "dev.kit.controls.show_given": "Show what's been given",
   "dev.kit.controls.disabled_toggle": "Disabled toggle",
   "dev.kit.controls.stepper": "Stepper",
   "dev.kit.controls.quantity": "How many are you offering?",
-  "dev.kit.controls.segmented": "Segmented control",
+  "dev.kit.controls.segmented": "Tabs as a segmented switch",
   "dev.kit.controls.view": "List view",
   "dev.kit.controls.edit": "Edit",
   "dev.kit.controls.guest_view": "Guest view",
@@ -176,5 +176,7 @@
   "dev.kit.fields.search_placeholder": "Search or paste a link",
   "dev.kit.fields.event_date": "Event date",
   "dev.kit.fields.event_date_placeholder": "No date, no countdown",
-  "dev.kit.fields.event_date_help": "Optional. With a date, a countdown shows on the list."
+  "dev.kit.fields.event_date_help": "Optional. With a date, a countdown shows on the list.",
+  "dev.kit.controls.edit_panel": "You are editing the list.",
+  "dev.kit.controls.guest_panel": "You see the list as your guests do."
 }

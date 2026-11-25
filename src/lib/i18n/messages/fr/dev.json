@@ -61,13 +61,13 @@
   "dev.kit.fields.note": "Un mot pour vos invités",
   "dev.kit.fields.note_placeholder": "La rouge, s'il en reste !",
   "dev.kit.fields.note_help": "Affiché à la main sous le cadeau.",
-  "dev.kit.controls.title": "Interrupteur, compteur, sélecteur",
+  "dev.kit.controls.title": "Interrupteur, compteur, onglets",
   "dev.kit.controls.toggle": "Interrupteur",
   "dev.kit.controls.show_given": "Montrer ce qui a été offert",
   "dev.kit.controls.disabled_toggle": "Interrupteur désactivé",
   "dev.kit.controls.stepper": "Compteur",
   "dev.kit.controls.quantity": "Combien en offrez-vous ?",
-  "dev.kit.controls.segmented": "Sélecteur segmenté",
+  "dev.kit.controls.segmented": "Onglets en sélecteur segmenté",
   "dev.kit.controls.view": "Vue de la liste",
   "dev.kit.controls.edit": "Modifier",
   "dev.kit.controls.guest_view": "Vue invité",
@@ -176,5 +176,7 @@
   "dev.kit.fields.search_placeholder": "Rechercher ou coller un lien",
   "dev.kit.fields.event_date": "Date de l'événement",
   "dev.kit.fields.event_date_placeholder": "Pas de date, pas de compte à rebours",
-  "dev.kit.fields.event_date_help": "Facultative. Avec une date, un compte à rebours s'affiche sur la liste."
+  "dev.kit.fields.event_date_help": "Facultative. Avec une date, un compte à rebours s'affiche sur la liste.",
+  "dev.kit.controls.edit_panel": "Vous modifiez la liste.",
+  "dev.kit.controls.guest_panel": "Vous voyez la liste comme vos invités."
 }
