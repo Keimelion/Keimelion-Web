@@ -67,8 +67,8 @@ The single list of reusable building blocks. **Check it before building any UI**
 | `AvatarStack` | Collaborators | `people, maxVisible, label` |
 | `Thumb` | Item thumbnail: paper + line icon, or product photo | `kind: 'drawing'` (`paper, icon`) or `'photo'` (`src, alt`), `size` |
 | `OccasionIcon` | Occasion shape | `shape` |
-| `PaperEdge` | Dotted band at the bottom of list cards and headers | `occasionSlug \| null` |
-| `WrappedGift` | A gift in its occasion paper | `paper, mode: static \| wrap \| unwrap, onDone, children` |
+| `PaperEdge` | Dotted band at the bottom of list cards and headers (always dots, as on every board) | `occasionSlug \| null` |
+| `WrappedGift` | A gift in its occasion paper, with one of the six gift papers | `paper, pattern? (default dots), mode: static \| wrap \| unwrap, onDone, children` |
 | `TyingBow` | The bow tying itself (logo moments, confirmations) | `onDone, className` |
 | `Countdown` | Event countdown, every state | `date \| null, today \| null, occasionKicker, children` |
 | `Confetti` | Celebration, once | `onDone` |
@@ -83,6 +83,7 @@ The single list of reusable building blocks. **Check it before building any UI**
 |---|---|
 | `notifyWithUndo({ message, undoLabel?, delayMs = 5000, onCommit, onUndo })` (`src/lib/notify-with-undo.ts`) | Deletions with an Undo toast: commits after the delay or on dismiss, unless undone |
 | `getOccasionPaper(slug)` (`src/lib/occasions/occasion-paper.ts`) | Occasion slug → paper, fallback `other` |
+| `getGiftPattern(seed)` (`src/lib/occasions/gift-pattern.ts`) | Stable gift paper (dots, stripes, gingham, confetti, bows, stars) from an id, so a list mixes papers and SSR matches |
 | Motion presets (`src/lib/motion`) | `land`, `landGlow`, `toastIn`, `sheetUp`, `scrim`, `press`, `flip`, `unfold`, `seq`, `wiggle`, `bob`, `rowExit` |
 | `transition-press` utility | Colour + press transitions on interactive elements (spring only on the scale) |
 | `touch-target` utility | 44 px hit area below `lg` |

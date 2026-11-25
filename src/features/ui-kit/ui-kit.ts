@@ -46,6 +46,8 @@ import type { AvatarPerson } from '@/components/shared/avatar-stack'
 import { OccasionPapers } from '@/lib/occasions/occasion-paper'
 import type { MessageId } from '@/lib/i18n/messages'
 import type { OccasionPaper } from '@/lib/occasions/occasion-paper'
+import { GiftPatterns } from '@/lib/occasions/gift-pattern'
+import type { GiftPattern } from '@/lib/occasions/gift-pattern'
 
 interface NamedLineIcon {
   name: string
@@ -115,3 +117,12 @@ export const KIT_PEOPLE: readonly AvatarPerson[] = [
 export const KIT_PHOTO_SOURCE = `data:image/svg+xml,${encodeURIComponent(
   '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 90 90"><rect width="90" height="90" fill="rgb(214 196 164)"/><circle cx="45" cy="48" r="24" fill="rgb(163 38 26)"/><rect x="18" y="40" width="54" height="8" rx="4" fill="rgb(28 26 51)"/></svg>',
 )}`
+
+export const GIFT_PATTERN_LABEL_IDS: Readonly<Record<GiftPattern, MessageId>> = {
+  [GiftPatterns.DOTS]: 'dev.kit.gift_papers.dots',
+  [GiftPatterns.STRIPES]: 'dev.kit.gift_papers.stripes',
+  [GiftPatterns.GINGHAM]: 'dev.kit.gift_papers.gingham',
+  [GiftPatterns.CONFETTI]: 'dev.kit.gift_papers.confetti',
+  [GiftPatterns.BOWS]: 'dev.kit.gift_papers.bows',
+  [GiftPatterns.STARS]: 'dev.kit.gift_papers.stars',
+}

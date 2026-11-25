@@ -2,6 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { OccasionPapers } from '@/lib/occasions/occasion-paper'
 import { reducedMotionPreference } from '@/test/reduced-motion-mock'
+import { GIFT_PATTERN_LIST, GiftPatterns } from '@/lib/occasions/gift-pattern'
 import { WrappedGift, WrappedGiftModes } from './wrapped-gift'
 import type { WrappedGiftMode } from './wrapped-gift'
 
@@ -72,5 +73,59 @@ describe('WrappedGift', () => {
     expect(onDone).toHaveBeenCalledTimes(1)
     expect(container.querySelector('svg')).toBeNull()
     expect(screen.getByText('Tea set')).toBeInTheDocument()
+  })
+
+  it('keeps the dotted paper by default', () => {
+    const { container } = renderGift(WrappedGiftModes.STATIC, vi.fn())
+
+    const pattern = container.querySelector('pattern')
+    expect(pattern).toHaveAttribute('width', '16')
+    expect(pattern?.querySelectorAll('circle')).toHaveLength(2)
+    expect(pattern).not.toHaveAttribute('patternTransform')
+  })
+
+  it.each(GIFT_PATTERN_LIST.filter((pattern) => pattern !== GiftPatterns.DOTS))(
+    'renders the %s paper in the occasion colour with cream motifs',
+    (pattern) => {
+      const { container } = render(
+        <WrappedGift
+          paper={OccasionPapers.MINT}
+          pattern={pattern}
+          mode={WrappedGiftModes.STATIC}
+          onDone={vi.fn()}
+        />,
+      )
+
+      const paperPattern = container.querySelector('pattern')
+      expect(paperPattern?.querySelector('rect')).toHaveClass('fill-gift-mint')
+      expect(paperPattern?.querySelector('.fill-gift-ribbon, .text-gift-ribbon')).not.toBeNull()
+      expect(paperPattern).toHaveAttribute('patternTransform', expect.stringContaining('scale'))
+      expect(container.querySelector('rect[fill]')).toHaveAttribute(
+        'fill',
+        `url(#${paperPattern?.id ?? ''})`,
+      )
+    },
+  )
+
+  it('gives every gift its own pattern id', () => {
+    const { container } = render(
+      <>
+        <WrappedGift
+          paper={OccasionPapers.SKY}
+          pattern={GiftPatterns.STARS}
+          mode={WrappedGiftModes.STATIC}
+          onDone={vi.fn()}
+        />
+        <WrappedGift
+          paper={OccasionPapers.ROSE}
+          pattern={GiftPatterns.STARS}
+          mode={WrappedGiftModes.STATIC}
+          onDone={vi.fn()}
+        />
+      </>,
+    )
+
+    const ids = Array.from(container.querySelectorAll('pattern'), (pattern) => pattern.id)
+    expect(new Set(ids).size).toBe(2)
   })
 })

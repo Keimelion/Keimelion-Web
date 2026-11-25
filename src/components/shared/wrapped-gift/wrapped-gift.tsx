@@ -5,9 +5,11 @@ import { useEffect, useId } from 'react'
 import { BowGlyph } from '@/components/icons'
 import { TyingBowGlyph } from '@/components/shared/tying-bow'
 import { useShouldReduceMotion } from '@/lib/motion'
-import { OCCASION_PAPER_CLASS_NAMES } from '@/lib/occasions/occasion-paper'
+import { GiftPatterns } from '@/lib/occasions/gift-pattern'
+import type { GiftPattern } from '@/lib/occasions/gift-pattern'
 import type { OccasionPaper } from '@/lib/occasions/occasion-paper'
 import { cn } from '@/lib/utils'
+import { GiftPaperPattern } from './gift-paper-pattern'
 import { UNWRAP_TIMELINE, WRAP_TIMELINE } from './gift-timelines'
 import type { GiftTimeline } from './gift-timelines'
 
@@ -29,6 +31,7 @@ const NO_MOTION: GiftTimeline = {
 
 interface WrappedGiftProps {
   paper: OccasionPaper
+  pattern?: GiftPattern
   mode: WrappedGiftMode
   onDone: () => void
   className?: string | undefined
@@ -37,6 +40,7 @@ interface WrappedGiftProps {
 
 export function WrappedGift({
   paper,
+  pattern = GiftPatterns.DOTS,
   mode,
   onDone,
   className,
@@ -60,6 +64,7 @@ export function WrappedGift({
         <GiftWrapping
           key={String(isAnimated)}
           paper={paper}
+          pattern={pattern}
           timeline={isAnimated ? resolveTimeline(mode) : NO_MOTION}
           onDone={isAnimated ? onDone : null}
           isBowLast={mode === WrappedGiftModes.WRAP}
@@ -73,13 +78,12 @@ function resolveTimeline(mode: WrappedGiftMode): GiftTimeline {
   return mode === WrappedGiftModes.UNWRAP ? UNWRAP_TIMELINE : WRAP_TIMELINE
 }
 
-const DOT_PATTERN_SIZE = 16
-const DOT_RADIUS = 16 / 7
 const RIBBON_WIDTH = 9
 const RIBBON_OFFSET = 50 - RIBBON_WIDTH / 2
 
 interface GiftWrappingProps {
   paper: OccasionPaper
+  pattern: GiftPattern
   timeline: GiftTimeline
   onDone: (() => void) | null
   isBowLast: boolean
@@ -87,6 +91,7 @@ interface GiftWrappingProps {
 
 function GiftWrapping({
   paper,
+  pattern,
   timeline,
   onDone,
   isBowLast,
@@ -102,20 +107,7 @@ function GiftWrapping({
       className="absolute inset-0 size-full"
     >
       <defs>
-        <pattern
-          id={patternId}
-          width={DOT_PATTERN_SIZE}
-          height={DOT_PATTERN_SIZE}
-          patternUnits="userSpaceOnUse"
-        >
-          <rect
-            width={DOT_PATTERN_SIZE}
-            height={DOT_PATTERN_SIZE}
-            className={OCCASION_PAPER_CLASS_NAMES[paper].giftFill}
-          />
-          <circle cx="4" cy="4" r={DOT_RADIUS} className="fill-gift-ribbon" />
-          <circle cx="12" cy="12" r={DOT_RADIUS} className="fill-gift-ribbon" />
-        </pattern>
+        <GiftPaperPattern id={patternId} pattern={pattern} paper={paper} />
       </defs>
       <motion.rect
         width="100"

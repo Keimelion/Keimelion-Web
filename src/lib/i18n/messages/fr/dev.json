@@ -237,5 +237,14 @@
   "dev.kit.choices.notifications": "M'écrire quand",
   "dev.kit.choices.notify_reservations": "Un cadeau est réservé",
   "dev.kit.choices.notify_price_drops": "Un prix baisse",
-  "dev.kit.choices.notify_news": "Keimêlion a du nouveau"
+  "dev.kit.choices.notify_news": "Keimêlion a du nouveau",
+  "dev.kit.gift_papers.title": "Papiers cadeaux",
+  "dev.kit.gift_papers.kicker": "six motifs, toutes les couleurs",
+  "dev.kit.gift_papers.choose": "Papier cadeau",
+  "dev.kit.gift_papers.dots": "Pois",
+  "dev.kit.gift_papers.stripes": "Rayures",
+  "dev.kit.gift_papers.gingham": "Vichy",
+  "dev.kit.gift_papers.confetti": "Confettis",
+  "dev.kit.gift_papers.bows": "Petits nœuds",
+  "dev.kit.gift_papers.stars": "Étoiles"
 }

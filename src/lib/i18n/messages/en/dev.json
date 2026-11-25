@@ -237,5 +237,14 @@
   "dev.kit.choices.notifications": "Email me when",
   "dev.kit.choices.notify_reservations": "A gift is reserved",
   "dev.kit.choices.notify_price_drops": "A price drops",
-  "dev.kit.choices.notify_news": "Keimêlion has news"
+  "dev.kit.choices.notify_news": "Keimêlion has news",
+  "dev.kit.gift_papers.title": "Gift papers",
+  "dev.kit.gift_papers.kicker": "six patterns, every colour",
+  "dev.kit.gift_papers.choose": "Gift paper",
+  "dev.kit.gift_papers.dots": "Dots",
+  "dev.kit.gift_papers.stripes": "Stripes",
+  "dev.kit.gift_papers.gingham": "Gingham",
+  "dev.kit.gift_papers.confetti": "Confetti",
+  "dev.kit.gift_papers.bows": "Little bows",
+  "dev.kit.gift_papers.stars": "Stars"
 }

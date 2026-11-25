@@ -8,6 +8,7 @@ import { CountdownSection } from './countdown-section'
 import { FeedbackSection } from './feedback-section'
 import { FieldSection } from './field-section'
 import { FormControlSection } from './form-control-section'
+import { GiftPaperSection } from './gift-paper-section'
 import { GiftSection } from './gift-section'
 import { IconSection } from './icon-section'
 import { ListActivitySection } from './list-activity-section'
@@ -35,6 +36,7 @@ export function UiKitBoard(): React.JSX.Element {
       <NavigationSection />
       <MotionSection />
       <GiftSection />
+      <GiftPaperSection />
       <CountdownSection />
       <FeedbackSection />
       <ListActivitySection />
