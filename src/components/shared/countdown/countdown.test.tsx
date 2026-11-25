@@ -3,6 +3,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { reducedMotionPreference } from '@/test/reduced-motion-mock'
 import { renderWithIntl } from '@/test/test-utils'
 import { Countdown } from './countdown'
+import { forgetCountdownClaims } from './countdown-memory'
+import { toCalendarDayKey } from './countdown-state'
 
 vi.mock('motion/react', async (importOriginal) => {
   const { mockMotionWithReducedMotionPreference } = await import('@/test/reduced-motion-mock')
@@ -114,5 +116,15 @@ describe('Countdown', () => {
     })
 
     expect(screen.getByText('3 days to go')).toBeInTheDocument()
+  })
+
+  it('celebrates again once its claims are forgotten', () => {
+    const { unmount } = renderCountdown(EVENT_DATE, EVENT_DATE)
+    unmount()
+
+    forgetCountdownClaims(toCalendarDayKey(EVENT_DATE))
+    renderCountdown(EVENT_DATE, EVENT_DATE)
+
+    expect(screen.getByTestId('confetti')).toBeInTheDocument()
   })
 })

@@ -9,10 +9,10 @@ import { useTranslate } from '@/lib/i18n/use-translate'
 import { OccasionPapers } from '@/lib/occasions/occasion-paper'
 import { KitSection } from './kit-section'
 import { KitSpecimen } from './kit-specimen'
+import { ReplayStage } from './replay-stage'
 
 export function FeedbackSection(): React.JSX.Element {
   const t = useTranslate()
-  const [celebrationCount, setCelebrationCount] = useState(1)
   const [isCelebrating, setIsCelebrating] = useState(true)
   const endCelebration = useCallback(() => {
     setIsCelebrating(false)
@@ -32,29 +32,28 @@ export function FeedbackSection(): React.JSX.Element {
             </div>
           </div>
         </KitSpecimen>
-        <KitSpecimen label={t('dev.kit.feedback.empty')} className="rounded-card bg-raised">
-          <EmptyState
-            paper={OccasionPapers.MINT}
-            title={t('dev.kit.feedback.empty_title')}
-            description={t('dev.kit.feedback.empty_description')}
-            action={<Button size="sm">{t('dev.kit.feedback.empty_action')}</Button>}
-          />
+        <KitSpecimen label={t('dev.kit.feedback.empty')} className="rounded-card bg-raised p-3">
+          <ReplayStage animationName={t('dev.kit.feedback.empty')} onReplay={null}>
+            <EmptyState
+              paper={OccasionPapers.MINT}
+              title={t('dev.kit.feedback.empty_title')}
+              description={t('dev.kit.feedback.empty_description')}
+              action={<Button size="sm">{t('dev.kit.feedback.empty_action')}</Button>}
+            />
+          </ReplayStage>
         </KitSpecimen>
-        <KitSpecimen label={t('dev.kit.feedback.confetti')} className="flex-col">
-          <div className="relative flex h-40 w-full items-center justify-center overflow-hidden rounded-card bg-surface">
-            {isCelebrating ? <Confetti key={celebrationCount} onDone={endCelebration} /> : null}
-            <span className="font-hand text-kicker text-hand">{t('dev.kit.feedback.yay')}</span>
-          </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              setCelebrationCount((count) => count + 1)
+        <KitSpecimen label={t('dev.kit.feedback.confetti')} className="flex-col items-stretch">
+          <ReplayStage
+            animationName={t('dev.kit.feedback.confetti')}
+            onReplay={() => {
               setIsCelebrating(true)
             }}
           >
-            {t('dev.kit.motion.replay')}
-          </Button>
+            <div className="relative flex h-40 w-full items-center justify-center overflow-hidden rounded-card bg-surface">
+              {isCelebrating ? <Confetti onDone={endCelebration} /> : null}
+              <span className="font-hand text-kicker text-hand">{t('dev.kit.feedback.yay')}</span>
+            </div>
+          </ReplayStage>
         </KitSpecimen>
       </div>
     </KitSection>

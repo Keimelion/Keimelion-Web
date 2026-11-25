@@ -21,6 +21,11 @@ export function claimVisitCelebration(eventDayKey: string): boolean {
   return true
 }
 
+export function forgetCountdownClaims(eventDayKey: string): void {
+  removeFromStorage(resolveLocalStorage, `${FLIP_KEY_PREFIX}${eventDayKey}`)
+  removeFromStorage(resolveSessionStorage, `${CELEBRATION_KEY_PREFIX}${eventDayKey}`)
+}
+
 function readStorage(resolveStorage: StorageResolver, key: string): string | null {
   try {
     return resolveStorage().getItem(key)
@@ -32,6 +37,14 @@ function readStorage(resolveStorage: StorageResolver, key: string): string | nul
 function writeStorage(resolveStorage: StorageResolver, key: string, value: string): void {
   try {
     resolveStorage().setItem(key, value)
+  } catch {
+    return
+  }
+}
+
+function removeFromStorage(resolveStorage: StorageResolver, key: string): void {
+  try {
+    resolveStorage().removeItem(key)
   } catch {
     return
   }

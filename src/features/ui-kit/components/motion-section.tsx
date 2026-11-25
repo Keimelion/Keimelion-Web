@@ -1,11 +1,9 @@
 'use client'
 
 import { motion } from 'motion/react'
-import { useState } from 'react'
 import { BowIcon, PlantIcon } from '@/components/icons'
 import { OccasionIcon } from '@/components/shared/occasion-icon'
 import { Thumb, ThumbSizes } from '@/components/shared/thumb'
-import { Button } from '@/components/ui/button'
 import type { MessageId } from '@/lib/i18n/messages'
 import { useTranslate } from '@/lib/i18n/use-translate'
 import {
@@ -24,27 +22,16 @@ import {
 import { OccasionPapers } from '@/lib/occasions/occasion-paper'
 import { OccasionShapes } from '@/lib/occasions/occasion-shape'
 import { KitSection } from './kit-section'
+import { ReplayStage } from './replay-stage'
 
 const SEQ_SHAPES = Object.values(OccasionShapes)
 
 export function MotionSection(): React.JSX.Element {
   const t = useTranslate()
-  const [replayCount, setReplayCount] = useState(0)
   return (
     <KitSection title={t('dev.kit.motion.title')} kicker={t('dev.kit.motion.kicker')}>
-      <div className="flex flex-wrap items-center gap-3">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => {
-            setReplayCount((count) => count + 1)
-          }}
-        >
-          {t('dev.kit.motion.replay')}
-        </Button>
-        <p className="text-small text-muted-foreground">{t('dev.kit.motion.reduced_motion')}</p>
-      </div>
-      <ul key={replayCount} className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
+      <p className="text-small text-muted-foreground">{t('dev.kit.motion.reduced_motion')}</p>
+      <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
         <MotionCard name="land" descriptionId="dev.kit.motion.land">
           <motion.span className="relative block rounded-thumb" {...land}>
             <Thumb
@@ -140,9 +127,13 @@ function MotionCard({ name, descriptionId, children }: MotionCardProps): React.J
   const t = useTranslate()
   return (
     <li className="flex min-w-0 flex-col gap-2.5 rounded-card bg-raised p-4 shadow-card">
-      <span className="flex h-32 items-center justify-center overflow-hidden rounded-thumb bg-surface px-3">
+      <ReplayStage
+        animationName={name}
+        onReplay={null}
+        className="flex h-32 items-center justify-center overflow-hidden rounded-thumb bg-surface px-3"
+      >
         {children}
-      </span>
+      </ReplayStage>
       <span className="font-mono text-label font-medium">{name}</span>
       <span className="text-small text-muted-foreground">{t(descriptionId)}</span>
     </li>

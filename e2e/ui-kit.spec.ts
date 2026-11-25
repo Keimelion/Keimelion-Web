@@ -99,6 +99,8 @@ test.describe('with reduced motion', () => {
     await page.goto(KIT_PATH)
 
     await expect(page.getByText('Finished once')).toHaveCount(2)
+    await page.getByRole('button', { name: 'Replay the Wrap · reserving animation' }).click()
+    await expect(page.getByText('Finished once')).toHaveCount(1)
   })
 })
 
