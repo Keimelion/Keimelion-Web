@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { ChipGroup } from '@/components/shared/chip-group'
 import type { ChipOption } from '@/components/shared/chip-group'
-import { PasswordInput } from '@/components/shared/password-input'
 import { TagInput } from '@/components/shared/tag-input'
 import {
   Form,
@@ -29,7 +28,6 @@ import { KitSection } from './kit-section'
 import { KitSpecimen } from './kit-specimen'
 
 interface ControlFormValues {
-  password: string
   language: Locale | ''
   categories: string[]
 }
@@ -40,30 +38,17 @@ const MAX_CATEGORY_LENGTH = 24
 export function FormControlSection(): React.JSX.Element {
   const t = useTranslate()
   const form = useForm<ControlFormValues>({
-    defaultValues: { password: '', language: '', categories: [t('dev.kit.chips.kitchen')] },
+    defaultValues: { language: '', categories: [t('dev.kit.chips.kitchen')] },
   })
   return (
     <KitSection title={t('dev.kit.form_controls.title')} kicker={t('dev.kit.form_controls.kicker')}>
       <Form {...form}>
         <form
-          className="grid gap-5 md:grid-cols-3"
+          className="grid gap-5 md:grid-cols-2"
           onSubmit={(event) => {
             event.preventDefault()
           }}
         >
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t('dev.kit.fields.password')}</FormLabel>
-                <FormControl>
-                  <PasswordInput autoComplete="new-password" {...field} />
-                </FormControl>
-                <FormDescription>{t('dev.kit.form_controls.password_help')}</FormDescription>
-              </FormItem>
-            )}
-          />
           <FormField
             control={form.control}
             name="language"

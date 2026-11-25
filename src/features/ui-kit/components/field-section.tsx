@@ -15,6 +15,7 @@ import {
 import { SearchIcon } from '@/components/icons'
 import { DatePicker } from '@/components/shared/date-picker'
 import { IconInput } from '@/components/shared/icon-input'
+import { PasswordInput } from '@/components/shared/password-input'
 import { Stepper } from '@/components/shared/stepper'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -84,7 +85,7 @@ export function FieldSection(): React.JSX.Element {
               <FormItem>
                 <FormLabel>{t('dev.kit.fields.password')}</FormLabel>
                 <FormControl>
-                  <Input type="text" {...field} />
+                  <PasswordInput autoComplete="new-password" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
