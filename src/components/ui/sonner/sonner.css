@@ -86,7 +86,7 @@
     }
   }
 
-  &:hover {
+  &[data-expanded='true'] {
     animation-play-state: paused;
   }
 
