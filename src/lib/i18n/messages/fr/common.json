@@ -22,5 +22,8 @@
   "common.countdown.today_note": "Les réservations restent ouvertes toute la journée.",
   "common.countdown.past_kicker": "merci à tous !",
   "common.countdown.past": "Le grand jour, c'était le {date, date, ::MMMMd}. Vous pouvez encore offrir un cadeau : la liste reste ouverte.",
-  "common.confirm_dialog.cancel": "Annuler"
+  "common.confirm_dialog.cancel": "Annuler",
+  "common.date_picker.clear": "Effacer la date",
+  "common.date_picker.value": "{date, date, ::EEEEyMMMMd}",
+  "common.date_picker.today": "Aujourd'hui, {date, date, ::EEEEyMMMMd}"
 }

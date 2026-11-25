@@ -28,6 +28,22 @@ for (const colorScheme of COLOR_SCHEMES) {
       await expect(sheet).toBeHidden()
     })
 
+    test('the date picker opens, passes axe, picks a day and clears it', async ({ page }) => {
+      await page.goto(KIT_PATH)
+      const trigger = page.getByRole('button', { name: 'Event date', exact: true })
+      const calendar = page.getByRole('dialog', { name: 'Event date' })
+      await expect(async () => {
+        await trigger.click()
+        await expect(calendar).toBeVisible({ timeout: 1000 })
+      }).toPass()
+      await expectNoAccessibilityViolations(page)
+      await page.keyboard.press('ArrowRight')
+      await page.keyboard.press('Enter')
+      await expect(page.getByRole('dialog')).toBeHidden()
+      await page.getByRole('button', { name: 'Clear the date' }).click()
+      await expect(trigger).toHaveText('No date, no countdown')
+    })
+
     test('the popover and the toast pass axe', async ({ page }) => {
       await page.goto(KIT_PATH)
       await page.getByRole('button', { name: 'Popover' }).click()

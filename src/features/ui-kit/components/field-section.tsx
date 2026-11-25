@@ -13,6 +13,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { SearchIcon } from '@/components/icons'
+import { DatePicker } from '@/components/shared/date-picker'
 import { IconInput } from '@/components/shared/icon-input'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -26,6 +27,7 @@ interface KitFieldValues {
   disabled: string
   note: string
   search: string
+  eventDate: Date | null
 }
 
 export function FieldSection(): React.JSX.Element {
@@ -38,6 +40,7 @@ export function FieldSection(): React.JSX.Element {
       disabled: t('dev.kit.fields.disabled_value'),
       note: '',
       search: '',
+      eventDate: null,
     },
   })
   useShowcasedError(form, t('dev.kit.fields.password_error'))
@@ -120,6 +123,26 @@ export function FieldSection(): React.JSX.Element {
                     {...field}
                   />
                 </FormControl>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="eventDate"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t('dev.kit.fields.event_date')}</FormLabel>
+                <FormControl>
+                  <DatePicker
+                    ref={field.ref}
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    onBlur={field.onBlur}
+                    label={t('dev.kit.fields.event_date')}
+                    placeholder={t('dev.kit.fields.event_date_placeholder')}
+                  />
+                </FormControl>
+                <FormDescription>{t('dev.kit.fields.event_date_help')}</FormDescription>
               </FormItem>
             )}
           />

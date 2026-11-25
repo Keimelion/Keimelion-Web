@@ -173,5 +173,8 @@
   "dev.kit.overlays.confirm_description": "The list and its 18 gifts disappear for everyone. This can't be undone.",
   "dev.kit.overlays.confirm_action": "Delete the list",
   "dev.kit.fields.search": "Search",
-  "dev.kit.fields.search_placeholder": "Search or paste a link"
+  "dev.kit.fields.search_placeholder": "Search or paste a link",
+  "dev.kit.fields.event_date": "Event date",
+  "dev.kit.fields.event_date_placeholder": "No date, no countdown",
+  "dev.kit.fields.event_date_help": "Optional. With a date, a countdown shows on the list."
 }

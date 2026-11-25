@@ -173,5 +173,8 @@
   "dev.kit.overlays.confirm_description": "La liste et ses 18 cadeaux disparaissent pour tout le monde. C'est définitif.",
   "dev.kit.overlays.confirm_action": "Supprimer la liste",
   "dev.kit.fields.search": "Recherche",
-  "dev.kit.fields.search_placeholder": "Rechercher ou coller un lien"
+  "dev.kit.fields.search_placeholder": "Rechercher ou coller un lien",
+  "dev.kit.fields.event_date": "Date de l'événement",
+  "dev.kit.fields.event_date_placeholder": "Pas de date, pas de compte à rebours",
+  "dev.kit.fields.event_date_help": "Facultative. Avec une date, un compte à rebours s'affiche sur la liste."
 }
