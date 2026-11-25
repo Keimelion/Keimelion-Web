@@ -183,5 +183,19 @@
   "dev.kit.overlays.show_warning_toast": "Warning toast",
   "dev.kit.overlays.toast_warning": "The price went up since you added it",
   "dev.kit.motion.replay_context": "the {name} animation",
-  "dev.kit.fields.quantity_help": "Up to 3, the others are already taken."
+  "dev.kit.fields.quantity_help": "Up to 3, the others are already taken.",
+  "dev.kit.form_controls.title": "More form controls",
+  "dev.kit.form_controls.kicker": "password, select, tags, chips",
+  "dev.kit.form_controls.password_help": "At least 10 characters.",
+  "dev.kit.form_controls.language": "Language",
+  "dev.kit.form_controls.language_placeholder": "Choose a language",
+  "dev.kit.form_controls.categories": "Categories",
+  "dev.kit.form_controls.categories_placeholder": "Add a category",
+  "dev.kit.form_controls.categories_help": "Press Enter or type a comma to add one, up to 5.",
+  "dev.kit.form_controls.single": "One choice",
+  "dev.kit.form_controls.multiple": "Several choices",
+  "dev.kit.form_controls.filter": "Show",
+  "dev.kit.form_controls.all": "All",
+  "dev.kit.form_controls.reserved": "Reserved",
+  "dev.kit.form_controls.occasions": "Occasions"
 }

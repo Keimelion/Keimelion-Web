@@ -25,5 +25,7 @@
   "common.confirm_dialog.cancel": "Cancel",
   "common.date_picker.clear": "Clear the date",
   "common.date_picker.value": "{date, date, ::EEEEyMMMMd}",
-  "common.date_picker.today": "Today, {date, date, ::EEEEyMMMMd}"
+  "common.date_picker.today": "Today, {date, date, ::EEEEyMMMMd}",
+  "common.password_input.show": "Show password",
+  "common.tag_input.remove": "Remove {tag}"
 }

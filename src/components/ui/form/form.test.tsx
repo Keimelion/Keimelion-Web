@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form'
 import { describe, expect, it } from 'vitest'
 import { SearchIcon } from '@/components/icons'
 import { IconInput } from '@/components/shared/icon-input'
+import { TagInput } from '@/components/shared/tag-input'
 import { Input } from '@/components/ui/input'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Switch } from '@/components/ui/switch'
@@ -86,6 +87,17 @@ describe('Form field', () => {
       <RadioGroup key="radios" aria-label="Field">
         <RadioGroupItem value="a" aria-label="A" />
       </RadioGroup>,
+    ],
+    [
+      'textbox',
+      <TagInput
+        key="tags"
+        aria-label="Field"
+        value={[]}
+        onValueChange={() => undefined}
+        maxTags={3}
+        maxTagLength={10}
+      />,
     ],
     ['textbox', <IconInput key="search" icon={SearchIcon} aria-label="Field" />],
   ])('forwards the field contract to a %s', (role, control) => {

@@ -183,5 +183,19 @@
   "dev.kit.overlays.show_warning_toast": "Notification d'avertissement",
   "dev.kit.overlays.toast_warning": "Le prix a augmenté depuis votre ajout",
   "dev.kit.motion.replay_context": "l'animation « {name} »",
-  "dev.kit.fields.quantity_help": "Jusqu'à 3, les autres sont déjà pris."
+  "dev.kit.fields.quantity_help": "Jusqu'à 3, les autres sont déjà pris.",
+  "dev.kit.form_controls.title": "Autres contrôles de formulaire",
+  "dev.kit.form_controls.kicker": "mot de passe, liste, étiquettes, puces",
+  "dev.kit.form_controls.password_help": "10 caractères minimum.",
+  "dev.kit.form_controls.language": "Langue",
+  "dev.kit.form_controls.language_placeholder": "Choisir une langue",
+  "dev.kit.form_controls.categories": "Catégories",
+  "dev.kit.form_controls.categories_placeholder": "Ajouter une catégorie",
+  "dev.kit.form_controls.categories_help": "Appuyez sur Entrée ou tapez une virgule pour en ajouter, jusqu'à 5.",
+  "dev.kit.form_controls.single": "Un seul choix",
+  "dev.kit.form_controls.multiple": "Plusieurs choix",
+  "dev.kit.form_controls.filter": "Afficher",
+  "dev.kit.form_controls.all": "Tout",
+  "dev.kit.form_controls.reserved": "Réservés",
+  "dev.kit.form_controls.occasions": "Occasions"
 }

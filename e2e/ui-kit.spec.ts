@@ -91,6 +91,21 @@ for (const colorScheme of COLOR_SCHEMES) {
       })
     }
 
+    test('the select opens, passes axe and picks an option', async ({ page }) => {
+      await page.goto(KIT_PATH)
+      const trigger = page.getByRole('combobox', { name: 'Language' })
+      const options = page.getByRole('listbox')
+      await expect(async () => {
+        await trigger.click()
+        await expect(options).toBeVisible({ timeout: 1000 })
+      }).toPass()
+
+      await expectNoAccessibilityViolations(page, '[role="listbox"]')
+      await page.getByRole('option', { name: 'Français' }).click()
+      await expect(trigger).toHaveText('Français')
+      await expectNoAccessibilityViolations(page)
+    })
+
     test('the popover and the toast pass axe', async ({ page }) => {
       await page.goto(KIT_PATH)
       await page.getByRole('button', { name: 'Popover' }).click()

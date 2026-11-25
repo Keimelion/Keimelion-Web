@@ -36,7 +36,13 @@ export const test = base.extend<SmokeFixtures>({
 
 export { expect }
 
-export async function expectNoAccessibilityViolations(page: Page): Promise<void> {
-  const results = await new AxeBuilder({ page }).withTags(WCAG_TAGS).analyze()
+export async function expectNoAccessibilityViolations(
+  page: Page,
+  includedSelector: string | null = null,
+): Promise<void> {
+  const builder = new AxeBuilder({ page }).withTags(WCAG_TAGS)
+  const results = await (
+    includedSelector === null ? builder : builder.include(includedSelector)
+  ).analyze()
   expect(results.violations).toEqual([])
 }
