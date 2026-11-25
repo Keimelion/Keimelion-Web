@@ -106,6 +106,45 @@ for (const colorScheme of COLOR_SCHEMES) {
       await expectNoAccessibilityViolations(page)
     })
 
+    test('the more menu opens, passes axe and runs an item', async ({ page }) => {
+      await page.goto(KIT_PATH)
+      const trigger = page.getByRole('button', { name: 'More actions' })
+      const menu = page.getByRole('menu')
+      await expect(async () => {
+        await trigger.click()
+        await expect(menu).toBeVisible({ timeout: 1000 })
+      }).toPass()
+
+      await expectNoAccessibilityViolations(page, '[role="menu"]')
+      await page.getByRole('menuitem', { name: 'Send feedback' }).click()
+      await expect(menu).toBeHidden()
+    })
+
+    test('removing a gift can be undone from the toast', async ({ page }) => {
+      await page.goto(KIT_PATH)
+      const gifts = page.getByRole('list', { name: 'Gifts' })
+      await expect(gifts.getByRole('listitem')).toHaveCount(3)
+
+      await page.getByRole('button', { name: 'Remove Cast-iron casserole' }).click()
+      await expect(gifts.getByRole('listitem')).toHaveCount(2)
+      await page.getByRole('button', { name: 'Undo' }).click()
+
+      await expect(gifts.getByRole('listitem')).toHaveCount(3)
+      await expect(gifts.getByText('Cast-iron casserole', { exact: true })).toBeVisible()
+    })
+
+    test('the copy field copies and says so', async ({ page, context }) => {
+      await context.grantPermissions(['clipboard-read', 'clipboard-write'])
+      await page.goto(KIT_PATH)
+      await page.getByRole('button', { name: 'Copy', exact: true }).click()
+
+      await expect(page.getByRole('button', { name: 'Copied' })).toBeVisible()
+      await expect(
+        page.getByRole('status').filter({ hasText: 'Copied to the clipboard' }),
+      ).toBeAttached()
+      await expectNoAccessibilityViolations(page)
+    })
+
     test('the popover and the toast pass axe', async ({ page }) => {
       await page.goto(KIT_PATH)
       await page.getByRole('button', { name: 'Popover' }).click()
