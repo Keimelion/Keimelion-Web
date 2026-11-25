@@ -1,43 +1,46 @@
-"use client"
+'use client'
 
-import {
-  CircleCheck,
-  Info,
-  LoaderCircle,
-  OctagonX,
-  TriangleAlert,
-} from "lucide-react"
-import { useTheme } from "next-themes"
-import { Toaster as Sonner } from "sonner"
+import { OctagonX, TriangleAlert } from 'lucide-react'
+import { useTheme } from 'next-themes'
+import { Toaster as Sonner } from 'sonner'
+
+import { ToastBow } from './toast-bow'
 
 type ToasterProps = React.ComponentProps<typeof Sonner>
 
-const Toaster = ({ ...props }: ToasterProps) => {
-  const { theme = "system" } = useTheme()
-  const resolvedTheme: "light" | "dark" | "system" =
-    theme === "dark" ? "dark" : theme === "light" ? "light" : "system"
+const LUCIDE_BRAND_STROKE_WIDTH = 1.75
+
+const Toaster = ({ ...props }: ToasterProps): React.JSX.Element => {
+  const { theme = 'system' } = useTheme()
+  const resolvedTheme: 'light' | 'dark' | 'system' =
+    theme === 'dark' ? 'dark' : theme === 'light' ? 'light' : 'system'
 
   return (
     <Sonner
       theme={resolvedTheme}
       className="toaster group"
       icons={{
-        success: <CircleCheck className="h-3.5 w-3.5 text-emerald-500" />,
-        info: <Info className="h-3.5 w-3.5 text-blue-500" />,
-        warning: <TriangleAlert className="h-3.5 w-3.5 text-amber-500" />,
-        error: <OctagonX className="h-3.5 w-3.5 text-red-500" />,
-        loading: <LoaderCircle className="h-3.5 w-3.5 animate-spin" />,
+        success: <ToastBow />,
+        info: <ToastBow />,
+        warning: (
+          <TriangleAlert
+            aria-hidden="true"
+            strokeWidth={LUCIDE_BRAND_STROKE_WIDTH}
+            className="size-5"
+          />
+        ),
+        error: (
+          <OctagonX aria-hidden="true" strokeWidth={LUCIDE_BRAND_STROKE_WIDTH} className="size-5" />
+        ),
       }}
       toastOptions={{
         classNames: {
-          toast:
-            "group toast group-[.toaster]:bg-card group-[.toaster]:text-card-foreground group-[.toaster]:border-border group-[.toaster]:shadow-lg",
-          title: "group-[.toast]:font-semibold group-[.toast]:text-sm",
-          description: "group-[.toast]:text-muted-foreground group-[.toast]:text-sm",
+          title: 'group-[.toast]:font-semibold group-[.toast]:text-[15px]',
+          description: 'group-[.toast]:text-small',
           actionButton:
-            "group-[.toast]:bg-primary group-[.toast]:text-primary-foreground",
+            'group-[.toast]:rounded-pill group-[.toast]:bg-on-inverse group-[.toast]:text-inverse',
           cancelButton:
-            "group-[.toast]:bg-muted group-[.toast]:text-muted-foreground",
+            'group-[.toast]:rounded-pill group-[.toast]:bg-transparent group-[.toast]:text-on-inverse',
         },
       }}
       {...props}

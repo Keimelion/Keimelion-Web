@@ -49,7 +49,7 @@ export function ThemePicker(): React.JSX.Element {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="icon">
+        <Button variant="ghost" size="icon-sm">
           <Sun aria-hidden="true" className="size-[1.2rem] dark:hidden" />
           <Moon aria-hidden="true" className="hidden size-[1.2rem] dark:block" />
           <span className="sr-only">{t('common.theme_picker.select_theme')}</span>

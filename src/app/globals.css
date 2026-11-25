@@ -45,7 +45,9 @@
   --color-brand: var(--brand);
   --color-brand-deep: var(--brand-deep);
   --color-hand: var(--hand);
+  --color-hand-on-paper: var(--hand-on-paper);
   --color-danger: var(--danger);
+  --color-danger-deep: var(--danger-deep);
   --color-success: var(--success);
   --color-focus: var(--focus);
   --color-on-brand: var(--on-brand);
@@ -87,6 +89,23 @@
 
   --shadow-card: var(--elevation-card);
   --shadow-float: var(--elevation-float);
+
+  --color-scrim: var(--scrim);
+
+  --ease-spring: var(--motion-ease-spring);
+  --ease-soft-out: var(--motion-ease-soft-out);
+  --ease-standard: var(--motion-ease-standard);
+
+  --animate-shimmer: shimmer 1.6s linear infinite;
+
+  @keyframes shimmer {
+    from {
+      background-position: 100% 0;
+    }
+    to {
+      background-position: -200% 0;
+    }
+  }
 
   --radius-card: 22px;
   --radius-sheet: 28px;

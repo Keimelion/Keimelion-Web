@@ -6,5 +6,20 @@
   "common.theme_picker.light": "Clair",
   "common.theme_picker.dark": "Sombre",
   "common.theme_picker.system": "Système",
-  "common.placeholder.coming_soon": "Cette page arrive bientôt."
+  "common.placeholder.coming_soon": "Cette page arrive bientôt.",
+  "common.dialog.close": "Fermer",
+  "common.stepper.decrease": "Diminuer",
+  "common.stepper.increase": "Augmenter",
+  "common.avatar_stack.more": "+{count}",
+  "common.avatar_stack.more_label": "et {count, plural, one {# autre personne} other {# autres personnes}}",
+  "common.countdown.days_to_go": "{count, plural, one {jour avant le jour J} other {jours avant le jour J}}",
+  "common.countdown.days_to_go_label": "{count, plural, one {# jour avant le jour J} other {# jours avant le jour J}}",
+  "common.countdown.near_kicker": "on y est presque !",
+  "common.countdown.tomorrow_kicker": "à demain !",
+  "common.countdown.tomorrow": "Demain",
+  "common.countdown.today_kicker": "c'est le grand jour !",
+  "common.countdown.today": "Aujourd'hui, le {date, date, ::MMMMd}",
+  "common.countdown.today_note": "Les réservations restent ouvertes toute la journée.",
+  "common.countdown.past_kicker": "merci à tous !",
+  "common.countdown.past": "Le grand jour, c'était le {date, date, ::MMMMd}. Vous pouvez encore offrir un cadeau : la liste reste ouverte."
 }

@@ -33,7 +33,7 @@ export function LocalePicker(): React.JSX.Element {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm">
+        <Button variant="ghost" size="sm">
           <span className="sr-only">{t('common.locale_picker.select_language')}</span>
           <span aria-hidden="true">{LOCALE_FLAG[locale]}</span> {LOCALE_NATIVE_NAMES[locale]}
         </Button>

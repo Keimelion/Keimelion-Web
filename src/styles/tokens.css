@@ -10,7 +10,9 @@
   --brand: #b3204c;
   --brand-deep: #9a1b41;
   --hand: #8a1538;
+  --hand-on-paper: #8a1538;
   --danger: #a3261a;
+  --danger-deep: #7d1c13;
   --success: #13694d;
   --focus: #2b45b8;
 
@@ -35,6 +37,12 @@
   --elevation-card: 0 1px 2px rgb(28 26 51 / 0.06), 0 14px 28px -20px rgb(28 26 51 / 0.45);
   --elevation-float: 0 30px 60px -30px rgb(28 26 51 / 0.6);
 
+  --scrim: rgb(28 26 51 / 0.42);
+
+  --motion-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --motion-ease-soft-out: cubic-bezier(0.2, 0.9, 0.3, 1);
+  --motion-ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+
   --reserved-opacity: 0.75;
   --photo-brightness: 1;
 
@@ -54,7 +62,9 @@
   --brand: #f06a8e;
   --brand-deep: #c94a6e;
   --hand: #ff9db5;
+  --hand-on-paper: #ffcdd9;
   --danger: #ff7a66;
+  --danger-deep: #d4604f;
   --success: #4fc79a;
   --focus: #94a6ff;
 
@@ -78,6 +88,8 @@
 
   --elevation-card: none;
   --elevation-float: none;
+
+  --scrim: rgb(0 0 0 / 0.6);
 
   --reserved-opacity: 0.9;
   --photo-brightness: 0.9;

@@ -11,6 +11,7 @@ const PAGES = [
   { path: '/auth/reset-password', heading: 'Choose a new password' },
   { path: '/invites/accept', heading: 'Join a list' },
   { path: '/dev/tokens', heading: 'Design tokens' },
+  { path: '/dev/kit', heading: 'UI kit' },
 ]
 
 const COLOR_SCHEMES = ['light', 'dark'] as const
