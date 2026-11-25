@@ -61,7 +61,7 @@ const TabsTrigger = React.forwardRef<
       ref={ref}
       value={value}
       className={cn(
-        'touch-target inline-flex h-[30px] min-w-0 cursor-pointer items-center justify-center rounded-pill px-[13px] text-[13px] font-bold whitespace-nowrap text-muted-foreground transition-colors duration-200 outline-none hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus disabled:pointer-events-none disabled:opacity-50 data-[state=active]:text-on-inverse [&_svg]:size-3.5',
+        'touch-target inline-flex h-[30px] min-w-0 cursor-pointer items-center justify-center rounded-pill px-[13px] text-[13px] font-bold whitespace-nowrap text-muted-foreground transition-colors duration-200 outline-none hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus disabled:pointer-events-none disabled:opacity-50 data-[state=active]:text-on-brand [&_svg]:size-3.5',
         className,
       )}
       {...props}
@@ -70,7 +70,7 @@ const TabsTrigger = React.forwardRef<
         <motion.span
           layoutId={context.knobId}
           transition={KNOB_TRANSITION}
-          className="absolute inset-0 rounded-pill bg-inverse"
+          className="absolute inset-0 rounded-pill bg-brand"
         />
       ) : null}
       <span className="relative inline-flex min-w-0 items-center gap-1.5">{children}</span>

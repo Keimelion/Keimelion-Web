@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Chip } from '@/components/shared/chip'
 import { OccasionIcon } from '@/components/shared/occasion-icon'
-import { Tag } from '@/components/shared/tag'
+import { Tag, TagTones } from '@/components/shared/tag'
 import type { MessageId } from '@/lib/i18n/messages'
 import { useTranslate } from '@/lib/i18n/use-translate'
 import { OccasionShapes } from '@/lib/occasions/occasion-shape'
@@ -52,9 +52,11 @@ export function ChipSection(): React.JSX.Element {
         </Chip>
       </KitSpecimen>
       <KitSpecimen label={t('dev.kit.chips.tags')}>
-        <Tag>{t('dev.kit.chips.kitchen')}</Tag>
-        <Tag>{t('dev.kit.chips.under_50')}</Tag>
-        <Tag className="max-w-40">{t('dev.kit.cards.long_name')}</Tag>
+        <Tag tone={TagTones.BRAND}>{t('dev.kit.chips.kitchen')}</Tag>
+        <Tag tone={TagTones.BRAND}>{t('dev.kit.chips.under_50')}</Tag>
+        <Tag tone={TagTones.NEUTRAL} className="max-w-40">
+          {t('dev.kit.cards.long_name')}
+        </Tag>
       </KitSpecimen>
     </KitSection>
   )

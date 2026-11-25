@@ -44,6 +44,8 @@
   --color-ink: var(--ink);
   --color-brand: var(--brand);
   --color-brand-deep: var(--brand-deep);
+  --color-brand-soft: var(--brand-soft);
+  --color-on-brand-soft: var(--on-brand-soft);
   --color-hand: var(--hand);
   --color-hand-on-paper: var(--hand-on-paper);
   --color-danger: var(--danger);

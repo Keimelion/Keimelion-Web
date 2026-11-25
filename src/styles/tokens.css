@@ -9,6 +9,8 @@
   --muted: #5a5570;
   --brand: #b3204c;
   --brand-deep: #9a1b41;
+  --brand-soft: #f6e0dc;
+  --on-brand-soft: #8a1538;
   --hand: #8a1538;
   --hand-on-paper: #8a1538;
   --danger: #a3261a;
@@ -64,6 +66,8 @@
   --muted: #aea6c0;
   --brand: #f06a8e;
   --brand-deep: #c94a6e;
+  --brand-soft: #472c3e;
+  --on-brand-soft: #ff9db5;
   --hand: #ff9db5;
   --hand-on-paper: #ffcdd9;
   --danger: #ff7a66;

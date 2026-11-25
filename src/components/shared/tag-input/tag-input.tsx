@@ -98,13 +98,13 @@ interface TagChipProps {
 function TagChip({ tag, isDisabled, onRemove }: TagChipProps): React.JSX.Element {
   const t = useTranslate()
   return (
-    <span className="inline-flex h-[34px] max-w-full min-w-0 items-center gap-1 rounded-pill bg-sunken pr-1 pl-3 text-sm font-semibold">
+    <span className="inline-flex h-[34px] max-w-full min-w-0 items-center gap-1 rounded-pill bg-brand-soft pr-1 pl-3 text-sm font-semibold text-on-brand-soft">
       <span className="min-w-0 truncate">{tag}</span>
       <button
         type="button"
         disabled={isDisabled}
         onClick={onRemove}
-        className="touch-target inline-flex size-7 shrink-0 cursor-pointer items-center justify-center rounded-pill text-muted-foreground transition-press outline-none hover:bg-raised hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus disabled:pointer-events-none"
+        className="touch-target inline-flex size-7 shrink-0 cursor-pointer items-center justify-center rounded-pill text-on-brand-soft transition-press outline-none hover:bg-raised focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus disabled:pointer-events-none"
       >
         <CloseIcon className="size-3.5" />
         <span className="sr-only">{t('common.tag_input.remove', { tag })}</span>

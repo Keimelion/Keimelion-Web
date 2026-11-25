@@ -18,7 +18,7 @@ function AddGiftTabs(): React.JSX.Element {
 }
 
 function countKnobs(tablist: HTMLElement): number {
-  return tablist.querySelectorAll('.bg-inverse').length
+  return tablist.querySelectorAll('.bg-brand').length
 }
 
 describe('Tabs', () => {
@@ -40,7 +40,7 @@ describe('Tabs', () => {
     expect(screen.getByRole('tab', { name: 'By hand' })).toHaveAttribute('aria-selected', 'true')
     expect(screen.getByRole('tabpanel')).toHaveTextContent('Type a name')
     expect(countKnobs(screen.getByRole('tablist'))).toBe(1)
-    expect(screen.getByRole('tab', { name: 'By hand' }).querySelector('.bg-inverse')).not.toBeNull()
+    expect(screen.getByRole('tab', { name: 'By hand' }).querySelector('.bg-brand')).not.toBeNull()
   })
 
   it('follows the arrow keys', async () => {

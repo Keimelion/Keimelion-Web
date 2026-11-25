@@ -128,7 +128,7 @@ function ChipContent({ option }: ChipContentProps): React.JSX.Element {
       {option.label}
       {option.count === null ? null : ' '}
       {option.count === null ? null : (
-        <span className="font-mono text-label tracking-normal opacity-80">{option.count}</span>
+        <span className="font-mono text-label tracking-normal">{option.count}</span>
       )}
     </>
   )
