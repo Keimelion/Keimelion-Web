@@ -15,6 +15,7 @@ import {
 import { SearchIcon } from '@/components/icons'
 import { DatePicker } from '@/components/shared/date-picker'
 import { IconInput } from '@/components/shared/icon-input'
+import { Stepper } from '@/components/shared/stepper'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { useTranslate } from '@/lib/i18n/use-translate'
@@ -28,7 +29,11 @@ interface KitFieldValues {
   note: string
   search: string
   eventDate: Date | null
+  quantity: number
 }
+
+const QUANTITY_MIN = 1
+const QUANTITY_MAX = 3
 
 export function FieldSection(): React.JSX.Element {
   const t = useTranslate()
@@ -41,6 +46,7 @@ export function FieldSection(): React.JSX.Element {
       note: '',
       search: '',
       eventDate: null,
+      quantity: 1,
     },
   })
   useShowcasedError(form, t('dev.kit.fields.password_error'))
@@ -143,6 +149,28 @@ export function FieldSection(): React.JSX.Element {
                   />
                 </FormControl>
                 <FormDescription>{t('dev.kit.fields.event_date_help')}</FormDescription>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="quantity"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t('dev.kit.controls.quantity')}</FormLabel>
+                <FormControl>
+                  <Stepper
+                    ref={field.ref}
+                    name={field.name}
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    onBlur={field.onBlur}
+                    min={QUANTITY_MIN}
+                    max={QUANTITY_MAX}
+                    label={t('dev.kit.controls.quantity')}
+                  />
+                </FormControl>
+                <FormDescription>{t('dev.kit.fields.quantity_help')}</FormDescription>
               </FormItem>
             )}
           />

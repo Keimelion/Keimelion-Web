@@ -59,7 +59,7 @@ export const DatePicker = React.forwardRef<HTMLButtonElement, DatePickerProps>(
             </BottomSheet>
           </>
         )}
-        {value === null ? null : (
+        {value === null || triggerProps.disabled === true ? null : (
           <button
             type="button"
             onClick={() => {

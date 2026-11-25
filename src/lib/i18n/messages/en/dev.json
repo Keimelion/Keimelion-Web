@@ -182,5 +182,6 @@
   "dev.kit.controls.guest_panel": "You see the list as your guests do.",
   "dev.kit.overlays.show_warning_toast": "Warning toast",
   "dev.kit.overlays.toast_warning": "The price went up since you added it",
-  "dev.kit.motion.replay_context": "the {name} animation"
+  "dev.kit.motion.replay_context": "the {name} animation",
+  "dev.kit.fields.quantity_help": "Up to 3, the others are already taken."
 }

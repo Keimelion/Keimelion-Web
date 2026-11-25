@@ -89,4 +89,26 @@ describe('DatePicker', () => {
       'No date, no countdown',
     )
   })
+
+  it('keeps a disabled picker closed and without a clear button', () => {
+    mockDesktopViewport(true)
+    renderWithIntl(
+      <DatePicker
+        disabled
+        value={EVENT_DATE}
+        onValueChange={vi.fn()}
+        label="Event date"
+        placeholder="No date"
+        aria-label="Event date"
+        aria-invalid
+      />,
+    )
+
+    expect(screen.getByRole('button', { name: 'Event date' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Event date' })).toHaveAttribute(
+      'aria-invalid',
+      'true',
+    )
+    expect(screen.queryByRole('button', { name: 'Clear the date' })).not.toBeInTheDocument()
+  })
 })

@@ -182,5 +182,6 @@
   "dev.kit.controls.guest_panel": "Vous voyez la liste comme vos invités.",
   "dev.kit.overlays.show_warning_toast": "Notification d'avertissement",
   "dev.kit.overlays.toast_warning": "Le prix a augmenté depuis votre ajout",
-  "dev.kit.motion.replay_context": "l'animation « {name} »"
+  "dev.kit.motion.replay_context": "l'animation « {name} »",
+  "dev.kit.fields.quantity_help": "Jusqu'à 3, les autres sont déjà pris."
 }

@@ -1,8 +1,13 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { describe, expect, it } from 'vitest'
+import { SearchIcon } from '@/components/icons'
+import { IconInput } from '@/components/shared/icon-input'
 import { Input } from '@/components/ui/input'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { Switch } from '@/components/ui/switch'
 import {
   Form,
   FormControl,
@@ -72,5 +77,44 @@ describe('Form field', () => {
     render(<EmailForm hasHelp={false} />)
 
     expect(screen.getByRole('textbox', { name: 'Email' })).not.toHaveAttribute('aria-describedby')
+  })
+
+  it.each([
+    ['switch', <Switch key="switch" aria-label="Field" />],
+    [
+      'radiogroup',
+      <RadioGroup key="radios" aria-label="Field">
+        <RadioGroupItem value="a" aria-label="A" />
+      </RadioGroup>,
+    ],
+    ['textbox', <IconInput key="search" icon={SearchIcon} aria-label="Field" />],
+  ])('forwards the field contract to a %s', (role, control) => {
+    function ControlForm(): React.JSX.Element {
+      const form = useForm<{ field: string }>({ defaultValues: { field: '' } })
+      useEffect(() => {
+        form.setError('field', { message: ERROR })
+      }, [form])
+      return (
+        <Form {...form}>
+          <FormField
+            control={form.control}
+            name="field"
+            render={() => (
+              <FormItem>
+                <FormControl>{control}</FormControl>
+                <FormDescription>{HELP}</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </Form>
+      )
+    }
+    render(<ControlForm />)
+
+    const element = screen.getByRole(role, { name: 'Field' })
+    expect(element).toHaveAccessibleDescription(`${HELP} ${ERROR}`)
+    expect(element).toHaveAttribute('aria-invalid', 'true')
+    expect(element.id).not.toBe('')
   })
 })
