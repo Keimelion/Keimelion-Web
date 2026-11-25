@@ -113,6 +113,7 @@
   "dev.kit.motion.flip": "A tile flips into place, like a flap display.",
   "dev.kit.motion.unfold": "A new list unfolds into place.",
   "dev.kit.motion.seq": "The occasion shapes pop in, one after the other.",
+  "dev.kit.motion.tie": "The ribbon loops itself into a bow, then the knot is pulled tight.",
   "dev.kit.motion.wiggle": "The bow wiggles to say it's done.",
   "dev.kit.motion.bob": "A gentle float for empty states.",
   "dev.kit.motion.saved": "Saved",

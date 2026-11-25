@@ -3,6 +3,7 @@
 import { motion } from 'motion/react'
 import { useEffect, useId } from 'react'
 import { BowGlyph } from '@/components/icons'
+import { TyingBowGlyph } from '@/components/shared/tying-bow'
 import { useShouldReduceMotion } from '@/lib/motion'
 import { OCCASION_PAPER_CLASS_NAMES } from '@/lib/occasions/occasion-paper'
 import type { OccasionPaper } from '@/lib/occasions/occasion-paper'
@@ -18,7 +19,13 @@ export const WrappedGiftModes = {
 
 export type WrappedGiftMode = (typeof WrappedGiftModes)[keyof typeof WrappedGiftModes]
 
-const NO_MOTION: GiftTimeline = { paper: {}, verticalRibbon: {}, horizontalRibbon: {}, bow: {} }
+const NO_MOTION: GiftTimeline = {
+  paper: {},
+  verticalRibbon: {},
+  horizontalRibbon: {},
+  bow: {},
+  bowTieDelay: null,
+}
 
 interface WrappedGiftProps {
   paper: OccasionPaper
@@ -132,9 +139,13 @@ function GiftWrapping({
         {...timeline.horizontalRibbon}
       />
       <g transform="translate(20 18) scale(0.6)" className="text-brand">
-        <motion.g {...timeline.bow} style={{ originX: 0.5, originY: 0.5 }} {...bowCompletion}>
-          <BowGlyph />
-        </motion.g>
+        {timeline.bowTieDelay === null ? (
+          <motion.g {...timeline.bow} style={{ originX: 0.5, originY: 0.5 }} {...bowCompletion}>
+            <BowGlyph />
+          </motion.g>
+        ) : (
+          <TyingBowGlyph delay={timeline.bowTieDelay} onDone={isBowLast ? onDone : null} />
+        )}
       </g>
     </svg>
   )

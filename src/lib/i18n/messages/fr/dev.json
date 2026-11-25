@@ -113,6 +113,7 @@
   "dev.kit.motion.flip": "Une tuile bascule en place, comme un panneau d'affichage de gare.",
   "dev.kit.motion.unfold": "Une nouvelle liste se déplie à sa place.",
   "dev.kit.motion.seq": "Les formes d'occasion apparaissent l'une après l'autre.",
+  "dev.kit.motion.tie": "Le ruban fait ses boucles, puis on serre le nœud.",
   "dev.kit.motion.wiggle": "Le nœud frétille pour dire que c'est fait.",
   "dev.kit.motion.bob": "Un léger flottement pour les états vides.",
   "dev.kit.motion.saved": "Enregistré",

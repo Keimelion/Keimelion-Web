@@ -4,6 +4,7 @@ import { motion } from 'motion/react'
 import { BowIcon, PlantIcon } from '@/components/icons'
 import { OccasionIcon } from '@/components/shared/occasion-icon'
 import { Thumb, ThumbSizes } from '@/components/shared/thumb'
+import { TyingBow } from '@/components/shared/tying-bow'
 import type { MessageId } from '@/lib/i18n/messages'
 import { useTranslate } from '@/lib/i18n/use-translate'
 import {
@@ -25,6 +26,8 @@ import { KitSection } from './kit-section'
 import { ReplayStage } from './replay-stage'
 
 const SEQ_SHAPES = Object.values(OccasionShapes)
+
+const NO_OP = (): void => undefined
 
 export function MotionSection(): React.JSX.Element {
   const t = useTranslate()
@@ -101,6 +104,9 @@ export function MotionSection(): React.JSX.Element {
               </motion.span>
             ))}
           </span>
+        </MotionCard>
+        <MotionCard name="tie" descriptionId="dev.kit.motion.tie">
+          <TyingBow onDone={NO_OP} className="size-20 text-brand" />
         </MotionCard>
         <MotionCard name="wiggle" descriptionId="dev.kit.motion.wiggle">
           <motion.span className="inline-flex text-brand" {...wiggle}>

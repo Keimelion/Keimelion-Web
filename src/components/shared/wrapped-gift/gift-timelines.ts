@@ -1,4 +1,5 @@
-import { MotionEasings } from '@/lib/motion'
+import { TIE_DURATION_S } from '@/components/shared/tying-bow'
+import { MotionDurations, MotionEasings } from '@/lib/motion'
 import type { MotionPreset } from '@/lib/motion'
 
 export interface GiftTimeline {
@@ -6,13 +7,13 @@ export interface GiftTimeline {
   verticalRibbon: MotionPreset
   horizontalRibbon: MotionPreset
   bow: MotionPreset
+  bowTieDelay: number | null
 }
 
-const WRAP_PAPER_S = 0.56
-const WRAP_RIBBON_DELAY_S = 0.5
-const WRAP_RIBBON_S = 0.35
-const WRAP_BOW_DELAY_S = 0.85
-const WRAP_BOW_S = 0.35
+const WRAP_PAPER_S = 0.44
+const WRAP_RIBBON_DELAY_S = 0.38
+const WRAP_RIBBON_S = 0.28
+const WRAP_BOW_DELAY_S = MotionDurations.GIFT - TIE_DURATION_S
 
 const UNWRAP_BOW_S = 0.55
 const UNWRAP_BOW_LIFT_TIME = 0.4
@@ -21,8 +22,6 @@ const UNWRAP_RIBBON_S = 0.38
 const UNWRAP_PAPER_DELAY_S = 0.71
 const UNWRAP_PAPER_S = 0.49
 const UNWRAP_PAPER_SKEW_DEGREES = -8
-
-const BOW_TILT_DEGREES = -40
 
 export const WRAP_TIMELINE: GiftTimeline = {
   paper: {
@@ -51,11 +50,8 @@ export const WRAP_TIMELINE: GiftTimeline = {
       ease: MotionEasings.STANDARD,
     },
   },
-  bow: {
-    initial: { scale: 0, rotate: BOW_TILT_DEGREES },
-    animate: { scale: 1, rotate: 0 },
-    transition: { duration: WRAP_BOW_S, delay: WRAP_BOW_DELAY_S, ease: MotionEasings.POP },
-  },
+  bow: {},
+  bowTieDelay: WRAP_BOW_DELAY_S,
 }
 
 export const UNWRAP_TIMELINE: GiftTimeline = {
@@ -73,6 +69,7 @@ export const UNWRAP_TIMELINE: GiftTimeline = {
       ease: MotionEasings.ACCELERATE,
     },
   },
+  bowTieDelay: null,
   verticalRibbon: {
     initial: { scaleY: 1 },
     animate: { scaleY: 0 },
