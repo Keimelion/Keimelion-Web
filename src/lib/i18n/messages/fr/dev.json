@@ -158,7 +158,7 @@
   "dev.kit.choices.by_hand": "À la main",
   "dev.kit.choices.from_link_body": "Collez le lien d'une boutique, on s'occupe du reste.",
   "dev.kit.choices.by_hand_body": "Saisissez un nom, un prix et un petit mot.",
-  "dev.kit.choices.radios": "Groupe de boutons radio",
+  "dev.kit.choices.radios": "Boutons radio, un seul choix",
   "dev.kit.choices.visibility": "Qui peut voir la liste",
   "dev.kit.choices.public": "Toute personne qui a le lien",
   "dev.kit.choices.private": "Seulement l'équipe de la liste",
@@ -233,5 +233,10 @@
   "dev.kit.activity.add": "Ajouter un cadeau",
   "dev.kit.activity.new_gift": "Nouveau cadeau {count}",
   "dev.kit.activity.gift_casserole": "Cocotte en fonte",
-  "dev.kit.activity.gift_lamp": "Lampe de chevet en laiton"
+  "dev.kit.activity.gift_lamp": "Lampe de chevet en laiton",
+  "dev.kit.choices.checkboxes": "Cases à cocher, plusieurs choix",
+  "dev.kit.choices.notifications": "M'écrire quand",
+  "dev.kit.choices.notify_reservations": "Un cadeau est réservé",
+  "dev.kit.choices.notify_price_drops": "Un prix baisse",
+  "dev.kit.choices.notify_news": "Keimêlion a du nouveau"
 }

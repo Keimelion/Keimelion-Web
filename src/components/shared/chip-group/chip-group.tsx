@@ -1,8 +1,11 @@
 'use client'
 
+import { motion } from 'motion/react'
 import { useRef, useState } from 'react'
+import { CheckIcon } from '@/components/icons'
 import type { LineIconProps } from '@/components/icons'
 import { CHIP_CLASS_NAME } from '@/components/shared/chip/chip-styles'
+import { seq } from '@/lib/motion'
 
 export interface ChipOption {
   value: string
@@ -74,6 +77,10 @@ export function ChipGroup(props: ChipGroupProps): React.JSX.Element {
           }}
           className={CHIP_CLASS_NAME}
         >
+          <ChoiceIndicator
+            selectionMode={props.selectionMode}
+            isSelected={isOptionSelected(props, option.value)}
+          />
           <ChipContent option={option} />
         </button>
       ))}
@@ -95,12 +102,18 @@ function getKeyStep(key: string): number {
   return 0
 }
 
+function isOptionSelected(props: ChipGroupProps, optionValue: string): boolean {
+  if (props.selectionMode === 'single') return props.value === optionValue
+  return props.value.includes(optionValue)
+}
+
 function selectionAttributes(
   props: ChipGroupProps,
   optionValue: string,
 ): { 'aria-checked': boolean } | { 'aria-pressed': boolean } {
-  if (props.selectionMode === 'single') return { 'aria-checked': props.value === optionValue }
-  return { 'aria-pressed': props.value.includes(optionValue) }
+  const isSelected = isOptionSelected(props, optionValue)
+  if (props.selectionMode === 'single') return { 'aria-checked': isSelected }
+  return { 'aria-pressed': isSelected }
 }
 
 function toggleOption(props: ChipGroupProps, optionValue: string): void {
@@ -131,5 +144,37 @@ function ChipContent({ option }: ChipContentProps): React.JSX.Element {
         <span className="font-mono text-label tracking-normal">{option.count}</span>
       )}
     </>
+  )
+}
+
+interface ChoiceIndicatorProps {
+  selectionMode: 'single' | 'multiple'
+  isSelected: boolean
+}
+
+function ChoiceIndicator({ selectionMode, isSelected }: ChoiceIndicatorProps): React.JSX.Element {
+  if (selectionMode === 'single') {
+    return (
+      <span
+        aria-hidden="true"
+        data-indicator="radio"
+        className="inline-flex size-3.5 shrink-0 items-center justify-center rounded-pill shadow-[inset_0_0_0_1.5px_currentColor]"
+      >
+        {isSelected ? <span className="size-1.5 rounded-pill bg-current" /> : null}
+      </span>
+    )
+  }
+  return (
+    <span
+      aria-hidden="true"
+      data-indicator="checkbox"
+      className="inline-flex size-3.5 shrink-0 items-center justify-center rounded-[4px] shadow-[inset_0_0_0_1.5px_currentColor]"
+    >
+      {isSelected ? (
+        <motion.span className="inline-flex" {...seq(0)}>
+          <CheckIcon className="size-3!" />
+        </motion.span>
+      ) : null}
+    </span>
   )
 }

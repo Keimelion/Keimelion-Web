@@ -77,4 +77,26 @@ describe('ChipGroup', () => {
       'true',
     )
   })
+
+  it('shows a radio dot for one choice and a check box for several', () => {
+    render(
+      <>
+        <SingleFilter />
+        <MultipleFilter />
+      </>,
+    )
+
+    expect(
+      screen.getByRole('radio', { name: 'All 18' }).querySelector('[data-indicator="radio"]'),
+    ).not.toBeNull()
+    const checkbox = screen
+      .getByRole('button', { name: 'Available 12' })
+      .querySelector('[data-indicator="checkbox"]')
+    expect(checkbox?.querySelector('svg')).not.toBeNull()
+    expect(
+      screen
+        .getByRole('button', { name: 'Given' })
+        .querySelector('[data-indicator="checkbox"] svg'),
+    ).toBeNull()
+  })
 })

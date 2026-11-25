@@ -158,7 +158,7 @@
   "dev.kit.choices.by_hand": "By hand",
   "dev.kit.choices.from_link_body": "Paste a link from any shop, we fill in the rest.",
   "dev.kit.choices.by_hand_body": "Type a name, a price and a note.",
-  "dev.kit.choices.radios": "Radio group",
+  "dev.kit.choices.radios": "Radio group, one choice",
   "dev.kit.choices.visibility": "Who can see the list",
   "dev.kit.choices.public": "Anyone with the link",
   "dev.kit.choices.private": "Only the list team",
@@ -233,5 +233,10 @@
   "dev.kit.activity.add": "Add a gift",
   "dev.kit.activity.new_gift": "New gift {count}",
   "dev.kit.activity.gift_casserole": "Cast-iron casserole",
-  "dev.kit.activity.gift_lamp": "Brass bedside lamp"
+  "dev.kit.activity.gift_lamp": "Brass bedside lamp",
+  "dev.kit.choices.checkboxes": "Checkboxes, several choices",
+  "dev.kit.choices.notifications": "Email me when",
+  "dev.kit.choices.notify_reservations": "A gift is reserved",
+  "dev.kit.choices.notify_price_drops": "A price drops",
+  "dev.kit.choices.notify_news": "Keimêlion has news"
 }

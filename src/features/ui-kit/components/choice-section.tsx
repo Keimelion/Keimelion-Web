@@ -2,6 +2,7 @@
 
 import { useId, useState } from 'react'
 import { EditIcon, LinkIcon } from '@/components/icons'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupCard, RadioGroupItem } from '@/components/ui/radio-group'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -34,7 +35,7 @@ export function ChoiceSection(): React.JSX.Element {
   const t = useTranslate()
   return (
     <KitSection title={t('dev.kit.choices.title')} kicker={t('dev.kit.choices.kicker')}>
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         <KitSpecimen label={t('dev.kit.choices.tabs')} className="flex-col items-stretch">
           <Tabs defaultValue="link" className="w-full">
             <TabsList className="w-full">
@@ -56,6 +57,7 @@ export function ChoiceSection(): React.JSX.Element {
           </Tabs>
         </KitSpecimen>
         <VisibilityRadios />
+        <NotificationCheckboxes />
         <AppearanceCards />
       </div>
     </KitSection>
@@ -75,6 +77,35 @@ function VisibilityRadios(): React.JSX.Element {
           </span>
         ))}
       </RadioGroup>
+    </KitSpecimen>
+  )
+}
+
+const NOTIFICATIONS = ['reservations', 'price_drops', 'news'] as const
+
+type Notification = (typeof NOTIFICATIONS)[number]
+
+const NOTIFICATION_LABEL_IDS: Readonly<Record<Notification, MessageId>> = {
+  reservations: 'dev.kit.choices.notify_reservations',
+  price_drops: 'dev.kit.choices.notify_price_drops',
+  news: 'dev.kit.choices.notify_news',
+}
+
+function NotificationCheckboxes(): React.JSX.Element {
+  const t = useTranslate()
+  const baseId = useId()
+  return (
+    <KitSpecimen label={t('dev.kit.choices.checkboxes')}>
+      <div role="group" aria-label={t('dev.kit.choices.notifications')} className="grid gap-3">
+        {NOTIFICATIONS.map((notification, position) => (
+          <span key={notification} className="flex items-center gap-3">
+            <Checkbox id={`${baseId}-${notification}`} defaultChecked={position === 0} />
+            <Label htmlFor={`${baseId}-${notification}`}>
+              {t(NOTIFICATION_LABEL_IDS[notification])}
+            </Label>
+          </span>
+        ))}
+      </div>
     </KitSpecimen>
   )
 }
