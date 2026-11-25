@@ -1,9 +1,11 @@
 [data-sonner-toaster] [data-sonner-toast][data-styled='true'] {
-  --normal-bg: var(--inverse);
-  --normal-bg-hover: color-mix(in srgb, var(--on-inverse) 12%, var(--inverse));
+  --toast-bg: var(--inverse);
+  --toast-fg: var(--on-inverse);
+  --normal-bg: var(--toast-bg);
+  --normal-bg-hover: color-mix(in srgb, var(--toast-fg) 12%, var(--toast-bg));
   --normal-border: transparent;
   --normal-border-hover: transparent;
-  --normal-text: var(--on-inverse);
+  --normal-text: var(--toast-fg);
   --gray2: var(--normal-bg-hover);
   --gray5: transparent;
   padding: 12px 44px 12px 12px;
@@ -11,7 +13,7 @@
   border-radius: 24px;
   gap: 10px;
   align-items: center;
-  background-color: var(--inverse);
+  background-color: var(--toast-bg);
   background-image: linear-gradient(
     color-mix(in srgb, currentColor 60%, transparent),
     color-mix(in srgb, currentColor 60%, transparent)
@@ -20,8 +22,8 @@
   background-position: left bottom;
   background-size: 100% 3px;
   animation: keimelion-toast-shrink 4000ms linear forwards;
-  color: var(--on-inverse);
-  border-color: var(--inverse);
+  color: var(--toast-fg);
+  border-color: var(--toast-bg);
   box-shadow: var(--elevation-float);
   transition-timing-function: var(--motion-ease-spring);
 
@@ -86,6 +88,16 @@
 
   &:hover {
     animation-play-state: paused;
+  }
+
+  &[data-type='error'] {
+    --toast-bg: var(--danger);
+    --toast-fg: var(--on-danger);
+  }
+
+  &[data-type='warning'] {
+    --toast-bg: var(--warning);
+    --toast-fg: var(--on-warning);
   }
 
   &[data-expanded='false'][data-front='false'] {

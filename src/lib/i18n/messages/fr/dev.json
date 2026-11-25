@@ -178,5 +178,7 @@
   "dev.kit.fields.event_date_placeholder": "Pas de date, pas de compte à rebours",
   "dev.kit.fields.event_date_help": "Facultative. Avec une date, un compte à rebours s'affiche sur la liste.",
   "dev.kit.controls.edit_panel": "Vous modifiez la liste.",
-  "dev.kit.controls.guest_panel": "Vous voyez la liste comme vos invités."
+  "dev.kit.controls.guest_panel": "Vous voyez la liste comme vos invités.",
+  "dev.kit.overlays.show_warning_toast": "Notification d'avertissement",
+  "dev.kit.overlays.toast_warning": "Le prix a augmenté depuis votre ajout"
 }

@@ -13,11 +13,13 @@
   --hand-on-paper: #8a1538;
   --danger: #a3261a;
   --danger-deep: #7d1c13;
+  --warning: #8a5a00;
   --success: #13694d;
   --focus: #2b45b8;
 
   --on-brand: #fffaf0;
   --on-danger: #fffaf0;
+  --on-warning: #fffaf0;
   --inverse: #1c1a33;
   --on-inverse: #fffaf0;
 
@@ -65,11 +67,13 @@
   --hand-on-paper: #ffcdd9;
   --danger: #ff7a66;
   --danger-deep: #d4604f;
+  --warning: #e0a422;
   --success: #4fc79a;
   --focus: #94a6ff;
 
   --on-brand: #1b1926;
   --on-danger: #1b1926;
+  --on-warning: #1b1926;
   --inverse: #f4ecdf;
   --on-inverse: #1b1926;
 

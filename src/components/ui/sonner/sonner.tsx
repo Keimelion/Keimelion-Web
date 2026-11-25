@@ -38,9 +38,9 @@ const Toaster = ({ ...props }: ToasterProps): React.JSX.Element => {
           title: 'group-[.toast]:font-semibold group-[.toast]:text-[15px]',
           description: 'group-[.toast]:text-small',
           actionButton:
-            'group-[.toast]:rounded-pill group-[.toast]:bg-on-inverse group-[.toast]:text-inverse',
+            'group-[.toast]:rounded-pill group-[.toast]:bg-(--toast-fg) group-[.toast]:text-(--toast-bg)',
           cancelButton:
-            'group-[.toast]:rounded-pill group-[.toast]:bg-transparent group-[.toast]:text-on-inverse',
+            'group-[.toast]:rounded-pill group-[.toast]:bg-transparent group-[.toast]:text-(--toast-fg)',
         },
       }}
       {...props}

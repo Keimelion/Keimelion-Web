@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/dialog'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { useTranslate } from '@/lib/i18n/use-translate'
-import { notifyError, notifySuccess } from '@/lib/notify'
+import { notifyError, notifySuccess, notifyWarning } from '@/lib/notify'
 import { KitSection } from './kit-section'
 import { KitSpecimen } from './kit-specimen'
 
@@ -81,6 +81,14 @@ export function OverlaySection(): React.JSX.Element {
           }}
         >
           {t('dev.kit.overlays.show_error_toast')}
+        </Button>
+        <Button
+          variant="ghost"
+          onClick={() => {
+            notifyWarning({ title: t('dev.kit.overlays.toast_warning') })
+          }}
+        >
+          {t('dev.kit.overlays.show_warning_toast')}
         </Button>
       </KitSpecimen>
       <KitSpecimen label={t('dev.kit.overlays.responsive')}>

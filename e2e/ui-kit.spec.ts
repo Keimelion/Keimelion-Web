@@ -1,6 +1,23 @@
+import type { Page } from '@playwright/test'
 import { expect, expectNoAccessibilityViolations, test } from './support/test'
 
 const KIT_PATH = '/dev/kit'
+
+const COLOURED_TOASTS = [
+  { trigger: 'Error toast', message: 'This gift was just reserved by someone else' },
+  { trigger: 'Warning toast', message: 'The price went up since you added it' },
+]
+
+async function inverseColour(page: Page): Promise<string> {
+  return page.evaluate(() => {
+    const probe = document.createElement('span')
+    probe.style.backgroundColor = 'var(--inverse)'
+    document.body.append(probe)
+    const colour = getComputedStyle(probe).backgroundColor
+    probe.remove()
+    return colour
+  })
+}
 const COLOR_SCHEMES = ['light', 'dark'] as const
 
 for (const colorScheme of COLOR_SCHEMES) {
@@ -43,6 +60,21 @@ for (const colorScheme of COLOR_SCHEMES) {
       await page.getByRole('button', { name: 'Clear the date' }).click()
       await expect(trigger).toHaveText('No date, no countdown')
     })
+
+    for (const { trigger, message } of COLOURED_TOASTS) {
+      test(`the ${trigger.toLowerCase()} stands out and passes axe`, async ({ page }) => {
+        await page.goto(KIT_PATH)
+        await page.getByRole('button', { name: trigger, exact: true }).click()
+
+        const toast = page.locator('[data-sonner-toast]', { hasText: message })
+        await expect(toast).toHaveCSS('opacity', '1')
+        const toastColours = await toast.evaluate(
+          (element) => getComputedStyle(element).backgroundColor,
+        )
+        expect(toastColours).not.toBe(await inverseColour(page))
+        await expectNoAccessibilityViolations(page)
+      })
+    }
 
     test('the popover and the toast pass axe', async ({ page }) => {
       await page.goto(KIT_PATH)

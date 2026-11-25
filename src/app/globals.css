@@ -48,10 +48,12 @@
   --color-hand-on-paper: var(--hand-on-paper);
   --color-danger: var(--danger);
   --color-danger-deep: var(--danger-deep);
+  --color-warning: var(--warning);
   --color-success: var(--success);
   --color-focus: var(--focus);
   --color-on-brand: var(--on-brand);
   --color-on-danger: var(--on-danger);
+  --color-on-warning: var(--on-warning);
   --color-inverse: var(--inverse);
   --color-on-inverse: var(--on-inverse);
 
