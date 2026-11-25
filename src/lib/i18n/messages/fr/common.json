@@ -33,5 +33,6 @@
   "common.copy_field.failed": "Impossible de copier le lien. Il est sélectionné : copiez-le avec le clavier.",
   "common.copy_field.copied_announcement": "Copié dans le presse-papiers",
   "common.copy_field.failed_announcement": "Impossible de copier. Le texte est sélectionné : copiez-le avec le clavier.",
-  "common.undo.action": "Annuler"
+  "common.undo.action": "Annuler",
+  "common.callout.dismiss": "Masquer"
 }

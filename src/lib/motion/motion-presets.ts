@@ -21,6 +21,7 @@ const WIGGLE_DEGREES = 10
 const WIGGLE_ORIGIN_Y = 0.6
 const BOB_PX = -6
 const BOB_PERIOD_S = 3
+const ROW_EXIT_DURATION_S = 0.25
 
 export const land: MotionPreset = {
   initial: { opacity: 0, y: LAND_DROP_PX, scale: 0.96 },
@@ -98,6 +99,14 @@ export const wiggle: MotionPreset = {
     rotate: [0, -WIGGLE_DEGREES, WIGGLE_DEGREES, -WIGGLE_DEGREES, WIGGLE_DEGREES, 0],
   },
   transition: { duration: MotionDurations.GIFT, ease: 'easeInOut' },
+}
+
+export const rowExit: MotionPreset = {
+  exit: {
+    height: 0,
+    opacity: 0,
+    transition: { duration: ROW_EXIT_DURATION_S, ease: MotionEasings.STANDARD },
+  },
 }
 
 export const bob: MotionPreset = {

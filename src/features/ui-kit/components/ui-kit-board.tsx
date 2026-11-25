@@ -10,6 +10,7 @@ import { FieldSection } from './field-section'
 import { FormControlSection } from './form-control-section'
 import { GiftSection } from './gift-section'
 import { IconSection } from './icon-section'
+import { ListActivitySection } from './list-activity-section'
 import { ListCardSection } from './list-card-section'
 import { MotionSection } from './motion-section'
 import { NavigationSection } from './navigation-section'
@@ -36,6 +37,7 @@ export function UiKitBoard(): React.JSX.Element {
       <GiftSection />
       <CountdownSection />
       <FeedbackSection />
+      <ListActivitySection />
     </div>
   )
 }
