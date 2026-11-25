@@ -21,13 +21,14 @@ afterEach(() => {
 describe('CopyField', () => {
   it('copies the value, announces it and turns back after 2 s', async () => {
     vi.useFakeTimers()
-    const writeText = vi.fn(async () => undefined)
+    const writeText = vi.fn(() => Promise.resolve())
     mockClipboard(writeText)
     renderWithIntl(<CopyField value={LINK} label="Share link" />)
 
     expect(screen.getByRole('textbox', { name: 'Share link' })).toHaveValue(LINK)
     await act(async () => {
       fireEvent.click(screen.getByRole('button', { name: 'Copy' }))
+      await Promise.resolve()
     })
 
     expect(writeText).toHaveBeenCalledWith(LINK)
@@ -40,14 +41,13 @@ describe('CopyField', () => {
   })
 
   it('selects the text and shows an error toast when the clipboard refuses', async () => {
-    mockClipboard(async () => {
-      throw new Error('denied')
-    })
+    mockClipboard(() => Promise.reject(new Error('denied')))
     renderWithIntl(<CopyField value={LINK} label="Share link" />)
     const input = screen.getByRole<HTMLInputElement>('textbox', { name: 'Share link' })
 
     await act(async () => {
       fireEvent.click(screen.getByRole('button', { name: 'Copy' }))
+      await Promise.resolve()
     })
 
     expect(input.selectionStart).toBe(0)
