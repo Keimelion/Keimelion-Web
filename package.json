@@ -85,7 +85,7 @@
     "husky": "^9.1.7",
     "jsdom": "^31.0.1",
     "prettier": "^3",
-    "semantic-release": "^25.0.9",
+    "semantic-release": "^26.0.1",
     "tailwindcss": "^4.3.5",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8",
