@@ -42,7 +42,17 @@ export interface ButtonProps
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   (
-    { className, variant, size, asChild = false, isLoading = false, onClick, children, ...props },
+    {
+      className,
+      variant,
+      size,
+      asChild = false,
+      isLoading = false,
+      type = 'button',
+      onClick,
+      children,
+      ...props
+    },
     ref,
   ) => {
     const Comp = asChild ? Slot : 'button'
@@ -50,6 +60,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       <Comp
         className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
+        type={resolveType(asChild, isLoading, type)}
         aria-busy={isLoading || undefined}
         aria-disabled={isLoading || undefined}
         onClick={isLoading ? undefined : onClick}
@@ -74,5 +85,13 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   },
 )
 Button.displayName = 'Button'
+
+type ButtonType = React.ButtonHTMLAttributes<HTMLButtonElement>['type']
+
+function resolveType(asChild: boolean, isLoading: boolean, type: ButtonType): ButtonType {
+  if (asChild) return undefined
+  if (isLoading) return 'button'
+  return type
+}
 
 export { Button, buttonVariants }

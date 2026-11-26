@@ -55,8 +55,8 @@ describe('motion presets', () => {
     expect(MotionDurations.GIFT).toBe(1.2)
   })
 
-  it('plays the wiggle once and only loops the idle bob', () => {
+  it('plays the wiggle and the bob once', () => {
     expect(wiggle.transition).not.toHaveProperty('repeat')
-    expect(bob.transition).toEqual(expect.objectContaining({ repeat: Infinity }))
+    expect(bob.transition).not.toHaveProperty('repeat')
   })
 })

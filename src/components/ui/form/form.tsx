@@ -25,9 +25,10 @@ interface FormFieldContextValue {
 
 interface FormItemContextValue {
   id: string
-  requiredRef: React.MutableRefObject<boolean>
+  isRequired: boolean
   hasDescription: boolean
   registerDescription: () => () => void
+  registerRequired: () => () => void
 }
 
 interface FieldIds {
@@ -41,7 +42,6 @@ interface FormFieldState {
   error: FieldError | undefined
   required: boolean
   hasDescription: boolean
-  markRequired: () => void
 }
 
 const FormFieldContext = React.createContext<FormFieldContextValue | null>(null)
@@ -92,29 +92,22 @@ function useFormField(): FormFieldState {
   return {
     ids: buildFieldIds(itemContext.id),
     error: fieldState.error,
-    required: itemContext.requiredRef.current,
+    required: itemContext.isRequired,
     hasDescription: itemContext.hasDescription,
-    markRequired: () => {
-      itemContext.requiredRef.current = true
-    },
   }
 }
 
 const FormItem = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => {
     const id = React.useId()
-    const requiredRef = React.useRef<boolean>(false)
-    requiredRef.current = false
-    const [descriptionCount, setDescriptionCount] = React.useState(0)
-    const registerDescription = React.useCallback(() => {
-      setDescriptionCount((count) => count + 1)
-      return () => {
-        setDescriptionCount((count) => count - 1)
-      }
-    }, [])
+    const [descriptionCount, registerDescription] = useRegistrationCount()
+    const [requiredCount, registerRequired] = useRegistrationCount()
     const hasDescription = descriptionCount > 0
+    const isRequired = requiredCount > 0
     return (
-      <FormItemContext.Provider value={{ id, requiredRef, hasDescription, registerDescription }}>
+      <FormItemContext.Provider
+        value={{ id, isRequired, hasDescription, registerDescription, registerRequired }}
+      >
         <div ref={ref} className={cn('flex min-w-0 flex-col gap-1.5', className)} {...props} />
       </FormItemContext.Provider>
     )
@@ -122,14 +115,29 @@ const FormItem = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivEl
 )
 FormItem.displayName = 'FormItem'
 
+function useRegistrationCount(): [number, () => () => void] {
+  const [count, setCount] = React.useState(0)
+  const register = React.useCallback(() => {
+    setCount((currentCount) => currentCount + 1)
+    return () => {
+      setCount((currentCount) => currentCount - 1)
+    }
+  }, [])
+  return [count, register]
+}
+
 interface FormLabelProps extends React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root> {
   required?: boolean
 }
 
 const FormLabel = React.forwardRef<React.ComponentRef<typeof LabelPrimitive.Root>, FormLabelProps>(
   ({ className, required = false, ...props }, ref) => {
-    const { ids, markRequired } = useFormField()
-    if (required) markRequired()
+    const { ids } = useFormField()
+    const { registerRequired } = useItemContext()
+    React.useEffect(() => {
+      if (!required) return undefined
+      return registerRequired()
+    }, [required, registerRequired])
     return (
       <Label
         ref={ref}

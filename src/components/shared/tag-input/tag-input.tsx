@@ -66,7 +66,8 @@ export const TagInput = React.forwardRef<HTMLInputElement, TagInputProps>(
           type="text"
           value={draft}
           maxLength={maxTagLength}
-          disabled={disabled === true || isFull}
+          disabled={disabled === true}
+          readOnly={isFull}
           onChange={(event) => {
             setDraft(event.currentTarget.value)
           }}

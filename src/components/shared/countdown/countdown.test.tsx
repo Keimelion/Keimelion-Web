@@ -1,5 +1,6 @@
 import { act, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { toCalendarDate } from '@/lib/calendar-date'
 import { reducedMotionPreference } from '@/test/reduced-motion-mock'
 import { renderWithIntl } from '@/test/test-utils'
 import { Countdown } from './countdown'
@@ -11,7 +12,8 @@ vi.mock('motion/react', async (importOriginal) => {
   return mockMotionWithReducedMotionPreference(importOriginal)
 })
 
-const EVENT_DATE = new Date(2027, 5, 14)
+const EVENT_DAY = new Date(2027, 5, 14)
+const EVENT_DATE = toCalendarDate(EVENT_DAY)
 const KICKER = "we're getting married!"
 const TITLE = "Léa & Axel's wedding"
 
@@ -62,21 +64,21 @@ describe('Countdown', () => {
   })
 
   it('celebrates with confetti once per visit on the day itself', () => {
-    const { unmount } = renderCountdown(EVENT_DATE, EVENT_DATE)
+    const { unmount } = renderCountdown(EVENT_DATE, EVENT_DAY)
 
     expect(screen.getByText("it's the big day!")).toBeInTheDocument()
     expect(screen.getByText('Today, June 14')).toBeInTheDocument()
     expect(screen.getByTestId('confetti')).toBeInTheDocument()
 
     unmount()
-    renderCountdown(EVENT_DATE, EVENT_DATE)
+    renderCountdown(EVENT_DATE, EVENT_DAY)
 
     expect(screen.queryByTestId('confetti')).not.toBeInTheDocument()
   })
 
   it('skips the confetti when motion is reduced', () => {
     reducedMotionPreference.isReduced = true
-    renderCountdown(EVENT_DATE, EVENT_DATE)
+    renderCountdown(EVENT_DATE, EVENT_DAY)
 
     expect(screen.queryByTestId('confetti')).not.toBeInTheDocument()
   })
@@ -119,11 +121,11 @@ describe('Countdown', () => {
   })
 
   it('celebrates again once its claims are forgotten', () => {
-    const { unmount } = renderCountdown(EVENT_DATE, EVENT_DATE)
+    const { unmount } = renderCountdown(EVENT_DATE, EVENT_DAY)
     unmount()
 
-    forgetCountdownClaims(toCalendarDayKey(EVENT_DATE))
-    renderCountdown(EVENT_DATE, EVENT_DATE)
+    forgetCountdownClaims(toCalendarDayKey(EVENT_DAY))
+    renderCountdown(EVENT_DATE, EVENT_DAY)
 
     expect(screen.getByTestId('confetti')).toBeInTheDocument()
   })

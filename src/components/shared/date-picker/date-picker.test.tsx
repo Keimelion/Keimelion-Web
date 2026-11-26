@@ -6,7 +6,7 @@ import { renderWithIntl } from '@/test/test-utils'
 import { mockDesktopViewport } from '@/test/viewport-mock'
 import { DatePicker } from './date-picker'
 
-const EVENT_DATE = new Date(2027, 5, 14)
+const EVENT_DATE = new Date(Date.UTC(2027, 5, 14))
 
 interface EventDateFieldProps {
   initialValue: Date | null
@@ -57,7 +57,7 @@ describe('DatePicker', () => {
     const calendar = screen.getByRole('dialog', { name: 'Event date' })
     await user.click(within(calendar).getByRole('button', { name: 'Sunday, June 20, 2027' }))
 
-    expect(onValueChange).toHaveBeenCalledWith(new Date(2027, 5, 20))
+    expect(onValueChange).toHaveBeenCalledWith(new Date(Date.UTC(2027, 5, 20)))
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Event date' })).toHaveAccessibleDescription(
       'Sunday, June 20, 2027',
@@ -110,5 +110,20 @@ describe('DatePicker', () => {
       'true',
     )
     expect(screen.queryByRole('button', { name: 'Clear the date' })).not.toBeInTheDocument()
+  })
+})
+
+describe('DatePicker on desktop', () => {
+  it('closes the calendar when its trigger is pressed again', async () => {
+    mockDesktopViewport(true)
+    const user = userEvent.setup()
+    renderWithIntl(<EventDateField initialValue={null} onValueChange={vi.fn()} />)
+    const trigger = screen.getByRole('button', { name: 'Event date' })
+
+    await user.click(trigger)
+    expect(screen.getByRole('grid')).toBeInTheDocument()
+    await user.click(trigger)
+
+    expect(screen.queryByRole('grid')).not.toBeInTheDocument()
   })
 })

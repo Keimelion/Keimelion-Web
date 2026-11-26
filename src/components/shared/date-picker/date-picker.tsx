@@ -5,6 +5,7 @@ import { CalendarIcon, CloseIcon } from '@/components/icons'
 import { BottomSheet } from '@/components/shared/bottom-sheet'
 import { FIELD_CONTROL_CLASS_NAME } from '@/components/ui/field-styles'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { fromCalendarDate, toCalendarDate } from '@/lib/calendar-date'
 import { useTranslate } from '@/lib/i18n/use-translate'
 import { useIsDesktopViewport } from '@/lib/use-is-desktop-viewport'
 import { cn } from '@/lib/utils'
@@ -25,23 +26,28 @@ export const DatePicker = React.forwardRef<HTMLButtonElement, DatePickerProps>(
     const t = useTranslate()
     const isDesktop = useIsDesktopViewport()
     const [isOpen, setIsOpen] = React.useState(false)
+    const localDay = value === null ? null : fromCalendarDate(value)
     const selectDate = (date: Date | null): void => {
-      onValueChange(date)
+      onValueChange(date === null ? null : toCalendarDate(date))
       setIsOpen(false)
     }
     const trigger = (
       <DateTrigger
         ref={ref}
-        value={value}
+        value={localDay}
         placeholder={placeholder}
         className={className}
-        onOpen={() => {
-          setIsOpen(true)
-        }}
+        onOpen={
+          isDesktop
+            ? null
+            : () => {
+                setIsOpen(true)
+              }
+        }
         {...triggerProps}
       />
     )
-    const calendar = <Calendar selected={value} onSelect={selectDate} />
+    const calendar = <Calendar selected={localDay} onSelect={selectDate} />
     return (
       <div className="relative w-full min-w-0">
         {isDesktop ? (
@@ -83,7 +89,7 @@ interface DateTriggerProps extends Omit<
 > {
   value: Date | null
   placeholder: string
-  onOpen: () => void
+  onOpen: (() => void) | null
 }
 
 const DateTrigger = React.forwardRef<HTMLButtonElement, DateTriggerProps>(
@@ -101,7 +107,7 @@ const DateTrigger = React.forwardRef<HTMLButtonElement, DateTriggerProps>(
         aria-describedby={[valueId, describedBy].filter(Boolean).join(' ')}
         onClick={(event) => {
           onClick?.(event)
-          onOpen()
+          onOpen?.()
         }}
         className={cn(
           FIELD_CONTROL_CLASS_NAME,

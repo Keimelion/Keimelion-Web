@@ -111,5 +111,5 @@ export const rowExit: MotionPreset = {
 
 export const bob: MotionPreset = {
   animate: { y: [0, BOB_PX, 0] },
-  transition: { duration: BOB_PERIOD_S, ease: 'easeInOut', repeat: Infinity },
+  transition: { duration: BOB_PERIOD_S, ease: 'easeInOut' },
 }

@@ -41,3 +41,40 @@ describe('Button', () => {
     expect(screen.getByRole('link', { name: 'My lists' })).toHaveAttribute('aria-busy', 'true')
   })
 })
+
+describe('Button inside a form', () => {
+  it('does not submit the form unless it is a submit button', async () => {
+    const user = userEvent.setup()
+    const onSubmit = vi.fn((event: React.FormEvent) => {
+      event.preventDefault()
+    })
+    render(
+      <form onSubmit={onSubmit}>
+        <Button>Copy</Button>
+      </form>,
+    )
+
+    await user.click(screen.getByRole('button', { name: 'Copy' }))
+
+    expect(onSubmit).not.toHaveBeenCalled()
+  })
+
+  it('does not submit again while loading, even with the keyboard', async () => {
+    const user = userEvent.setup()
+    const onSubmit = vi.fn((event: React.FormEvent) => {
+      event.preventDefault()
+    })
+    render(
+      <form onSubmit={onSubmit}>
+        <Button type="submit" isLoading>
+          Save
+        </Button>
+      </form>,
+    )
+
+    screen.getByRole('button', { name: 'Save' }).focus()
+    await user.keyboard('{Enter}')
+
+    expect(onSubmit).not.toHaveBeenCalled()
+  })
+})

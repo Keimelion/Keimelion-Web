@@ -100,3 +100,55 @@ describe('ChipGroup', () => {
     ).toBeNull()
   })
 })
+
+describe('ChipGroup tab stop', () => {
+  it('keeps one chip reachable with Tab when the focused chip disappears', async () => {
+    const user = userEvent.setup()
+    const { rerender } = render(
+      <ChipGroup
+        selectionMode="multiple"
+        label="Categories"
+        options={OPTIONS}
+        value={[]}
+        onValueChange={() => undefined}
+      />,
+    )
+    await user.click(screen.getByRole('button', { name: /Given/ }))
+
+    rerender(
+      <ChipGroup
+        selectionMode="multiple"
+        label="Categories"
+        options={OPTIONS.slice(0, 2)}
+        value={[]}
+        onValueChange={() => undefined}
+      />,
+    )
+
+    expect(screen.getByRole('button', { name: /Available/ })).toHaveAttribute('tabindex', '0')
+  })
+
+  it('follows a selection changed from outside in single mode', () => {
+    const { rerender } = render(
+      <ChipGroup
+        selectionMode="single"
+        label="Filter"
+        options={OPTIONS}
+        value="all"
+        onValueChange={() => undefined}
+      />,
+    )
+
+    rerender(
+      <ChipGroup
+        selectionMode="single"
+        label="Filter"
+        options={OPTIONS}
+        value="gifted"
+        onValueChange={() => undefined}
+      />,
+    )
+
+    expect(screen.getByRole('radio', { name: /Given/ })).toHaveAttribute('tabindex', '0')
+  })
+})

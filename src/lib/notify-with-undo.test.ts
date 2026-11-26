@@ -44,29 +44,34 @@ describe('notifyWithUndo', () => {
 
     expect(toastMock).toHaveBeenCalledWith(
       'Gift removed',
-      expect.objectContaining({ duration: 5000 }),
+      expect.objectContaining({ duration: 5000, style: { '--toast-lifetime': '5000ms' } }),
     )
     expect(lastToastOptions().action.label).toBe('Undo')
   })
 
-  it('commits once after the delay and closes the toast', () => {
+  it('leaves the timing to the toast, so hovering it keeps the undo window open', () => {
+    const { onCommit } = notify()
+
+    vi.advanceTimersByTime(60_000)
+
+    expect(onCommit).not.toHaveBeenCalled()
+  })
+
+  it('commits once when the toast closes on its own', () => {
     const { onCommit, onUndo } = notify()
 
-    vi.advanceTimersByTime(4999)
-    expect(onCommit).not.toHaveBeenCalled()
-    vi.advanceTimersByTime(1)
     lastToastOptions().onAutoClose()
+    lastToastOptions().onDismiss()
 
     expect(onCommit).toHaveBeenCalledTimes(1)
     expect(onUndo).not.toHaveBeenCalled()
-    expect(toastMock.dismiss).toHaveBeenCalledWith('toast-id')
   })
 
   it('undoes instead of committing', () => {
     const { onCommit, onUndo } = notify()
 
     lastToastOptions().action.onClick()
-    vi.advanceTimersByTime(5000)
+    lastToastOptions().onAutoClose()
 
     expect(onUndo).toHaveBeenCalledTimes(1)
     expect(onCommit).not.toHaveBeenCalled()
@@ -76,7 +81,7 @@ describe('notifyWithUndo', () => {
     const { onCommit } = notify()
 
     lastToastOptions().onDismiss()
-    vi.advanceTimersByTime(5000)
+    lastToastOptions().onAutoClose()
 
     expect(onCommit).toHaveBeenCalledTimes(1)
   })

@@ -39,12 +39,13 @@ export function ChipGroup(props: ChipGroupProps): React.JSX.Element {
   const isSingle = props.selectionMode === 'single'
   const chipRefs = useRef<(HTMLButtonElement | null)[]>([])
   const [focusedPosition, setFocusedPosition] = useState(() => findInitialPosition(props))
+  const tabStopPosition = resolveTabStopPosition(props, focusedPosition)
 
   const moveFocus = (event: React.KeyboardEvent<HTMLDivElement>): void => {
     const step = getKeyStep(event.key)
     if (step === 0 || options.length === 0) return
     event.preventDefault()
-    const nextPosition = (focusedPosition + step + options.length) % options.length
+    const nextPosition = (tabStopPosition + step + options.length) % options.length
     setFocusedPosition(nextPosition)
     chipRefs.current[nextPosition]?.focus()
     const nextOption = options[nextPosition]
@@ -68,7 +69,7 @@ export function ChipGroup(props: ChipGroupProps): React.JSX.Element {
           type="button"
           role={isSingle ? 'radio' : undefined}
           {...selectionAttributes(props, option.value)}
-          tabIndex={position === focusedPosition ? 0 : -1}
+          tabIndex={position === tabStopPosition ? 0 : -1}
           onFocus={() => {
             setFocusedPosition(position)
           }}
@@ -94,6 +95,15 @@ function findInitialPosition(props: ChipGroupProps): number {
     0,
     props.options.findIndex((option) => selectedValues.includes(option.value)),
   )
+}
+
+function resolveTabStopPosition(props: ChipGroupProps, focusedPosition: number): number {
+  if (props.selectionMode === 'single') {
+    const selectedPosition = props.options.findIndex((option) => option.value === props.value)
+    if (selectedPosition !== -1) return selectedPosition
+  }
+  const lastPosition = Math.max(0, props.options.length - 1)
+  return Math.min(focusedPosition, lastPosition)
 }
 
 function getKeyStep(key: string): number {

@@ -21,7 +21,7 @@
   background-repeat: no-repeat;
   background-position: left bottom;
   background-size: 100% 3px;
-  animation: keimelion-toast-shrink 4000ms linear forwards;
+  animation: keimelion-toast-shrink var(--toast-lifetime, 4000ms) linear forwards;
   color: var(--toast-fg);
   border-color: var(--toast-bg);
   box-shadow: var(--elevation-float);
@@ -86,7 +86,8 @@
     }
   }
 
-  &[data-expanded='true'] {
+  &[data-expanded='true'],
+  &:active {
     animation-play-state: paused;
   }
 

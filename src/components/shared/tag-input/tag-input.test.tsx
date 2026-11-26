@@ -68,7 +68,19 @@ describe('TagInput', () => {
     renderCategories(['kitchen', 'garden', 'books'])
 
     const input = screen.getByRole('textbox')
-    expect(input).toBeDisabled()
+    expect(input).toHaveAttribute('readonly')
+    expect(input).toBeEnabled()
     expect(input).toHaveAttribute('maxlength', '12')
+  })
+
+  it('keeps focus on the field when the last allowed tag is added, so Backspace still works', async () => {
+    const user = userEvent.setup()
+    const onValueChange = renderCategories(['kitchen', 'garden'])
+
+    await user.type(screen.getByRole('textbox'), 'books{Enter}')
+    expect(screen.getByRole('textbox')).toHaveFocus()
+    await user.keyboard('{Backspace}')
+
+    expect(onValueChange).toHaveBeenLastCalledWith(['kitchen', 'garden'])
   })
 })

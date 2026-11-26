@@ -1,7 +1,10 @@
+import type { CSSProperties } from 'react'
 import { toast } from 'sonner'
 import { translate } from '@/lib/i18n/translate'
 
 const DEFAULT_UNDO_DELAY_MS = 5000
+
+type ToastLifetimeStyle = CSSProperties & Record<'--toast-lifetime', string>
 
 interface NotifyWithUndoInput {
   message: string
@@ -22,15 +25,12 @@ export function notifyWithUndo({
   const settle = (outcome: () => void): void => {
     if (settlement.isSettled) return
     settlement.isSettled = true
-    window.clearTimeout(commitTimeout)
     outcome()
   }
-  const commitTimeout = window.setTimeout(() => {
-    settle(onCommit)
-    toast.dismiss(toastId)
-  }, delayMs)
-  const toastId = toast(message, {
+  const lifetimeStyle: ToastLifetimeStyle = { '--toast-lifetime': `${String(delayMs)}ms` }
+  toast(message, {
     duration: delayMs,
+    style: lifetimeStyle,
     action: {
       label: undoLabel,
       onClick: () => {

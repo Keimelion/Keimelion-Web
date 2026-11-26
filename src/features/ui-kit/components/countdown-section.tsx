@@ -1,6 +1,7 @@
 'use client'
 
 import { Countdown, forgetCountdownClaims, toCalendarDayKey } from '@/components/shared/countdown'
+import { toCalendarDate } from '@/lib/calendar-date'
 import type { MessageId } from '@/lib/i18n/messages'
 import { useTranslate } from '@/lib/i18n/use-translate'
 import { OCCASION_PAPER_CLASS_NAMES, OccasionPapers } from '@/lib/occasions/occasion-paper'
@@ -60,7 +61,7 @@ function CountdownCard({ sample }: CountdownCardProps): React.JSX.Element {
       )}
     >
       <Countdown
-        date={sample.daysBeforeEvent === null ? null : createEventDate()}
+        date={sample.daysBeforeEvent === null ? null : toCalendarDate(createEventDate())}
         today={sample.daysBeforeEvent === null ? null : createEventDate(-sample.daysBeforeEvent)}
         occasionKicker={t(
           sample.daysBeforeEvent === null

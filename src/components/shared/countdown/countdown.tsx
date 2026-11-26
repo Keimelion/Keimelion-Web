@@ -7,6 +7,7 @@ import { Confetti } from '@/components/shared/confetti'
 import type { MessageId } from '@/lib/i18n/messages'
 import { useTranslate } from '@/lib/i18n/use-translate'
 import { flip, wiggle } from '@/lib/motion'
+import { fromCalendarDate } from '@/lib/calendar-date'
 import { cn } from '@/lib/utils'
 import { claimDailyFlip, claimVisitCelebration } from './countdown-memory'
 import { CountdownPhases, getCountdownState, toCalendarDayKey } from './countdown-state'
@@ -39,15 +40,16 @@ export function Countdown({
   if (date === null || clientToday === null) {
     return <CountdownFrame kicker={occasionKicker}>{children}</CountdownFrame>
   }
-  const state = getCountdownState(date, clientToday)
+  const eventDay = fromCalendarDate(date)
+  const state = getCountdownState(eventDay, clientToday)
   const kickerId = PHASE_KICKER_IDS[state.phase]
   return (
     <CountdownFrame kicker={kickerId === undefined ? occasionKicker : t(kickerId)}>
       {children}
       <CountdownValue
         state={state}
-        eventDate={date}
-        eventDayKey={toCalendarDayKey(date)}
+        eventDate={eventDay}
+        eventDayKey={toCalendarDayKey(eventDay)}
         todayKey={toCalendarDayKey(clientToday)}
       />
     </CountdownFrame>

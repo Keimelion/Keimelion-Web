@@ -130,3 +130,34 @@ describe('Form field', () => {
     expect(element.id).not.toBe('')
   })
 })
+
+function TermsForm(): React.JSX.Element {
+  const form = useForm<{ terms: boolean }>({ defaultValues: { terms: false } })
+  return (
+    <Form {...form}>
+      <FormField
+        control={form.control}
+        name="terms"
+        render={({ field }) => (
+          <FormItem>
+            <FormControl>
+              <Switch checked={field.value} onCheckedChange={field.onChange} />
+            </FormControl>
+            <FormLabel required>Accept the terms</FormLabel>
+          </FormItem>
+        )}
+      />
+    </Form>
+  )
+}
+
+describe('Required field', () => {
+  it('marks the control required even when it comes before its label', () => {
+    render(<TermsForm />)
+
+    expect(screen.getByRole('switch', { name: 'Accept the terms' })).toHaveAttribute(
+      'aria-required',
+      'true',
+    )
+  })
+})
