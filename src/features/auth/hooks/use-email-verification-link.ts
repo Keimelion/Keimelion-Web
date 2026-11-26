@@ -4,7 +4,7 @@ import { useMutation } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { ApiError } from '@keimelion/sdk/client'
-import { ErrorCode } from '@keimelion/sdk/enums'
+import { ErrorCode, HttpStatus } from '@keimelion/sdk/enums'
 import { getRefreshToken } from '@/data-access/_shared/auth-storage'
 import { refreshAccessToken } from '@/data-access/_shared/client'
 import { verifyEmail } from '@/data-access/auth/auth.api'
@@ -15,12 +15,28 @@ export const EmailVerificationStatuses = {
   VERIFYING: 'verifying',
   INVALID_LINK: 'invalid_link',
   FAILED: 'failed',
+  TOO_MANY_ATTEMPTS: 'too_many_attempts',
   VERIFIED: 'verified',
   SIGNING_IN: 'signing_in',
+  REDIRECTING_TO_LOGIN: 'redirecting_to_login',
 } as const
 
 export type EmailVerificationStatus =
   (typeof EmailVerificationStatuses)[keyof typeof EmailVerificationStatuses]
+
+const SessionResumptions = {
+  RESUMED: 'resumed',
+  LOGIN_REQUIRED: 'login_required',
+  SESSION_ENDED: 'session_ended',
+} as const
+
+type SessionResumption = (typeof SessionResumptions)[keyof typeof SessionResumptions]
+
+const STATUS_BY_SESSION_RESUMPTION: Record<SessionResumption, EmailVerificationStatus> = {
+  [SessionResumptions.RESUMED]: EmailVerificationStatuses.SIGNING_IN,
+  [SessionResumptions.LOGIN_REQUIRED]: EmailVerificationStatuses.VERIFIED,
+  [SessionResumptions.SESSION_ENDED]: EmailVerificationStatuses.REDIRECTING_TO_LOGIN,
+}
 
 const INVALID_LINK_ERROR_CODES: readonly string[] = [
   ErrorCode.BAD_REQUEST,
@@ -37,8 +53,8 @@ export function useEmailVerificationLink(): EmailVerificationLink {
   const verification = useMutation({
     mutationFn: verifyAndResumeSession,
     meta: { silent: true },
-    onSuccess: (isSessionResumed) => {
-      if (isSessionResumed) router.replace(AppPaths.NEW_LIST)
+    onSuccess: (resumption) => {
+      if (resumption === SessionResumptions.RESUMED) router.replace(AppPaths.NEW_LIST)
     },
   })
   const { mutate } = verification
@@ -73,14 +89,36 @@ function useVerificationTokenFromUrl(onToken: (token: string) => void): Verifica
   return linkToken
 }
 
-async function verifyAndResumeSession(token: string): Promise<boolean> {
-  await verifyEmail(token)
-  if (getRefreshToken() === null) return false
+async function verifyAndResumeSession(token: string): Promise<SessionResumption> {
+  try {
+    await verifyEmail(token)
+  } catch (verificationError: unknown) {
+    return resumeAlreadyVerifiedSession(verificationError)
+  }
+  if (getRefreshToken() === null) return SessionResumptions.LOGIN_REQUIRED
+  return resumeStoredSession()
+}
+
+async function resumeStoredSession(): Promise<SessionResumption> {
   try {
     await refreshAccessToken()
-    return true
+    return SessionResumptions.RESUMED
+  } catch (refreshError: unknown) {
+    return isSessionEnded(refreshError)
+      ? SessionResumptions.SESSION_ENDED
+      : SessionResumptions.LOGIN_REQUIRED
+  }
+}
+
+async function resumeAlreadyVerifiedSession(
+  verificationError: unknown,
+): Promise<SessionResumption> {
+  if (!isInvalidLinkError(verificationError) || getRefreshToken() === null) throw verificationError
+  try {
+    await refreshAccessToken()
+    return SessionResumptions.RESUMED
   } catch {
-    return false
+    throw verificationError
   }
 }
 
@@ -94,7 +132,7 @@ interface VerificationResult {
   isError: boolean
   isSuccess: boolean
   error: Error | null
-  data: boolean | undefined
+  data: SessionResumption | undefined
 }
 
 function resolveStatus(
@@ -102,17 +140,25 @@ function resolveStatus(
   verification: VerificationResult,
 ): EmailVerificationStatus {
   if (isTokenUnusable) return EmailVerificationStatuses.INVALID_LINK
-  if (verification.isError) {
-    return isInvalidLinkError(verification.error)
-      ? EmailVerificationStatuses.INVALID_LINK
-      : EmailVerificationStatuses.FAILED
+  if (verification.isError) return resolveErrorStatus(verification.error)
+  if (!verification.isSuccess || verification.data === undefined) {
+    return EmailVerificationStatuses.VERIFYING
   }
-  if (!verification.isSuccess) return EmailVerificationStatuses.VERIFYING
-  return verification.data === true
-    ? EmailVerificationStatuses.SIGNING_IN
-    : EmailVerificationStatuses.VERIFIED
+  return STATUS_BY_SESSION_RESUMPTION[verification.data]
 }
 
-function isInvalidLinkError(error: Error | null): boolean {
+function resolveErrorStatus(error: Error | null): EmailVerificationStatus {
+  if (isInvalidLinkError(error)) return EmailVerificationStatuses.INVALID_LINK
+  if (error instanceof ApiError && error.code === ErrorCode.RATE_LIMIT_EXCEEDED) {
+    return EmailVerificationStatuses.TOO_MANY_ATTEMPTS
+  }
+  return EmailVerificationStatuses.FAILED
+}
+
+function isInvalidLinkError(error: unknown): boolean {
   return error instanceof ApiError && INVALID_LINK_ERROR_CODES.includes(error.code)
+}
+
+function isSessionEnded(error: unknown): boolean {
+  return error instanceof ApiError && error.status === HttpStatus.UNAUTHORIZED
 }

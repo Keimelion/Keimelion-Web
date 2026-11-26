@@ -8,7 +8,7 @@ interface AuthScreenProps {
   paper: OccasionPaper
   title: string
   description: string
-  children: React.ReactNode
+  children?: React.ReactNode
 }
 
 export function AuthScreen({
@@ -16,7 +16,7 @@ export function AuthScreen({
   paper,
   title,
   description,
-  children,
+  children = null,
 }: AuthScreenProps): React.JSX.Element {
   return (
     <section className="relative mx-auto flex w-full max-w-md min-w-0 flex-col items-center gap-3 py-10 text-center lg:py-16">

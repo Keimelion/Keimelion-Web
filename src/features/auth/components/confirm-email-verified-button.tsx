@@ -3,6 +3,7 @@
 import { ApiError } from '@keimelion/sdk/client'
 import { ErrorCode } from '@keimelion/sdk/enums'
 import { Button } from '@/components/ui/button'
+import { AuthStatusMessage } from '@/features/auth/components/auth-status-message'
 import { useConfirmEmailVerified } from '@/features/auth/hooks/use-confirm-email-verified'
 import type { MessageId } from '@/lib/i18n/messages'
 import { useTranslate } from '@/lib/i18n/use-translate'
@@ -22,9 +23,7 @@ export function ConfirmEmailVerifiedButton(): React.JSX.Element {
       >
         {t('auth.check_inbox.confirm')}
       </Button>
-      <p role="status" className="min-h-[18px] text-small font-medium">
-        {hintId === null ? null : t(hintId)}
-      </p>
+      <AuthStatusMessage message={hintId === null ? null : t(hintId)} />
     </div>
   )
 }

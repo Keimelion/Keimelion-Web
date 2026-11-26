@@ -240,6 +240,55 @@ describe('VerifyEmailScreen', () => {
     expect(router.replace).not.toHaveBeenCalled()
   })
 
+  it('says it is redirecting to login, without a button, when the stored session has ended', async () => {
+    authStorage.getRefreshToken.mockReturnValue('refresh-token')
+    sessionClient.refreshAccessToken.mockRejectedValue(apiError(401, 'REFRESH_FAILED'))
+    openVerificationLink(`#token=${VALID_TOKEN}`)
+    renderWithQueryClient(<VerifyEmailScreen />)
+
+    expect(
+      await screen.findByText(
+        "Your account is ready. Your session has expired, so we're taking you to the login page…",
+      ),
+    ).toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: 'Log in' })).not.toBeInTheDocument()
+    expect(router.replace).not.toHaveBeenCalled()
+  })
+
+  it('resumes a stored session when a link that was already used is opened again', async () => {
+    authApi.verifyEmail.mockRejectedValue(apiError(400, ErrorCode.BAD_REQUEST))
+    authStorage.getRefreshToken.mockReturnValue('refresh-token')
+    openVerificationLink(`#token=${VALID_TOKEN}`)
+    renderWithQueryClient(<VerifyEmailScreen />)
+
+    await waitFor(() => {
+      expect(router.replace).toHaveBeenCalledWith('/lists/new')
+    })
+    expect(sessionClient.refreshAccessToken).toHaveBeenCalledOnce()
+  })
+
+  it('keeps the invalid-link state when the stored session is still unverified', async () => {
+    authApi.verifyEmail.mockRejectedValue(apiError(400, ErrorCode.BAD_REQUEST))
+    authStorage.getRefreshToken.mockReturnValue('refresh-token')
+    sessionClient.refreshAccessToken.mockRejectedValue(apiError(403, ErrorCode.EMAIL_NOT_VERIFIED))
+    openVerificationLink(`#token=${VALID_TOKEN}`)
+    renderWithQueryClient(<VerifyEmailScreen />)
+
+    expect(
+      await screen.findByRole('heading', { level: 1, name: 'This link is no longer valid' }),
+    ).toBeInTheDocument()
+    expect(router.replace).not.toHaveBeenCalled()
+  })
+
+  it('tells the user to wait when the verification is rate-limited', async () => {
+    authApi.verifyEmail.mockRejectedValue(apiError(429, ErrorCode.RATE_LIMIT_EXCEEDED))
+    openVerificationLink(`#token=${VALID_TOKEN}`)
+    renderWithQueryClient(<VerifyEmailScreen />)
+
+    expect(await screen.findByRole('heading', { name: 'Too many attempts' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Try again' })).toBeInTheDocument()
+  })
+
   it('shows the invalid-link state with the resend form when the API rejects the token', async () => {
     authApi.verifyEmail.mockRejectedValue(apiError(400, ErrorCode.BAD_REQUEST))
     authStorage.getStoredUser.mockReturnValue({ email: STORED_EMAIL })

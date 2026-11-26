@@ -34,8 +34,19 @@ export function VerifyEmailScreen(): React.JSX.Element {
           onRetry={retry}
         />
       )
+    case EmailVerificationStatuses.TOO_MANY_ATTEMPTS:
+      return (
+        <ErrorState
+          title={t('auth.verify_email.too_many_attempts_title')}
+          description={t('auth.verify_email.too_many_attempts_description')}
+          isRetrying={false}
+          onRetry={retry}
+        />
+      )
     case EmailVerificationStatuses.SIGNING_IN:
       return <VerifiedState description={t('auth.verify_email.signing_in_description')} />
+    case EmailVerificationStatuses.REDIRECTING_TO_LOGIN:
+      return <VerifiedState description={t('auth.verify_email.redirecting_to_login_description')} />
     case EmailVerificationStatuses.VERIFIED:
       return (
         <VerifiedState description={t('auth.verify_email.verified_description')}>
@@ -57,9 +68,7 @@ function VerifyingState(): React.JSX.Element {
       paper={OccasionPapers.SKY}
       title={t('auth.verify_email.verifying_title')}
       description={t('auth.verify_email.verifying_description')}
-    >
-      {null}
-    </AuthScreen>
+    />
   )
 }
 
