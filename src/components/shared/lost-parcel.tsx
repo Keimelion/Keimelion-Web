@@ -86,7 +86,7 @@ function AddressLabel({ addressLabel, pageLabel }: AddressLabelProps): React.JSX
       <text
         x="16"
         y="46"
-        fontSize="8.5"
+        fontSize="7.5"
         fontWeight="700"
         className="fill-parcel-label-ink font-sans"
       >
