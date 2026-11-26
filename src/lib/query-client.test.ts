@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Mock } from 'vitest'
 import type * as QueryClientModule from './query-client'
 import { ApiError } from '@keimelion/sdk/client'
+import { ErrorCode } from '@keimelion/sdk/enums'
 import type * as AuthStorageModule from '@/data-access/_shared/auth-storage'
 import type * as NotifyModule from '@/lib/notify'
 
@@ -195,5 +196,93 @@ describe('QueryClient MutationCache onError', () => {
         metadata: {},
       }),
     )
+  })
+})
+
+describe('QueryClient on 403 EMAIL_NOT_VERIFIED', () => {
+  function emailNotVerifiedError(): ApiError {
+    return new ApiError({
+      code: ErrorCode.EMAIL_NOT_VERIFIED,
+      message: 'Email address has not been verified',
+      status: 403,
+      metadata: {},
+    })
+  }
+
+  it('keeps the session and surfaces the error of a failed mutation', async () => {
+    const { createQueryClient, saveSession, notifyError } = await freshQueryClientModule()
+    const client = createQueryClient()
+    saveSession('access', 'refresh', TEST_USER)
+
+    await expect(
+      client
+        .getMutationCache()
+        .build(client, { mutationFn: () => Promise.reject(emailNotVerifiedError()) })
+        .execute(undefined),
+    ).rejects.toMatchObject({ code: ErrorCode.EMAIL_NOT_VERIFIED })
+
+    expect(mockAssign).not.toHaveBeenCalled()
+    expect(localStorage.getItem('keimelion_refresh_token')).toBe('refresh')
+    expect(notifyError).toHaveBeenCalledWith(emailNotVerifiedError())
+  })
+
+  it('keeps the session and rejects a failed query with its code', async () => {
+    const { createQueryClient, saveSession } = await freshQueryClientModule()
+    const client = createQueryClient()
+    saveSession('access', 'refresh', TEST_USER)
+
+    await expect(
+      client.query({
+        queryKey: ['profile'],
+        queryFn: () => Promise.reject(emailNotVerifiedError()),
+      }),
+    ).rejects.toMatchObject({ code: ErrorCode.EMAIL_NOT_VERIFIED })
+
+    expect(mockAssign).not.toHaveBeenCalled()
+    expect(localStorage.getItem('keimelion_refresh_token')).toBe('refresh')
+  })
+})
+
+describe('QueryClient on 403 ACCOUNT_BANNED', () => {
+  function accountBannedError(): ApiError {
+    return new ApiError({
+      code: ErrorCode.ACCOUNT_BANNED,
+      message: 'This account has been suspended',
+      status: 403,
+      metadata: {},
+    })
+  }
+
+  it('drops the cached data of the banned user without redirecting', async () => {
+    const { createQueryClient } = await freshQueryClientModule()
+    const client = createQueryClient()
+    client.setQueryData(['lists', 'abc'], { title: 'Birthday' })
+
+    await expect(
+      client.query({
+        queryKey: ['profile'],
+        queryFn: () => Promise.reject(accountBannedError()),
+      }),
+    ).rejects.toMatchObject({ code: ErrorCode.ACCOUNT_BANNED })
+
+    expect(client.getQueryData(['lists', 'abc'])).toBeUndefined()
+    expect(mockAssign).not.toHaveBeenCalled()
+  })
+
+  it('drops the cached data and surfaces the error of a failed mutation', async () => {
+    const { createQueryClient, notifyError } = await freshQueryClientModule()
+    const client = createQueryClient()
+    client.setQueryData(['lists', 'abc'], { title: 'Birthday' })
+
+    await expect(
+      client
+        .getMutationCache()
+        .build(client, { mutationFn: () => Promise.reject(accountBannedError()) })
+        .execute(undefined),
+    ).rejects.toMatchObject({ code: ErrorCode.ACCOUNT_BANNED })
+
+    expect(client.getQueryData(['lists', 'abc'])).toBeUndefined()
+    expect(notifyError).toHaveBeenCalledWith(accountBannedError())
+    expect(mockAssign).not.toHaveBeenCalled()
   })
 })

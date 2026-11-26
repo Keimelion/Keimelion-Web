@@ -1,11 +1,15 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import {
   SESSION_COOKIE_NAME,
+  SessionStates,
   clearSession,
   getAccessToken,
   getRefreshToken,
+  getSessionState,
   getStoredUser,
   isKnownRole,
+  markAccountBanned,
+  markEmailNotVerified,
   rotateTokens,
   saveSession,
 } from '@/data-access/_shared/auth-storage'
@@ -106,6 +110,58 @@ describe('getRefreshToken', () => {
   it('returns the stored refresh token', () => {
     localStorage.setItem(REFRESH_TOKEN_KEY, 'rf-token')
     expect(getRefreshToken()).toBe('rf-token')
+  })
+})
+
+describe('getSessionState', () => {
+  it('is none without a refresh token', () => {
+    expect(getSessionState()).toBe(SessionStates.NONE)
+  })
+
+  it('is active once a session is saved', () => {
+    saveSession('access', 'refresh', OWNER_USER)
+    expect(getSessionState()).toBe(SessionStates.ACTIVE)
+  })
+
+  it('is email_not_verified after markEmailNotVerified, keeping the refresh token and cookie', () => {
+    saveSession('access', 'refresh', OWNER_USER)
+    markEmailNotVerified()
+    expect(getSessionState()).toBe(SessionStates.EMAIL_NOT_VERIFIED)
+    expect(getAccessToken()).toBeNull()
+    expect(getRefreshToken()).toBe('refresh')
+    expect(getStoredUser()).toEqual(OWNER_USER)
+    expect(readSessionCookie()).toBe('user')
+  })
+
+  it('goes back to active when the tokens rotate', () => {
+    saveSession('access', 'refresh', OWNER_USER)
+    markEmailNotVerified()
+    rotateTokens('new-access', 'new-refresh')
+    expect(getSessionState()).toBe(SessionStates.ACTIVE)
+  })
+
+  it('is account_banned after markAccountBanned, with the session cleared', () => {
+    saveSession('access', 'refresh', OWNER_USER)
+    markAccountBanned()
+    expect(getSessionState()).toBe(SessionStates.ACCOUNT_BANNED)
+    expect(getAccessToken()).toBeNull()
+    expect(getRefreshToken()).toBeNull()
+    expect(readSessionCookie()).toBeNull()
+  })
+
+  it('goes back to active when a new session is saved after a ban', () => {
+    markAccountBanned()
+    saveSession('access', 'refresh', OWNER_USER)
+    expect(getSessionState()).toBe(SessionStates.ACTIVE)
+  })
+
+  it('goes back to none when the session is cleared', () => {
+    saveSession('access', 'refresh', OWNER_USER)
+    markEmailNotVerified()
+    clearSession()
+    expect(getSessionState()).toBe(SessionStates.NONE)
+    saveSession('access', 'refresh', OWNER_USER)
+    expect(getSessionState()).toBe(SessionStates.ACTIVE)
   })
 })
 
