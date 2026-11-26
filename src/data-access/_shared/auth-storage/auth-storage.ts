@@ -22,6 +22,13 @@ export type SessionState = (typeof SessionStates)[keyof typeof SessionStates]
 
 const KNOWN_ROLES: readonly string[] = Object.values(UserRoles)
 
+interface ParsedUserCache {
+  raw: string
+  user: UserDetailParsed
+}
+
+let parsedUserCache: ParsedUserCache | null = null
+
 export function isKnownRole(role: string): boolean {
   return KNOWN_ROLES.includes(role)
 }
@@ -79,6 +86,7 @@ export function markAccountBanned(): void {
 export function getStoredUser(): UserDetailParsed | null {
   const raw = localStorage.getItem(STORED_USER_KEY)
   if (!raw) return null
+  if (parsedUserCache?.raw === raw) return parsedUserCache.user
 
   try {
     const parsed = userDetailSchema.safeParse(JSON.parse(raw))
@@ -86,6 +94,7 @@ export function getStoredUser(): UserDetailParsed | null {
       clearSession()
       return null
     }
+    parsedUserCache = { raw, user: parsed.data }
     return parsed.data
   } catch {
     clearSession()

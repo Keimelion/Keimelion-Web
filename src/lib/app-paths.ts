@@ -3,6 +3,7 @@ export const AppPaths = {
   BROWSE: '/browse',
   LOGIN: '/auth/login',
   VERIFY_EMAIL: '/auth/verify-email',
+  CHECK_INBOX: '/auth/check-inbox',
   RESET_PASSWORD: '/auth/reset-password',
   LISTS: '/lists',
   NEW_LIST: '/lists/new',
