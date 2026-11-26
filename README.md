@@ -63,7 +63,8 @@ npx shadcn add <component-name>
 
 | Group | Paths | Audience |
 |---|---|---|
-| `(public)` | `/`, `/invites/accept` | Everyone, guests included |
+| `(public)` | `/` | Everyone, with the full app navigation |
+| `(guest)` | `/invites/accept` | Guests arriving from a shared link: minimal header, no bottom bar |
 | `(auth)` | `/auth/login`, `/auth/verify-email`, `/auth/reset-password` | Account pages |
 | `(app)` | `/lists` | Signed-in owners and editors (gated by `src/proxy.ts`) |
 

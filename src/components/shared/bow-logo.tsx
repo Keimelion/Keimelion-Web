@@ -7,6 +7,7 @@ export const BowLogoTones = {
   ON_BRAND: 'on-brand',
   INK: 'ink',
   ON_INVERSE: 'on-inverse',
+  ON_FOOTER: 'on-footer',
 } as const
 
 export type BowLogoTone = (typeof BowLogoTones)[keyof typeof BowLogoTones]
@@ -21,6 +22,7 @@ const TONE_CLASS_NAMES: Readonly<Record<BowLogoTone, BowLogoToneClassNames>> = {
   [BowLogoTones.ON_BRAND]: { mark: 'text-on-brand', wordmark: 'text-on-brand' },
   [BowLogoTones.INK]: { mark: 'text-ink', wordmark: 'text-ink' },
   [BowLogoTones.ON_INVERSE]: { mark: 'text-paper-rose', wordmark: 'text-on-inverse' },
+  [BowLogoTones.ON_FOOTER]: { mark: 'text-footer-logo', wordmark: 'text-footer-logo' },
 }
 
 interface BowLogoProps {

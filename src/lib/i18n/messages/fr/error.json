@@ -1,5 +1,13 @@
 {
   "error.title": "Une erreur est survenue",
-  "error.description": "Une erreur inattendue s'est produite lors du chargement de cette page. Vous pouvez réessayer ou revenir plus tard.",
-  "error.try_again": "Réessayer"
+  "error.description": "Impossible de charger cette page. Rien n'est perdu : réessayez dans un instant.",
+  "error.not_found.metadata_title": "Page introuvable",
+  "error.not_found.kicker": "retour à l'envoyeur",
+  "error.not_found.code": "Erreur 404",
+  "error.not_found.title": "Cette page n'existe pas",
+  "error.not_found.description": "Le lien est peut-être mal saisi, ou la page a déménagé. Vous cherchez la liste de quelqu'un ? Demandez-lui de vous renvoyer le lien.",
+  "error.not_found.back_home": "Retour à l'accueil",
+  "error.not_found.stamp": "ADRESSE INCONNUE",
+  "error.not_found.label_to": "À",
+  "error.not_found.label_page": "cette-page"
 }

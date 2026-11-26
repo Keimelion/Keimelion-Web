@@ -7,7 +7,7 @@ import {
   getRefreshToken,
   rotateTokens,
 } from '@/data-access/_shared/auth-storage'
-import { AppPaths } from '@/lib/app-paths'
+import { buildLoginPathFromCurrentPage } from '@/lib/login-return-path'
 import { useLocaleStore } from '@/lib/i18n/locale-store'
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? ''
@@ -60,6 +60,6 @@ async function executeTokenRefresh(): Promise<string> {
 
 function endSession(code: string, message: string, cause?: unknown): never {
   clearSession()
-  window.location.assign(AppPaths.LOGIN)
+  window.location.assign(buildLoginPathFromCurrentPage())
   throw new ApiError({ status: HttpStatus.UNAUTHORIZED, code, message, metadata: {}, cause })
 }

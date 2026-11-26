@@ -39,7 +39,7 @@ beforeEach(() => {
   Object.defineProperty(window, 'location', {
     configurable: true,
     writable: true,
-    value: { assign: mockAssign },
+    value: { assign: mockAssign, pathname: '/lists/abc', search: '?tab=guests', hash: '' },
   })
 })
 
@@ -136,7 +136,7 @@ describe('QueryClient MutationCache onError', () => {
       .execute(undefined)
       .catch(() => undefined)
 
-    expect(mockAssign).toHaveBeenCalledWith('/auth/login')
+    expect(mockAssign).toHaveBeenCalledWith('/auth/login?next=%2Flists%2Fabc%3Ftab%3Dguests')
     expect(localStorage.getItem('keimelion_access_token')).toBeNull()
     expect(localStorage.getItem('keimelion_user')).toBeNull()
     expect(client.getQueryData(['some', 'cached', 'data'])).toBeUndefined()

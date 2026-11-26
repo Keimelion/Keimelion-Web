@@ -58,7 +58,13 @@ beforeEach(() => {
   Object.defineProperty(window, 'location', {
     configurable: true,
     writable: true,
-    value: { assign: assignMock, protocol: 'http:' },
+    value: {
+      assign: assignMock,
+      pathname: '/lists/abc',
+      search: '?tab=guests',
+      hash: '',
+      protocol: 'http:',
+    },
   })
 })
 
@@ -152,7 +158,7 @@ describe('apiClient session recovery', () => {
     await expect(apiClient.users.getProfile()).rejects.toMatchObject({ status: 401 })
 
     expect(localStorage.getItem(ACCESS_TOKEN_KEY)).toBeNull()
-    expect(assignMock).toHaveBeenCalledWith('/auth/login')
+    expect(assignMock).toHaveBeenCalledWith('/auth/login?next=%2Flists%2Fabc%3Ftab%3Dguests')
   })
 
   it('clears the session and redirects when no refresh token is stored', async () => {
@@ -162,7 +168,7 @@ describe('apiClient session recovery', () => {
     await expect(apiClient.users.getProfile()).rejects.toBeInstanceOf(ApiError)
 
     expect(mock.history.post).toHaveLength(0)
-    expect(assignMock).toHaveBeenCalledWith('/auth/login')
+    expect(assignMock).toHaveBeenCalledWith('/auth/login?next=%2Flists%2Fabc%3Ftab%3Dguests')
   })
 
   it('does not attempt a refresh when login returns 401', async () => {

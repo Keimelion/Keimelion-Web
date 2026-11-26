@@ -14,6 +14,10 @@ export function isKnownRole(role: string): boolean {
   return KNOWN_ROLES.includes(role)
 }
 
+export function isValidSessionCookie(cookieValue: string | undefined): boolean {
+  return cookieValue !== undefined && isKnownRole(cookieValue)
+}
+
 function buildCookieFlags(): string {
   const secureFlag = window.location.protocol === 'https:' ? '; secure' : ''
   return `path=/; samesite=lax${secureFlag}`

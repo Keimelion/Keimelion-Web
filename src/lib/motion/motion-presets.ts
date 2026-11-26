@@ -22,6 +22,8 @@ const WIGGLE_ORIGIN_Y = 0.6
 const BOB_PX = -6
 const BOB_PERIOD_S = 3
 const ROW_EXIT_DURATION_S = 0.25
+const STAMP_START_SCALE = 1.8
+const STAMP_DELAY_S = 0.5
 
 export const land: MotionPreset = {
   initial: { opacity: 0, y: LAND_DROP_PX, scale: 0.96 },
@@ -112,4 +114,11 @@ export const rowExit: MotionPreset = {
 export const bob: MotionPreset = {
   animate: { y: [0, BOB_PX, 0] },
   transition: { duration: BOB_PERIOD_S, ease: 'easeInOut' },
+}
+
+export const stamp: MotionPreset = {
+  style: { transformBox: 'fill-box', originX: 0.5, originY: 0.5 },
+  initial: { opacity: 0, scale: STAMP_START_SCALE },
+  animate: { opacity: 1, scale: 1 },
+  transition: { duration: MotionDurations.M, ease: MotionEasings.POP, delay: STAMP_DELAY_S },
 }

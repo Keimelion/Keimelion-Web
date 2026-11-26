@@ -8,6 +8,7 @@ import {
   scrim,
   seq,
   sheetUp,
+  stamp,
   toastIn,
   unfold,
   wiggle,
@@ -27,6 +28,13 @@ describe('motion presets', () => {
   it('uses the springy curve for arrivals', () => {
     expect(land.transition).toEqual(expect.objectContaining({ ease: MotionEasings.SPRING }))
     expect(toastIn.transition).toEqual(expect.objectContaining({ ease: MotionEasings.SPRING }))
+  })
+
+  it('thumps the stamp down once, after the page has landed', () => {
+    expect(stamp.initial).toEqual(expect.objectContaining({ opacity: 0 }))
+    expect(stamp.animate).toEqual({ opacity: 1, scale: 1 })
+    expect(stamp.transition).toEqual(expect.objectContaining({ ease: MotionEasings.POP }))
+    expect(stamp.transition).not.toHaveProperty('repeat')
   })
 
   it('exits with the standard curve', () => {

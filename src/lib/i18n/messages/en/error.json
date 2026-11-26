@@ -1,5 +1,13 @@
 {
   "error.title": "Something went wrong",
-  "error.description": "An unexpected error occurred while rendering this page. You can try again or come back later.",
-  "error.try_again": "Try again"
+  "error.description": "We couldn't load this page. Nothing is lost: try again in a moment.",
+  "error.not_found.metadata_title": "Page not found",
+  "error.not_found.kicker": "return to sender",
+  "error.not_found.code": "Error 404",
+  "error.not_found.title": "This page doesn't exist",
+  "error.not_found.description": "The link may be mistyped, or the page has moved. Looking for someone's list? Ask them to send the link again.",
+  "error.not_found.back_home": "Back to home",
+  "error.not_found.stamp": "ADDRESS UNKNOWN",
+  "error.not_found.label_to": "TO",
+  "error.not_found.label_page": "this-page"
 }

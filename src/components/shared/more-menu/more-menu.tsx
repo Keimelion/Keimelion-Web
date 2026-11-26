@@ -30,6 +30,7 @@ export interface MoreMenuItem {
 
 interface MoreMenuProps {
   label: string
+  trigger: React.ReactElement | null
   items: readonly MoreMenuItem[]
   footerItem: MoreMenuItem | null
 }
@@ -40,14 +41,16 @@ const TONE_CLASS_NAMES: Readonly<Record<MoreMenuTone, string>> = {
   [MoreMenuTones.HIGHLIGHT]: 'font-semibold text-brand focus:bg-sunken focus:text-brand',
 }
 
-export function MoreMenu({ label, items, footerItem }: MoreMenuProps): React.JSX.Element {
+export function MoreMenu({ label, trigger, items, footerItem }: MoreMenuProps): React.JSX.Element {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon-sm">
-          <MoreIcon />
-          <span className="sr-only">{label}</span>
-        </Button>
+        {trigger ?? (
+          <Button variant="ghost" size="icon-sm">
+            <MoreIcon />
+            <span className="sr-only">{label}</span>
+          </Button>
+        )}
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align="end"

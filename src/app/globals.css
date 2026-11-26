@@ -97,6 +97,28 @@
 
   --color-scrim: var(--scrim);
 
+  --color-footer: var(--footer);
+  --color-on-footer: var(--on-footer);
+  --color-on-footer-muted: var(--on-footer-muted);
+  --color-footer-logo: var(--footer-logo);
+
+  --color-parcel-top: var(--parcel-top);
+  --color-parcel-left: var(--parcel-left);
+  --color-parcel-right: var(--parcel-right);
+  --color-parcel-edge: var(--parcel-edge);
+  --color-parcel-tape-top: var(--parcel-tape-top);
+  --color-parcel-tape-side: var(--parcel-tape-side);
+  --color-parcel-label: var(--parcel-label);
+  --color-parcel-label-ink: var(--parcel-label-ink);
+  --color-parcel-label-muted: var(--parcel-label-muted);
+  --color-parcel-stamp: var(--parcel-stamp);
+  --color-parcel-shadow: var(--parcel-shadow);
+
+  --spacing-bottom-bar: 84px;
+  --spacing-fab-inset: 16px;
+  --spacing-fab-bottom: 100px;
+  --spacing-top-nav: 72px;
+
   --ease-spring: var(--motion-ease-spring);
   --ease-soft-out: var(--motion-ease-soft-out);
   --ease-standard: var(--motion-ease-standard);
@@ -128,6 +150,12 @@
   transition-duration: 200ms;
   transition-timing-function:
     var(--ease-standard), var(--ease-standard), var(--ease-standard), var(--ease-spring);
+}
+
+@utility fab-slot {
+  position: fixed;
+  right: var(--spacing-fab-inset);
+  bottom: var(--spacing-fab-bottom);
 }
 
 @layer components {
