@@ -214,11 +214,12 @@ describe('QueryClient on 403 EMAIL_NOT_VERIFIED', () => {
     const client = createQueryClient()
     saveSession('access', 'refresh', TEST_USER)
 
-    await client
-      .getMutationCache()
-      .build(client, { mutationFn: () => Promise.reject(emailNotVerifiedError()) })
-      .execute(undefined)
-      .catch(() => undefined)
+    await expect(
+      client
+        .getMutationCache()
+        .build(client, { mutationFn: () => Promise.reject(emailNotVerifiedError()) })
+        .execute(undefined),
+    ).rejects.toMatchObject({ code: ErrorCode.EMAIL_NOT_VERIFIED })
 
     expect(mockAssign).not.toHaveBeenCalled()
     expect(localStorage.getItem('keimelion_refresh_token')).toBe('refresh')
@@ -239,5 +240,49 @@ describe('QueryClient on 403 EMAIL_NOT_VERIFIED', () => {
 
     expect(mockAssign).not.toHaveBeenCalled()
     expect(localStorage.getItem('keimelion_refresh_token')).toBe('refresh')
+  })
+})
+
+describe('QueryClient on 403 ACCOUNT_BANNED', () => {
+  function accountBannedError(): ApiError {
+    return new ApiError({
+      code: ErrorCode.ACCOUNT_BANNED,
+      message: 'This account has been suspended',
+      status: 403,
+      metadata: {},
+    })
+  }
+
+  it('drops the cached data of the banned user without redirecting', async () => {
+    const { createQueryClient } = await freshQueryClientModule()
+    const client = createQueryClient()
+    client.setQueryData(['lists', 'abc'], { title: 'Birthday' })
+
+    await expect(
+      client.query({
+        queryKey: ['profile'],
+        queryFn: () => Promise.reject(accountBannedError()),
+      }),
+    ).rejects.toMatchObject({ code: ErrorCode.ACCOUNT_BANNED })
+
+    expect(client.getQueryData(['lists', 'abc'])).toBeUndefined()
+    expect(mockAssign).not.toHaveBeenCalled()
+  })
+
+  it('drops the cached data and surfaces the error of a failed mutation', async () => {
+    const { createQueryClient, notifyError } = await freshQueryClientModule()
+    const client = createQueryClient()
+    client.setQueryData(['lists', 'abc'], { title: 'Birthday' })
+
+    await expect(
+      client
+        .getMutationCache()
+        .build(client, { mutationFn: () => Promise.reject(accountBannedError()) })
+        .execute(undefined),
+    ).rejects.toMatchObject({ code: ErrorCode.ACCOUNT_BANNED })
+
+    expect(client.getQueryData(['lists', 'abc'])).toBeUndefined()
+    expect(notifyError).toHaveBeenCalledWith(accountBannedError())
+    expect(mockAssign).not.toHaveBeenCalled()
   })
 })

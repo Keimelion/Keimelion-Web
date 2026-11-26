@@ -1,5 +1,5 @@
 import { MutationCache, QueryCache, QueryClient } from '@tanstack/react-query'
-import { HttpStatus } from '@keimelion/sdk/enums'
+import { ErrorCode, HttpStatus } from '@keimelion/sdk/enums'
 import { clearSession } from '@/data-access/_shared/auth-storage'
 import { translate } from '@/lib/i18n/translate'
 import { buildLoginPathFromCurrentPage } from '@/lib/login-return-path'
@@ -15,9 +15,24 @@ interface MutationMeta {
 }
 
 let redirectInFlight = false
+let accountBannedHandled = false
 
 function isUnauthorized(error: unknown): boolean {
   return error instanceof ApiError && error.status === HttpStatus.UNAUTHORIZED
+}
+
+function isAccountBanned(error: unknown): boolean {
+  return (
+    error instanceof ApiError &&
+    error.status === HttpStatus.FORBIDDEN &&
+    error.code === ErrorCode.ACCOUNT_BANNED
+  )
+}
+
+function handleAccountBanned(client: QueryClient): void {
+  if (accountBannedHandled) return
+  accountBannedHandled = true
+  client.clear()
 }
 
 function handleUnauthorized(client: QueryClient): void {
@@ -34,6 +49,10 @@ export function createQueryClient(): QueryClient {
       onError: (error) => {
         if (isUnauthorized(error)) {
           handleUnauthorized(client)
+          return
+        }
+        if (isAccountBanned(error)) {
+          handleAccountBanned(client)
         }
       },
     }),
@@ -44,6 +63,10 @@ export function createQueryClient(): QueryClient {
         if (isUnauthorized(error) && meta?.skipUnauthorizedRedirect !== true) {
           handleUnauthorized(client)
           return
+        }
+
+        if (isAccountBanned(error)) {
+          handleAccountBanned(client)
         }
 
         if (meta?.silent === true) return

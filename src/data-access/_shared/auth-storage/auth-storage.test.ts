@@ -8,6 +8,7 @@ import {
   getSessionState,
   getStoredUser,
   isKnownRole,
+  markAccountBanned,
   markEmailNotVerified,
   rotateTokens,
   saveSession,
@@ -136,6 +137,21 @@ describe('getSessionState', () => {
     saveSession('access', 'refresh', OWNER_USER)
     markEmailNotVerified()
     rotateTokens('new-access', 'new-refresh')
+    expect(getSessionState()).toBe(SessionStates.ACTIVE)
+  })
+
+  it('is account_banned after markAccountBanned, with the session cleared', () => {
+    saveSession('access', 'refresh', OWNER_USER)
+    markAccountBanned()
+    expect(getSessionState()).toBe(SessionStates.ACCOUNT_BANNED)
+    expect(getAccessToken()).toBeNull()
+    expect(getRefreshToken()).toBeNull()
+    expect(readSessionCookie()).toBeNull()
+  })
+
+  it('goes back to active when a new session is saved after a ban', () => {
+    markAccountBanned()
+    saveSession('access', 'refresh', OWNER_USER)
     expect(getSessionState()).toBe(SessionStates.ACTIVE)
   })
 
