@@ -1,6 +1,7 @@
 import { MutationCache, QueryCache, QueryClient } from '@tanstack/react-query'
 import { ErrorCode, HttpStatus } from '@keimelion/sdk/enums'
 import { clearSession } from '@/data-access/_shared/auth-storage'
+import { AppPaths, isPathWithin } from '@/lib/app-paths'
 import { translate } from '@/lib/i18n/translate'
 import { buildLoginPathFromCurrentPage } from '@/lib/login-return-path'
 import { notifyError } from '@/lib/notify'
@@ -14,6 +15,8 @@ interface MutationMeta {
   skipUnauthorizedRedirect?: boolean
 }
 
+const EMAIL_VERIFICATION_PATHS: readonly string[] = [AppPaths.CHECK_INBOX, AppPaths.VERIFY_EMAIL]
+
 let redirectInFlight = false
 let accountBannedHandled = false
 
@@ -21,12 +24,25 @@ function isUnauthorized(error: unknown): boolean {
   return error instanceof ApiError && error.status === HttpStatus.UNAUTHORIZED
 }
 
+function isForbiddenWithCode(error: unknown, code: ErrorCode): boolean {
+  return error instanceof ApiError && error.status === HttpStatus.FORBIDDEN && error.code === code
+}
+
 function isAccountBanned(error: unknown): boolean {
-  return (
-    error instanceof ApiError &&
-    error.status === HttpStatus.FORBIDDEN &&
-    error.code === ErrorCode.ACCOUNT_BANNED
-  )
+  return isForbiddenWithCode(error, ErrorCode.ACCOUNT_BANNED)
+}
+
+function isEmailNotVerified(error: unknown): boolean {
+  return isForbiddenWithCode(error, ErrorCode.EMAIL_NOT_VERIFIED)
+}
+
+function sendToCheckInbox(): void {
+  const { pathname } = window.location
+  if (redirectInFlight || EMAIL_VERIFICATION_PATHS.some((path) => isPathWithin(pathname, path))) {
+    return
+  }
+  redirectInFlight = true
+  window.location.assign(AppPaths.CHECK_INBOX)
 }
 
 function handleAccountBanned(client: QueryClient): void {
@@ -51,6 +67,10 @@ export function createQueryClient(): QueryClient {
           handleUnauthorized(client)
           return
         }
+        if (isEmailNotVerified(error)) {
+          sendToCheckInbox()
+          return
+        }
         if (isAccountBanned(error)) {
           handleAccountBanned(client)
         }
@@ -62,6 +82,11 @@ export function createQueryClient(): QueryClient {
 
         if (isUnauthorized(error) && meta?.skipUnauthorizedRedirect !== true) {
           handleUnauthorized(client)
+          return
+        }
+
+        if (isEmailNotVerified(error)) {
+          sendToCheckInbox()
           return
         }
 

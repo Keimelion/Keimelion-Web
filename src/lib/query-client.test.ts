@@ -209,7 +209,7 @@ describe('QueryClient on 403 EMAIL_NOT_VERIFIED', () => {
     })
   }
 
-  it('keeps the session and surfaces the error of a failed mutation', async () => {
+  it('keeps the session and sends a failed mutation to the check-inbox screen', async () => {
     const { createQueryClient, saveSession, notifyError } = await freshQueryClientModule()
     const client = createQueryClient()
     saveSession('access', 'refresh', TEST_USER)
@@ -221,12 +221,12 @@ describe('QueryClient on 403 EMAIL_NOT_VERIFIED', () => {
         .execute(undefined),
     ).rejects.toMatchObject({ code: ErrorCode.EMAIL_NOT_VERIFIED })
 
-    expect(mockAssign).not.toHaveBeenCalled()
+    expect(mockAssign).toHaveBeenCalledWith('/auth/check-inbox')
     expect(localStorage.getItem('keimelion_refresh_token')).toBe('refresh')
-    expect(notifyError).toHaveBeenCalledWith(emailNotVerifiedError())
+    expect(notifyError).not.toHaveBeenCalled()
   })
 
-  it('keeps the session and rejects a failed query with its code', async () => {
+  it('keeps the session and sends a failed query to the check-inbox screen', async () => {
     const { createQueryClient, saveSession } = await freshQueryClientModule()
     const client = createQueryClient()
     saveSession('access', 'refresh', TEST_USER)
@@ -238,8 +238,22 @@ describe('QueryClient on 403 EMAIL_NOT_VERIFIED', () => {
       }),
     ).rejects.toMatchObject({ code: ErrorCode.EMAIL_NOT_VERIFIED })
 
-    expect(mockAssign).not.toHaveBeenCalled()
+    expect(mockAssign).toHaveBeenCalledWith('/auth/check-inbox')
     expect(localStorage.getItem('keimelion_refresh_token')).toBe('refresh')
+  })
+
+  it('stays put when the user is already on an email verification screen', async () => {
+    const { createQueryClient } = await freshQueryClientModule()
+    const client = createQueryClient()
+    window.location.pathname = '/auth/check-inbox'
+
+    await client
+      .getMutationCache()
+      .build(client, { mutationFn: () => Promise.reject(emailNotVerifiedError()) })
+      .execute(undefined)
+      .catch(() => undefined)
+
+    expect(mockAssign).not.toHaveBeenCalled()
   })
 })
 

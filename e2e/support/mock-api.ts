@@ -13,8 +13,15 @@ const CORS_HEADERS = {
 
 const RESPONSES = new Map<string, unknown>()
 
+interface MockResponse {
+  status: number
+  body: unknown
+}
+
 export interface MockApi {
   unhandledRequests: string[]
+  handledRequests: string[]
+  respond: (routeKey: string, response: MockResponse) => void
 }
 
 function isApiUrl(url: URL): boolean {
@@ -23,6 +30,8 @@ function isApiUrl(url: URL): boolean {
 
 export async function mockApi(page: Page): Promise<MockApi> {
   const unhandledRequests: string[] = []
+  const handledRequests: string[] = []
+  const testResponses = new Map<string, MockResponse>()
 
   await page.route(isApiUrl, async (route: Route): Promise<void> => {
     const request = route.request()
@@ -33,6 +42,17 @@ export async function mockApi(page: Page): Promise<MockApi> {
     }
 
     const routeKey = `${method} ${new URL(request.url()).pathname}`
+    const testResponse = testResponses.get(routeKey)
+    if (testResponse !== undefined) {
+      handledRequests.push(routeKey)
+      await route.fulfill({
+        status: testResponse.status,
+        headers: CORS_HEADERS,
+        json: testResponse.body,
+      })
+      return
+    }
+
     const body = RESPONSES.get(routeKey)
     if (body === undefined) {
       unhandledRequests.push(routeKey)
@@ -44,8 +64,15 @@ export async function mockApi(page: Page): Promise<MockApi> {
       return
     }
 
+    handledRequests.push(routeKey)
     await route.fulfill({ status: HTTP_OK, headers: CORS_HEADERS, json: body })
   })
 
-  return { unhandledRequests }
+  return {
+    unhandledRequests,
+    handledRequests,
+    respond: (routeKey, response) => {
+      testResponses.set(routeKey, response)
+    },
+  }
 }

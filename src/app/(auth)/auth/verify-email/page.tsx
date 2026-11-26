@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { PlaceholderPage } from '@/components/shared/placeholder-page'
+import { VerifyEmailScreen } from '@/features/auth/components/verify-email-screen'
 import { getServerTranslate } from '@/lib/i18n/server-translate'
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -8,10 +8,5 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default function VerifyEmailPage(): React.JSX.Element {
-  return (
-    <PlaceholderPage
-      titleId="auth.verify_email.title"
-      descriptionId="common.placeholder.coming_soon"
-    />
-  )
+  return <VerifyEmailScreen />
 }

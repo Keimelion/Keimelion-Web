@@ -2,18 +2,10 @@
 
 import { useSyncExternalStore } from 'react'
 import { getStoredUser } from '@/data-access/_shared/auth-storage'
-
-const STORAGE_EVENT = 'storage'
+import { subscribeToStorage } from '@/lib/subscribe-to-storage'
 
 export function useStoredUserInitial(): string | null {
   return useSyncExternalStore(subscribeToStorage, readStoredUserInitial, readServerInitial)
-}
-
-function subscribeToStorage(onChange: () => void): () => void {
-  window.addEventListener(STORAGE_EVENT, onChange)
-  return () => {
-    window.removeEventListener(STORAGE_EVENT, onChange)
-  }
 }
 
 function readStoredUserInitial(): string | null {

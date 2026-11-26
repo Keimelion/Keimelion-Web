@@ -7,7 +7,8 @@ const SIGNED_IN_ROLE = 'user'
 const PAGES = [
   { path: '/', heading: 'Wishlists made together' },
   { path: '/auth/login', heading: 'Sign in' },
-  { path: '/auth/verify-email', heading: 'Verify your email' },
+  { path: '/auth/verify-email', heading: 'This link is no longer valid' },
+  { path: '/auth/check-inbox', heading: 'Check your inbox' },
   { path: '/auth/reset-password', heading: 'Choose a new password' },
   { path: '/invites/accept', heading: 'Join a list' },
   { path: '/dev/tokens', heading: 'Design tokens' },
