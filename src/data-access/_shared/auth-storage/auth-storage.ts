@@ -1,6 +1,7 @@
 import { UserRoles } from '@keimelion/sdk/enums'
 import { userDetailSchema } from '@keimelion/sdk/schemas'
 import type { UserDetailParsed } from '@keimelion/sdk/schemas'
+import { notifyStorageSubscribers } from '@/lib/subscribe-to-storage'
 
 const ACCESS_TOKEN_KEY = 'keimelion_access_token'
 const REFRESH_TOKEN_KEY = 'keimelion_refresh_token'
@@ -108,11 +109,22 @@ export function saveSession(
   user: UserDetailParsed,
 ): void {
   localStorage.setItem(ACCESS_TOKEN_KEY, accessToken)
+  localStorage.removeItem(EMAIL_NOT_VERIFIED_KEY)
+  storeSessionIdentity(refreshToken, user)
+}
+
+export function saveUnverifiedSession(refreshToken: string, user: UserDetailParsed): void {
+  localStorage.removeItem(ACCESS_TOKEN_KEY)
+  localStorage.setItem(EMAIL_NOT_VERIFIED_KEY, String(Date.now()))
+  storeSessionIdentity(refreshToken, user)
+}
+
+function storeSessionIdentity(refreshToken: string, user: UserDetailParsed): void {
   localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken)
   localStorage.setItem(STORED_USER_KEY, JSON.stringify(user))
-  localStorage.removeItem(EMAIL_NOT_VERIFIED_KEY)
   localStorage.removeItem(ACCOUNT_BANNED_KEY)
   writeSessionCookie(user.role)
+  notifyStorageSubscribers()
 }
 
 export function rotateTokens(accessToken: string, refreshToken: string): void {
@@ -128,4 +140,5 @@ export function clearSession(): void {
   localStorage.removeItem(EMAIL_NOT_VERIFIED_KEY)
   localStorage.removeItem(ACCOUNT_BANNED_KEY)
   deleteSessionCookie()
+  notifyStorageSubscribers()
 }

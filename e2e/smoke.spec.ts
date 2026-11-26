@@ -6,10 +6,12 @@ const SIGNED_IN_ROLE = 'user'
 
 const PAGES = [
   { path: '/', heading: 'Wishlists made together' },
-  { path: '/auth/login', heading: 'Sign in' },
+  { path: '/auth/login', heading: 'Log in' },
+  { path: '/auth/signup', heading: 'Create your account' },
+  { path: '/auth/forgot-password', heading: 'Forgot your password?' },
   { path: '/auth/verify-email', heading: 'This link is no longer valid' },
   { path: '/auth/check-inbox', heading: 'Check your inbox' },
-  { path: '/auth/reset-password', heading: 'Choose a new password' },
+  { path: '/auth/reset-password', heading: 'This link has expired' },
   { path: '/invites/accept', heading: 'Join a list' },
   { path: '/dev/tokens', heading: 'Design tokens' },
   { path: '/dev/kit', heading: 'UI kit' },

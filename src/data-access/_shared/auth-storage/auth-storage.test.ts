@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   SESSION_COOKIE_NAME,
   SessionStates,
@@ -12,8 +12,10 @@ import {
   markEmailNotVerified,
   rotateTokens,
   saveSession,
+  saveUnverifiedSession,
 } from '@/data-access/_shared/auth-storage'
 import type { UserDetailParsed } from '@keimelion/sdk/schemas'
+import { subscribeToStorage } from '@/lib/subscribe-to-storage'
 
 const STORED_USER_KEY = 'keimelion_user'
 const REFRESH_TOKEN_KEY = 'keimelion_refresh_token'
@@ -88,6 +90,35 @@ describe('saveSession / clearSession', () => {
     expect(getRefreshToken()).toBeNull()
     expect(getStoredUser()).toBeNull()
     expect(readSessionCookie()).toBeNull()
+  })
+})
+
+describe('saveUnverifiedSession', () => {
+  it('keeps the refresh token, user and cookie without an access token, marked unverified', () => {
+    saveSession('old-access', 'old-refresh', OWNER_USER)
+    saveUnverifiedSession('refresh-unverified', OWNER_USER)
+    expect(getAccessToken()).toBeNull()
+    expect(getRefreshToken()).toBe('refresh-unverified')
+    expect(getStoredUser()).toEqual(OWNER_USER)
+    expect(readSessionCookie()).toBe('user')
+    expect(getSessionState()).toBe(SessionStates.EMAIL_NOT_VERIFIED)
+  })
+})
+
+describe('same-tab notification', () => {
+  it('tells the subscribers of this tab, after the call returns, when the session changes', async () => {
+    const onChange = vi.fn()
+    const unsubscribe = subscribeToStorage(onChange)
+
+    saveSession('access', 'refresh', OWNER_USER)
+    expect(onChange).not.toHaveBeenCalled()
+    await Promise.resolve()
+    expect(onChange).toHaveBeenCalledOnce()
+
+    clearSession()
+    await Promise.resolve()
+    expect(onChange).toHaveBeenCalledTimes(2)
+    unsubscribe()
   })
 })
 

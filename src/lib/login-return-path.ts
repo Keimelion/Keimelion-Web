@@ -12,6 +12,22 @@ export function buildLoginPath(returnPath: string): string {
   return `${AppPaths.LOGIN}?${searchParams.toString()}`
 }
 
+export function buildAuthPathKeepingReturn(authPath: string, rawReturnPath: string | null): string {
+  if (rawReturnPath === null) return authPath
+  const searchParams = new URLSearchParams({
+    [LOGIN_RETURN_PARAM]: resolveLoginReturnPath(rawReturnPath),
+  })
+  return `${authPath}?${searchParams.toString()}`
+}
+
+export function readSearchParam(
+  searchParams: Record<string, string | string[] | undefined>,
+  name: string,
+): string | null {
+  const value = searchParams[name]
+  return typeof value === 'string' ? value : null
+}
+
 export function buildLoginPathFromCurrentPage(): string {
   const { pathname, search, hash } = window.location
   return buildLoginPath(`${pathname}${search}${hash}`)

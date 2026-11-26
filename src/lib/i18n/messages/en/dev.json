@@ -253,5 +253,12 @@
   "dev.kit.states.error_retrying": "Error state, retrying",
   "dev.kit.states.error_title": "Your lists are hiding",
   "dev.kit.states.error_description": "We couldn't load them. Nothing is lost, it's only the connection.",
-  "dev.kit.states.lost_parcel": "Lost parcel (404)"
+  "dev.kit.states.lost_parcel": "Lost parcel (404)",
+  "dev.kit.auth_shell.title": "Auth shell",
+  "dev.kit.auth_shell.kicker": "short and calm",
+  "dev.kit.auth_shell.specimen": "Hero on paper below 1024 px, split view from 1024 px",
+  "dev.kit.auth_shell.sample_kicker": "it happens",
+  "dev.kit.auth_shell.sample_title": "Forgot your password?",
+  "dev.kit.auth_shell.sample_body": "The form goes here, in the sheet on mobile and in the right column on desktop.",
+  "dev.kit.auth_shell.sample_action": "Send the link"
 }

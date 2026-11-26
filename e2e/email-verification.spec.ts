@@ -125,7 +125,7 @@ for (const colorScheme of COLOR_SCHEMES) {
         api.respond(VERIFY_EMAIL_ROUTE, { status: HTTP_OK, body: VERIFIED_RESPONSE })
         await page.goto(`/auth/verify-email#token=${VALID_TOKEN}`)
 
-        await heading(page, 'Email verified')
+        await heading(page, 'Email confirmed')
         await expect(page.getByRole('link', { name: 'Log in' }).last()).toHaveAttribute(
           'href',
           '/auth/login',

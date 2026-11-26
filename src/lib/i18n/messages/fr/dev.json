@@ -253,5 +253,12 @@
   "dev.kit.states.error_retrying": "État d'erreur, nouvel essai en cours",
   "dev.kit.states.error_title": "Vos listes se cachent",
   "dev.kit.states.error_description": "Impossible de les charger. Rien n'est perdu, c'est juste la connexion.",
-  "dev.kit.states.lost_parcel": "Colis perdu (404)"
+  "dev.kit.states.lost_parcel": "Colis perdu (404)",
+  "dev.kit.auth_shell.title": "Cadre d'authentification",
+  "dev.kit.auth_shell.kicker": "court et serein",
+  "dev.kit.auth_shell.specimen": "Héros sur papier sous 1024 px, vue partagée dès 1024 px",
+  "dev.kit.auth_shell.sample_kicker": "ça arrive",
+  "dev.kit.auth_shell.sample_title": "Mot de passe oublié ?",
+  "dev.kit.auth_shell.sample_body": "Le formulaire se place ici : dans la feuille sur mobile, dans la colonne de droite sur ordinateur.",
+  "dev.kit.auth_shell.sample_action": "Envoyer le lien"
 }

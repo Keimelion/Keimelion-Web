@@ -1,14 +1,30 @@
 import type { Metadata } from 'next'
-import { PlaceholderPage } from '@/components/shared/placeholder-page'
+import { LoginScreen } from '@/features/auth/components/login-screen'
+import { AppPaths, LOGIN_RETURN_PARAM } from '@/lib/app-paths'
 import { getServerTranslate } from '@/lib/i18n/server-translate'
+import {
+  buildAuthPathKeepingReturn,
+  readSearchParam,
+  resolveLoginReturnPath,
+} from '@/lib/login-return-path'
+
+interface LoginPageProps {
+  searchParams: Promise<Record<string, string | string[] | undefined>>
+}
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getServerTranslate()
   return { title: t('auth.login.title') }
 }
 
-export default function LoginPage(): React.JSX.Element {
+export default async function LoginPage({
+  searchParams,
+}: LoginPageProps): Promise<React.JSX.Element> {
+  const rawReturnPath = readSearchParam(await searchParams, LOGIN_RETURN_PARAM)
   return (
-    <PlaceholderPage titleId="auth.login.title" descriptionId="common.placeholder.coming_soon" />
+    <LoginScreen
+      returnPath={resolveLoginReturnPath(rawReturnPath)}
+      signupHref={buildAuthPathKeepingReturn(AppPaths.SIGNUP, rawReturnPath)}
+    />
   )
 }

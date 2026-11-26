@@ -1,3 +1,4 @@
+import { AuthShellSection } from './auth-shell-section'
 import { BrandSection } from './brand-section'
 import { ButtonSection } from './button-section'
 import { CardSection } from './card-section'
@@ -35,6 +36,7 @@ export function UiKitBoard(): React.JSX.Element {
       <ListCardSection />
       <OverlaySection />
       <NavigationSection />
+      <AuthShellSection />
       <MotionSection />
       <GiftSection />
       <GiftPaperSection />

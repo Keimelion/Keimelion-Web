@@ -13,7 +13,7 @@ export function requireSession(request: NextRequest): NextResponse | null {
   const { pathname, search, searchParams } = request.nextUrl
   const hasValidSession = isValidSessionCookie(request.cookies.get(SESSION_COOKIE_NAME)?.value)
 
-  if (pathname === AppPaths.LOGIN && hasValidSession) {
+  if (isAccountEntryPath(pathname) && hasValidSession) {
     const returnPath = resolveLoginReturnPath(searchParams.get(LOGIN_RETURN_PARAM))
     return NextResponse.redirect(new URL(returnPath, request.url))
   }
@@ -23,6 +23,10 @@ export function requireSession(request: NextRequest): NextResponse | null {
   }
 
   return null
+}
+
+function isAccountEntryPath(pathname: string): boolean {
+  return pathname === AppPaths.LOGIN || pathname === AppPaths.SIGNUP
 }
 
 function isSignedInPath(pathname: string): boolean {

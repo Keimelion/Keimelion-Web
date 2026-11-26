@@ -1,7 +1,6 @@
 'use client'
 
 import { useMutation } from '@tanstack/react-query'
-import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { ApiError } from '@keimelion/sdk/client'
 import { ErrorCode, HttpStatus } from '@keimelion/sdk/enums'
@@ -9,7 +8,7 @@ import { getRefreshToken } from '@/data-access/_shared/auth-storage'
 import { refreshAccessToken } from '@/data-access/_shared/client'
 import { verifyEmail } from '@/data-access/auth/auth.api'
 import { parseVerificationToken } from '@/features/auth/auth.input-schemas'
-import { AppPaths } from '@/lib/app-paths'
+import { takeUrlFragment } from '@/features/auth/take-url-fragment'
 
 export const EmailVerificationStatuses = {
   VERIFYING: 'verifying',
@@ -49,13 +48,9 @@ interface EmailVerificationLink {
 }
 
 export function useEmailVerificationLink(): EmailVerificationLink {
-  const router = useRouter()
   const verification = useMutation({
     mutationFn: verifyAndResumeSession,
     meta: { silent: true },
-    onSuccess: (resumption) => {
-      if (resumption === SessionResumptions.RESUMED) router.replace(AppPaths.NEW_LIST)
-    },
   })
   const { mutate } = verification
   const { token, isTokenUnusable } = useVerificationTokenFromUrl(mutate)
@@ -81,7 +76,7 @@ function useVerificationTokenFromUrl(onToken: (token: string) => void): Verifica
   useEffect(() => {
     if (hasReadUrlRef.current) return
     hasReadUrlRef.current = true
-    const token = takeVerificationTokenFromUrl()
+    const token = parseVerificationToken(takeUrlFragment())
     setLinkToken({ token, isTokenUnusable: token === null })
     if (token !== null) onToken(token)
   }, [onToken])
@@ -120,12 +115,6 @@ async function resumeAlreadyVerifiedSession(
   } catch {
     throw verificationError
   }
-}
-
-function takeVerificationTokenFromUrl(): string | null {
-  const { pathname, search, hash } = window.location
-  if (hash !== '') window.history.replaceState(window.history.state, '', `${pathname}${search}`)
-  return parseVerificationToken(hash)
 }
 
 interface VerificationResult {

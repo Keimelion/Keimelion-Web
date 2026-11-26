@@ -13,6 +13,7 @@ const STALE_TIME_MS = 1000 * 60 * 5
 interface MutationMeta {
   silent?: boolean
   skipUnauthorizedRedirect?: boolean
+  skipEmailNotVerifiedRedirect?: boolean
 }
 
 const EMAIL_VERIFICATION_PATHS: readonly string[] = [AppPaths.CHECK_INBOX, AppPaths.VERIFY_EMAIL]
@@ -85,7 +86,7 @@ export function createQueryClient(): QueryClient {
           return
         }
 
-        if (isEmailNotVerified(error)) {
+        if (isEmailNotVerified(error) && meta?.skipEmailNotVerifiedRedirect !== true) {
           sendToCheckInbox()
           return
         }

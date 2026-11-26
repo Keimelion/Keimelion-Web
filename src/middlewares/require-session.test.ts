@@ -49,6 +49,11 @@ describe('requireSession', () => {
     expect(redirectTarget('/auth/login', 'user')).toBe(`${ORIGIN}/lists`)
   })
 
+  it('sends a signed-in user away from the sign-up page too', () => {
+    expect(redirectTarget('/auth/signup', 'user')).toBe(`${ORIGIN}/lists`)
+    expect(redirectTarget('/auth/signup?next=%2Fprofile', 'user')).toBe(`${ORIGIN}/profile`)
+  })
+
   it('sends a signed-in user back to the page they asked for', () => {
     expect(redirectTarget('/auth/login?next=%2Flists%2F42%3Ftab%3Dguests', 'user')).toBe(
       `${ORIGIN}/lists/42?tab=guests`,
