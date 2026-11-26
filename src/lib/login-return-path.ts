@@ -12,6 +12,11 @@ export function buildLoginPath(returnPath: string): string {
   return `${AppPaths.LOGIN}?${searchParams.toString()}`
 }
 
+export function buildLoginPathFromCurrentPage(): string {
+  const { pathname, search, hash } = window.location
+  return buildLoginPath(`${pathname}${search}${hash}`)
+}
+
 export function resolveLoginReturnPath(rawReturnPath: string | null): string {
   const parsed = loginReturnPathSchema.safeParse(rawReturnPath)
   return parsed.success ? parsed.data : DEFAULT_LOGIN_RETURN_PATH

@@ -1,8 +1,8 @@
 import { MutationCache, QueryCache, QueryClient } from '@tanstack/react-query'
 import { HttpStatus } from '@keimelion/sdk/enums'
 import { clearSession } from '@/data-access/_shared/auth-storage'
-import { AppPaths } from '@/lib/app-paths'
 import { translate } from '@/lib/i18n/translate'
+import { buildLoginPathFromCurrentPage } from '@/lib/login-return-path'
 import { notifyError } from '@/lib/notify'
 import { shareEqualStructure } from '@/lib/share-equal-structure'
 import { ApiError } from '@keimelion/sdk/client'
@@ -25,7 +25,7 @@ function handleUnauthorized(client: QueryClient): void {
   redirectInFlight = true
   clearSession()
   client.clear()
-  window.location.assign(AppPaths.LOGIN)
+  window.location.assign(buildLoginPathFromCurrentPage())
 }
 
 export function createQueryClient(): QueryClient {
