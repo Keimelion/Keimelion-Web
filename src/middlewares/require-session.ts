@@ -1,26 +1,30 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { SESSION_COOKIE_NAME, isKnownRole } from '@/data-access/_shared/auth-storage'
-import { AppPaths, SIGNED_IN_PATH_PREFIXES } from '@/lib/app-paths'
-
-function isSignedInPath(pathname: string): boolean {
-  return SIGNED_IN_PATH_PREFIXES.some(
-    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
-  )
-}
+import { SESSION_COOKIE_NAME, isValidSessionCookie } from '@/data-access/_shared/auth-storage'
+import {
+  AppPaths,
+  LOGIN_RETURN_PARAM,
+  SIGNED_IN_PATH_PREFIXES,
+  isPathWithin,
+} from '@/lib/app-paths'
+import { buildLoginPath, resolveLoginReturnPath } from '@/lib/login-return-path'
 
 export function requireSession(request: NextRequest): NextResponse | null {
-  const { pathname } = request.nextUrl
-  const cookieValue = request.cookies.get(SESSION_COOKIE_NAME)?.value
-  const hasValidSession = cookieValue !== undefined && isKnownRole(cookieValue)
+  const { pathname, search, searchParams } = request.nextUrl
+  const hasValidSession = isValidSessionCookie(request.cookies.get(SESSION_COOKIE_NAME)?.value)
 
   if (pathname === AppPaths.LOGIN && hasValidSession) {
-    return NextResponse.redirect(new URL(AppPaths.LISTS, request.url))
+    const returnPath = resolveLoginReturnPath(searchParams.get(LOGIN_RETURN_PARAM))
+    return NextResponse.redirect(new URL(returnPath, request.url))
   }
 
   if (isSignedInPath(pathname) && !hasValidSession) {
-    return NextResponse.redirect(new URL(AppPaths.LOGIN, request.url))
+    return NextResponse.redirect(new URL(buildLoginPath(`${pathname}${search}`), request.url))
   }
 
   return null
+}
+
+function isSignedInPath(pathname: string): boolean {
+  return SIGNED_IN_PATH_PREFIXES.some((prefix) => isPathWithin(pathname, prefix))
 }

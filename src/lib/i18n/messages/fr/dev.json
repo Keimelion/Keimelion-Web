@@ -246,5 +246,12 @@
   "dev.kit.gift_papers.gingham": "Vichy",
   "dev.kit.gift_papers.confetti": "Confettis",
   "dev.kit.gift_papers.bows": "Petits nœuds",
-  "dev.kit.gift_papers.stars": "Étoiles"
+  "dev.kit.gift_papers.stars": "Étoiles",
+  "dev.kit.states.title": "Quand ça coince",
+  "dev.kit.states.kicker": "jamais d'impasse",
+  "dev.kit.states.error": "État d'erreur",
+  "dev.kit.states.error_retrying": "État d'erreur, nouvel essai en cours",
+  "dev.kit.states.error_title": "Vos listes se cachent",
+  "dev.kit.states.error_description": "Impossible de les charger. Rien n'est perdu, c'est juste la connexion.",
+  "dev.kit.states.lost_parcel": "Colis perdu (404)"
 }

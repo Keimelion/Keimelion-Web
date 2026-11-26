@@ -38,7 +38,7 @@ for (const colorScheme of COLOR_SCHEMES) {
 test('a guest opening a signed-in page is sent to the login page', async ({ page }) => {
   await page.goto('/lists')
 
-  await expect(page).toHaveURL('/auth/login')
+  await expect(page).toHaveURL('/auth/login?next=%2Flists')
 })
 
 test('a signed-in user reaches the signed-in pages', async ({ page, context, baseURL }) => {

@@ -14,6 +14,7 @@ describe('MoreMenu', () => {
     renderWithIntl(
       <MoreMenu
         label="More actions"
+        trigger={null}
         items={[
           {
             id: 'rename',
@@ -49,5 +50,30 @@ describe('MoreMenu', () => {
 
     expect(onFeedback).toHaveBeenCalledTimes(1)
     expect(onRename).not.toHaveBeenCalled()
+  })
+
+  it('opens from a custom trigger instead of the dots', async () => {
+    const user = userEvent.setup()
+    renderWithIntl(
+      <MoreMenu
+        label="More actions"
+        trigger={<button type="button">Your account</button>}
+        items={[
+          {
+            id: 'profile',
+            label: 'Profile',
+            icon: null,
+            tone: MoreMenuTones.DEFAULT,
+            onSelect: vi.fn(),
+          },
+        ]}
+        footerItem={null}
+      />,
+    )
+
+    expect(screen.queryByRole('button', { name: 'More actions' })).not.toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Your account' }))
+
+    expect(screen.getByRole('menuitem', { name: 'Profile' })).toBeInTheDocument()
   })
 })

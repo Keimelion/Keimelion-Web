@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { connection } from 'next/server'
-import { SiteShell } from '@/components/shared/site-shell'
+import { GuestShell } from '@/components/shared/guest-shell'
 import { areDevPagesEnabled } from '@/lib/dev-pages'
 
 export const metadata: Metadata = {
@@ -15,5 +15,5 @@ export default async function DevLayout({
 }): Promise<React.JSX.Element> {
   await connection()
   if (!areDevPagesEnabled()) notFound()
-  return <SiteShell>{children}</SiteShell>
+  return <GuestShell>{children}</GuestShell>
 }

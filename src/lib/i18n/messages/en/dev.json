@@ -246,5 +246,12 @@
   "dev.kit.gift_papers.gingham": "Gingham",
   "dev.kit.gift_papers.confetti": "Confetti",
   "dev.kit.gift_papers.bows": "Little bows",
-  "dev.kit.gift_papers.stars": "Stars"
+  "dev.kit.gift_papers.stars": "Stars",
+  "dev.kit.states.title": "When things go wrong",
+  "dev.kit.states.kicker": "never a dead end",
+  "dev.kit.states.error": "Error state",
+  "dev.kit.states.error_retrying": "Error state, retrying",
+  "dev.kit.states.error_title": "Your lists are hiding",
+  "dev.kit.states.error_description": "We couldn't load them. Nothing is lost, it's only the connection.",
+  "dev.kit.states.lost_parcel": "Lost parcel (404)"
 }

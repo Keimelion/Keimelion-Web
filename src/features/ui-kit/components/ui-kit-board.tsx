@@ -17,6 +17,7 @@ import { MotionSection } from './motion-section'
 import { NavigationSection } from './navigation-section'
 import { OccasionSection } from './occasion-section'
 import { OverlaySection } from './overlay-section'
+import { StatesSection } from './states-section'
 
 export function UiKitBoard(): React.JSX.Element {
   return (
@@ -39,6 +40,7 @@ export function UiKitBoard(): React.JSX.Element {
       <GiftPaperSection />
       <CountdownSection />
       <FeedbackSection />
+      <StatesSection />
       <ListActivitySection />
     </div>
   )

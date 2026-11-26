@@ -53,7 +53,7 @@ Design boards are exported as HTML and dropped in `temp/design/` (git-ignored, n
 - **Tablet**: 768–1023 px (`md`) uses the **mobile layout in a centered 720 px column** (`md:max-w-tablet`) unless a ticket says otherwise
 - **Desktop**: from 1024 px (`lg`), designs at 1440 px (`lg:max-w-desktop`)
 
-`SiteShell` (`src/components/shared/site-shell/`) already applies this column rule to the header and `<main>`.
+`SiteShell` (`src/components/shared/site-shell/`) already applies this column rule to the header and `<main>`. Its layout reads the session cookie on the server (`hasServerSession()` from `src/data-access/_shared/auth-storage/server-session.ts`) so the navigation renders signed in or out without a flash: below `lg` a brand header and the bottom bar (Home, Browse, My lists, Profile / Home, Browse, Log in), from `lg` the top nav. The bottom bar is reserved under the page, and a mobile FAB goes in the `fab-slot` utility (right 16, bottom 100). A guest opening a signed-in page lands on `/auth/login?next=<page>`; read the return path with `resolveLoginReturnPath()` (`src/lib/login-return-path.ts`), never trust the raw parameter.
 
 ### Design tokens
 
@@ -124,9 +124,11 @@ Rules distilled from past BackOffice code reviews — follow unless there's an e
 ```
 src/
   app/                  # Next.js App Router — pages and layouts only, no business logic
-    (public)/           # Guest-facing pages, no account needed: / (home), /invites/accept, shared lists…
+    (public)/           # Pages open to everyone with the full app chrome (SiteShell): / (home), browse, legal…
+    (guest)/            # Guest pages reached from a shared link (GuestShell: logo, EN · FR, footer, no bottom bar): /invites/accept, shared lists…
     (auth)/auth/        # Account pages: /auth/login, /auth/verify-email, /auth/reset-password…
     (app)/              # Signed-in pages (owners, editors): /lists… — gated by src/middlewares/require-session.ts
+    not-found.tsx       # 404 (the lost parcel) inside SiteShell; every route group has an error.tsx rendering RouteErrorState
   components/
     ui/                 # Our restyled primitives (shadcn + Radix) — owned code, see .claude/ui-kit.md
     shared/             # Reusable app-level components (site-shell, locale-picker, theme-picker…)

@@ -63,6 +63,7 @@ export function NavigationSection(): React.JSX.Element {
         <KitSpecimen label={t('dev.kit.navigation.more_menu')}>
           <MoreMenu
             label={t('dev.kit.navigation.more_actions')}
+            trigger={null}
             items={menuItems}
             footerItem={{
               id: 'feedback',
