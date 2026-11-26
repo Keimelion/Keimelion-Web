@@ -41,7 +41,11 @@ export function resolveLoginReturnPath(rawReturnPath: string | null): string {
 function isInternalPath(value: string): boolean {
   if (!value.startsWith('/') || value.startsWith('//') || value.includes('\\')) return false
   const url = new URL(value, INTERNAL_ORIGIN)
-  return url.origin === INTERNAL_ORIGIN && !isPathWithin(url.pathname, AUTH_PATH_PREFIX)
+  return (
+    url.origin === INTERNAL_ORIGIN &&
+    !url.pathname.startsWith('//') &&
+    !isPathWithin(url.pathname, AUTH_PATH_PREFIX)
+  )
 }
 
 function normalizeInternalPath(value: string): string {

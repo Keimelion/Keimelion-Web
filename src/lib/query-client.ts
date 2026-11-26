@@ -52,6 +52,10 @@ function handleAccountBanned(client: QueryClient): void {
   client.clear()
 }
 
+function resetAccountBannedHandling(): void {
+  accountBannedHandled = false
+}
+
 function handleUnauthorized(client: QueryClient): void {
   if (redirectInFlight) return
   redirectInFlight = true
@@ -63,6 +67,7 @@ function handleUnauthorized(client: QueryClient): void {
 export function createQueryClient(): QueryClient {
   const client: QueryClient = new QueryClient({
     queryCache: new QueryCache({
+      onSuccess: resetAccountBannedHandling,
       onError: (error) => {
         if (isUnauthorized(error)) {
           handleUnauthorized(client)
@@ -78,6 +83,7 @@ export function createQueryClient(): QueryClient {
       },
     }),
     mutationCache: new MutationCache({
+      onSuccess: resetAccountBannedHandling,
       onError: (error, _variables, _context, mutation) => {
         const meta = mutation.options.meta as MutationMeta | undefined
 

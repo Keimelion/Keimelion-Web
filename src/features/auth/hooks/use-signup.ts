@@ -8,14 +8,20 @@ import { register } from '@/data-access/auth/auth.api'
 import type { SignupInput } from '@/features/auth/auth.input-schemas'
 import { AppPaths } from '@/lib/app-paths'
 
-export function useSignup(): UseMutationResult<string, Error, SignupInput> {
+export function useSignup(
+  returnPath: string | null,
+): UseMutationResult<string, Error, SignupInput> {
   return useMutation({
-    mutationFn: async (input: SignupInput) => openSessionAfterSignup(await register(input)),
+    mutationFn: async (input: SignupInput) =>
+      openSessionAfterSignup(await register(input), returnPath),
     meta: { silent: true },
   })
 }
 
-function openSessionAfterSignup({ refreshToken, user }: RegisterResponseParsed): string {
-  saveUnverifiedSession(refreshToken, user)
+function openSessionAfterSignup(
+  { refreshToken, user }: RegisterResponseParsed,
+  returnPath: string | null,
+): string {
+  saveUnverifiedSession(refreshToken, user, returnPath)
   return AppPaths.CHECK_INBOX
 }

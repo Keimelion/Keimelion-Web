@@ -28,9 +28,9 @@ interface SignupForm {
   isPending: boolean
 }
 
-export function useSignupForm(): SignupForm {
+export function useSignupForm(returnPath: string | null): SignupForm {
   const router = useRouter()
-  const signup = useSignup()
+  const signup = useSignup(returnPath)
   const form = useForm<SignupInput>({
     resolver: zodResolver(signupInputSchema),
     mode: 'onTouched',

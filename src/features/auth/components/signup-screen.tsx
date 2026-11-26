@@ -8,9 +8,10 @@ import { useTranslate } from '@/lib/i18n/use-translate'
 
 interface SignupScreenProps {
   loginHref: string
+  returnPath: string | null
 }
 
-export function SignupScreen({ loginHref }: SignupScreenProps): React.JSX.Element {
+export function SignupScreen({ loginHref, returnPath }: SignupScreenProps): React.JSX.Element {
   const t = useTranslate()
   return (
     <AuthShell
@@ -21,7 +22,7 @@ export function SignupScreen({ loginHref }: SignupScreenProps): React.JSX.Elemen
       title={t('auth.signup.title')}
       backHref={loginHref}
     >
-      <SignupForm loginHref={loginHref} />
+      <SignupForm loginHref={loginHref} returnPath={returnPath} />
     </AuthShell>
   )
 }

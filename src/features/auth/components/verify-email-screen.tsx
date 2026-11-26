@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
 import { AuthBackdrops, AuthShell } from '@/components/shared/auth-shell'
 import { Button } from '@/components/ui/button'
 import { EnvelopeArt, VerifiedArt } from '@/features/auth/components/auth-art'
@@ -13,6 +13,7 @@ import {
   useEmailVerificationLink,
 } from '@/features/auth/hooks/use-email-verification-link'
 import { useStoredUserEmail } from '@/features/auth/hooks/use-stored-user-email'
+import { resolvePostVerificationPath } from '@/features/auth/post-verification-path'
 import { AppPaths, FEEDBACK_BUG_PATH } from '@/lib/app-paths'
 import type { MessageId } from '@/lib/i18n/messages'
 import { useTranslate } from '@/lib/i18n/use-translate'
@@ -30,6 +31,8 @@ export function VerifyEmailScreen(): React.JSX.Element {
       return <FailedState status={status} onRetry={retry} />
     case EmailVerificationStatuses.SIGNING_IN:
       return <SigningInState />
+    case EmailVerificationStatuses.ACCOUNT_SUSPENDED:
+      return <AccountSuspendedState />
     case EmailVerificationStatuses.REDIRECTING_TO_LOGIN:
       return (
         <VerifiedState
@@ -127,17 +130,43 @@ function FailedState({ status, onRetry }: FailedStateProps): React.JSX.Element {
   )
 }
 
+function AccountSuspendedState(): React.JSX.Element {
+  const t = useTranslate()
+  return (
+    <AuthShell
+      backdrop={AuthBackdrops.ROSE}
+      art={<EnvelopeArt />}
+      desktopPanel={null}
+      kicker={t('auth.verify_email.suspended_kicker')}
+      title={t('auth.verify_email.suspended_title')}
+      backHref={AppPaths.HOME}
+    >
+      <p role="alert" className="text-body text-muted-foreground">
+        {t('auth.verify_email.suspended_description')}
+      </p>
+      <Button asChild variant="ghost" className="w-full">
+        <Link href={AppPaths.HOME}>{t('auth.verify_email.suspended_back_home')}</Link>
+      </Button>
+    </AuthShell>
+  )
+}
+
 function SigningInState(): React.JSX.Element {
   const router = useRouter()
-  const openOnboarding = useCallback(() => {
-    router.replace(AppPaths.NEW_LIST)
-  }, [router])
+  const [nextPath] = useState(resolvePostVerificationPath)
+  const openNextPage = useCallback(() => {
+    router.replace(nextPath)
+  }, [router, nextPath])
   return (
     <VerifiedState
-      descriptionId="auth.verify_email.signing_in_description"
-      onWrapped={openOnboarding}
+      descriptionId={
+        nextPath === AppPaths.NEW_LIST
+          ? 'auth.verify_email.signing_in_description'
+          : 'auth.verify_email.signing_in_return_description'
+      }
+      onWrapped={openNextPage}
     >
-      <ContinueLink href={AppPaths.NEW_LIST} labelId="auth.verify_email.continue" />
+      <ContinueLink href={nextPath} labelId="auth.verify_email.continue" />
     </VerifiedState>
   )
 }

@@ -25,6 +25,7 @@ const authStorage = vi.hoisted(() => ({
   saveSession: vi.fn(),
   saveUnverifiedSession: vi.fn(),
   clearSession: vi.fn(),
+  getPostVerificationPath: vi.fn<() => string | null>(),
 }))
 const sessionClient = vi.hoisted(() => ({ refreshAccessToken: vi.fn<() => Promise<string>>() }))
 const authApi = vi.hoisted(() => ({
@@ -61,6 +62,7 @@ beforeEach(() => {
   vi.clearAllMocks()
   authStorage.getStoredUser.mockReturnValue(null)
   authStorage.getRefreshToken.mockReturnValue(null)
+  authStorage.getPostVerificationPath.mockReturnValue(null)
   sessionClient.refreshAccessToken.mockResolvedValue('access-token')
   authApi.verifyEmail.mockResolvedValue({ message: 'Email verified successfully' })
   authApi.resendVerification.mockResolvedValue({ message: 'generic' })
@@ -284,6 +286,27 @@ describe('VerifyEmailScreen', () => {
     expect(sessionClient.refreshAccessToken).toHaveBeenCalledOnce()
   })
 
+  it('takes the user back to the page they signed up from once verified', async () => {
+    authStorage.getRefreshToken.mockReturnValue('refresh-token')
+    authStorage.getPostVerificationPath.mockReturnValue('/invites/accept')
+    openVerificationLink(`#token=${VALID_TOKEN}`)
+    renderWithQueryClient(<VerifyEmailScreen />)
+
+    expect(
+      await screen.findByText('Your account is ready. Taking you back to where you left off.'),
+    ).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Continue' })).toHaveAttribute(
+      'href',
+      '/invites/accept',
+    )
+    await waitFor(
+      () => {
+        expect(router.replace).toHaveBeenCalledExactlyOnceWith('/invites/accept')
+      },
+      { timeout: WRAP_TIMEOUT_MS },
+    )
+  })
+
   it('falls back to "please log in" when the stored session cannot be refreshed', async () => {
     authStorage.getRefreshToken.mockReturnValue('refresh-token')
     sessionClient.refreshAccessToken.mockRejectedValue(apiError(0, 'NETWORK_ERROR'))
@@ -308,6 +331,26 @@ describe('VerifyEmailScreen', () => {
     expect(screen.queryByRole('link', { name: 'Log in' })).not.toBeInTheDocument()
     expect(router.replace).not.toHaveBeenCalled()
   })
+
+  it.each([
+    ['a fresh link', null],
+    ['a link that was already used', apiError(400, ErrorCode.BAD_REQUEST)],
+  ])(
+    'says the account is suspended, without a log-in button, after %s',
+    async (_case, verifyError) => {
+      if (verifyError !== null) authApi.verifyEmail.mockRejectedValue(verifyError)
+      authStorage.getRefreshToken.mockReturnValue('refresh-token')
+      sessionClient.refreshAccessToken.mockRejectedValue(apiError(403, ErrorCode.ACCOUNT_BANNED))
+      openVerificationLink(`#token=${VALID_TOKEN}`)
+      renderWithQueryClient(<VerifyEmailScreen />)
+
+      expect(
+        await screen.findByRole('heading', { level: 1, name: 'This account is suspended' }),
+      ).toBeInTheDocument()
+      expect(screen.queryByRole('link', { name: 'Log in' })).not.toBeInTheDocument()
+      expect(router.replace).not.toHaveBeenCalled()
+    },
+  )
 
   it('resumes a stored session when a link that was already used is opened again', async () => {
     authApi.verifyEmail.mockRejectedValue(apiError(400, ErrorCode.BAD_REQUEST))
@@ -506,7 +549,7 @@ describe('SignupScreen', () => {
   }
 
   it('shows the password rule and checks the fields inline', async () => {
-    renderWithQueryClient(<SignupScreen loginHref="/auth/login" />)
+    renderWithQueryClient(<SignupScreen loginHref="/auth/login" returnPath={null} />)
 
     expect(
       screen.getByText('At least 8 characters. A short sentence works great.'),
@@ -521,7 +564,7 @@ describe('SignupScreen', () => {
   })
 
   it('keeps the unverified session and opens check-inbox after a sign-up', async () => {
-    renderWithQueryClient(<SignupScreen loginHref="/auth/login" />)
+    renderWithQueryClient(<SignupScreen loginHref="/auth/login" returnPath={null} />)
 
     await fillSignup('Léa', 'Lea@Example.com', 'a long sentence works')
 
@@ -533,12 +576,31 @@ describe('SignupScreen', () => {
       email: STORED_EMAIL,
       password: 'a long sentence works',
     })
-    expect(authStorage.saveUnverifiedSession).toHaveBeenCalledWith('refresh', SIGNED_IN_USER)
+    expect(authStorage.saveUnverifiedSession).toHaveBeenCalledWith('refresh', SIGNED_IN_USER, null)
+  })
+
+  it('keeps the page the user came from for after the email is verified', async () => {
+    renderWithQueryClient(
+      <SignupScreen
+        loginHref="/auth/login?next=%2Finvites%2Faccept"
+        returnPath="/invites/accept"
+      />,
+    )
+
+    await fillSignup('Léa', STORED_EMAIL, 'a long sentence works')
+
+    await waitFor(() => {
+      expect(authStorage.saveUnverifiedSession).toHaveBeenCalledWith(
+        'refresh',
+        SIGNED_IN_USER,
+        '/invites/accept',
+      )
+    })
   })
 
   it('shows a taken email under the email field', async () => {
     authApi.register.mockRejectedValue(apiError(409, ErrorCode.CONFLICT))
-    renderWithQueryClient(<SignupScreen loginHref="/auth/login" />)
+    renderWithQueryClient(<SignupScreen loginHref="/auth/login" returnPath={null} />)
 
     await fillSignup('Léa', STORED_EMAIL, 'a long sentence works')
 
@@ -550,7 +612,7 @@ describe('SignupScreen', () => {
 
   it('opens the terms in a sheet without losing the form', async () => {
     const user = userEvent.setup()
-    renderWithQueryClient(<SignupScreen loginHref="/auth/login" />)
+    renderWithQueryClient(<SignupScreen loginHref="/auth/login" returnPath={null} />)
     await user.type(screen.getByLabelText('First name'), 'Léa')
 
     await user.click(screen.getByRole('link', { name: 'Terms of use' }))

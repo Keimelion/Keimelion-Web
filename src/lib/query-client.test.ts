@@ -316,4 +316,25 @@ describe('QueryClient on 403 ACCOUNT_BANNED', () => {
     expect(notifyError).toHaveBeenCalledWith(accountBannedError())
     expect(mockAssign).not.toHaveBeenCalled()
   })
+
+  it('drops the cached data again when another user is banned after a successful login', async () => {
+    const { createQueryClient } = await freshQueryClientModule()
+    const client = createQueryClient()
+    const failWithBan = (): Promise<never> => Promise.reject(accountBannedError())
+
+    await expect(
+      client.query({ queryKey: ['profile', 'first'], queryFn: failWithBan }),
+    ).rejects.toMatchObject({ code: ErrorCode.ACCOUNT_BANNED })
+    await client
+      .getMutationCache()
+      .build(client, { mutationFn: () => Promise.resolve('logged in') })
+      .execute(undefined)
+    client.setQueryData(['lists', 'abc'], { title: 'Birthday' })
+
+    await expect(
+      client.query({ queryKey: ['profile', 'second'], queryFn: failWithBan }),
+    ).rejects.toMatchObject({ code: ErrorCode.ACCOUNT_BANNED })
+
+    expect(client.getQueryData(['lists', 'abc'])).toBeUndefined()
+  })
 })

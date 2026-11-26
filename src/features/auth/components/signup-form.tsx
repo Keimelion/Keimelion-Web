@@ -17,11 +17,12 @@ import { useTranslate } from '@/lib/i18n/use-translate'
 
 interface SignupFormProps {
   loginHref: string
+  returnPath: string | null
 }
 
-export function SignupForm({ loginHref }: SignupFormProps): React.JSX.Element {
+export function SignupForm({ loginHref, returnPath }: SignupFormProps): React.JSX.Element {
   const t = useTranslate()
-  const { form, submit, isPending } = useSignupForm()
+  const { form, submit, isPending } = useSignupForm(returnPath)
   const [openLegalTitle, setOpenLegalTitle] = useState<string | null>(null)
   return (
     <Form {...form}>

@@ -18,6 +18,7 @@ export const EmailVerificationStatuses = {
   VERIFIED: 'verified',
   SIGNING_IN: 'signing_in',
   REDIRECTING_TO_LOGIN: 'redirecting_to_login',
+  ACCOUNT_SUSPENDED: 'account_suspended',
 } as const
 
 export type EmailVerificationStatus =
@@ -27,6 +28,7 @@ const SessionResumptions = {
   RESUMED: 'resumed',
   LOGIN_REQUIRED: 'login_required',
   SESSION_ENDED: 'session_ended',
+  ACCOUNT_BANNED: 'account_banned',
 } as const
 
 type SessionResumption = (typeof SessionResumptions)[keyof typeof SessionResumptions]
@@ -35,6 +37,7 @@ const STATUS_BY_SESSION_RESUMPTION: Record<SessionResumption, EmailVerificationS
   [SessionResumptions.RESUMED]: EmailVerificationStatuses.SIGNING_IN,
   [SessionResumptions.LOGIN_REQUIRED]: EmailVerificationStatuses.VERIFIED,
   [SessionResumptions.SESSION_ENDED]: EmailVerificationStatuses.REDIRECTING_TO_LOGIN,
+  [SessionResumptions.ACCOUNT_BANNED]: EmailVerificationStatuses.ACCOUNT_SUSPENDED,
 }
 
 const INVALID_LINK_ERROR_CODES: readonly string[] = [
@@ -99,10 +102,14 @@ async function resumeStoredSession(): Promise<SessionResumption> {
     await refreshAccessToken()
     return SessionResumptions.RESUMED
   } catch (refreshError: unknown) {
-    return isSessionEnded(refreshError)
-      ? SessionResumptions.SESSION_ENDED
-      : SessionResumptions.LOGIN_REQUIRED
+    return resolveFailedResumption(refreshError)
   }
+}
+
+function resolveFailedResumption(refreshError: unknown): SessionResumption {
+  if (isAccountBanned(refreshError)) return SessionResumptions.ACCOUNT_BANNED
+  if (isSessionEnded(refreshError)) return SessionResumptions.SESSION_ENDED
+  return SessionResumptions.LOGIN_REQUIRED
 }
 
 async function resumeAlreadyVerifiedSession(
@@ -112,7 +119,8 @@ async function resumeAlreadyVerifiedSession(
   try {
     await refreshAccessToken()
     return SessionResumptions.RESUMED
-  } catch {
+  } catch (refreshError: unknown) {
+    if (isAccountBanned(refreshError)) return SessionResumptions.ACCOUNT_BANNED
     throw verificationError
   }
 }
@@ -146,6 +154,14 @@ function resolveErrorStatus(error: Error | null): EmailVerificationStatus {
 
 function isInvalidLinkError(error: unknown): boolean {
   return error instanceof ApiError && INVALID_LINK_ERROR_CODES.includes(error.code)
+}
+
+function isAccountBanned(error: unknown): boolean {
+  return (
+    error instanceof ApiError &&
+    error.status === HttpStatus.FORBIDDEN &&
+    error.code === ErrorCode.ACCOUNT_BANNED
+  )
 }
 
 function isSessionEnded(error: unknown): boolean {

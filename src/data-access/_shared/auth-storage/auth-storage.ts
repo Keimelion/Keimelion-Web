@@ -8,6 +8,7 @@ const REFRESH_TOKEN_KEY = 'keimelion_refresh_token'
 const STORED_USER_KEY = 'keimelion_user'
 const EMAIL_NOT_VERIFIED_KEY = 'keimelion_email_not_verified'
 const ACCOUNT_BANNED_KEY = 'keimelion_account_banned'
+const POST_VERIFICATION_PATH_KEY = 'keimelion_post_verification_path'
 const FLAG_SET_VALUE = 'true'
 export const SESSION_COOKIE_NAME = 'keimelion_web_session'
 const SESSION_COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 7
@@ -91,16 +92,16 @@ export function getStoredUser(): UserDetailParsed | null {
 
   try {
     const parsed = userDetailSchema.safeParse(JSON.parse(raw))
-    if (!parsed.success) {
-      clearSession()
-      return null
-    }
+    if (!parsed.success) return null
     parsedUserCache = { raw, user: parsed.data }
     return parsed.data
   } catch {
-    clearSession()
     return null
   }
+}
+
+export function getPostVerificationPath(): string | null {
+  return localStorage.getItem(POST_VERIFICATION_PATH_KEY)
 }
 
 export function saveSession(
@@ -110,20 +111,35 @@ export function saveSession(
 ): void {
   localStorage.setItem(ACCESS_TOKEN_KEY, accessToken)
   localStorage.removeItem(EMAIL_NOT_VERIFIED_KEY)
+  localStorage.removeItem(POST_VERIFICATION_PATH_KEY)
+  writeSessionCookie(user.role)
   storeSessionIdentity(refreshToken, user)
 }
 
-export function saveUnverifiedSession(refreshToken: string, user: UserDetailParsed): void {
+export function saveUnverifiedSession(
+  refreshToken: string,
+  user: UserDetailParsed,
+  postVerificationPath: string | null,
+): void {
   localStorage.removeItem(ACCESS_TOKEN_KEY)
   localStorage.setItem(EMAIL_NOT_VERIFIED_KEY, String(Date.now()))
+  storePostVerificationPath(postVerificationPath)
+  deleteSessionCookie()
   storeSessionIdentity(refreshToken, user)
+}
+
+function storePostVerificationPath(postVerificationPath: string | null): void {
+  if (postVerificationPath === null) {
+    localStorage.removeItem(POST_VERIFICATION_PATH_KEY)
+    return
+  }
+  localStorage.setItem(POST_VERIFICATION_PATH_KEY, postVerificationPath)
 }
 
 function storeSessionIdentity(refreshToken: string, user: UserDetailParsed): void {
   localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken)
   localStorage.setItem(STORED_USER_KEY, JSON.stringify(user))
   localStorage.removeItem(ACCOUNT_BANNED_KEY)
-  writeSessionCookie(user.role)
   notifyStorageSubscribers()
 }
 
@@ -131,6 +147,8 @@ export function rotateTokens(accessToken: string, refreshToken: string): void {
   localStorage.setItem(ACCESS_TOKEN_KEY, accessToken)
   localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken)
   localStorage.removeItem(EMAIL_NOT_VERIFIED_KEY)
+  const user = getStoredUser()
+  if (user !== null) writeSessionCookie(user.role)
 }
 
 export function clearSession(): void {
@@ -139,6 +157,7 @@ export function clearSession(): void {
   localStorage.removeItem(STORED_USER_KEY)
   localStorage.removeItem(EMAIL_NOT_VERIFIED_KEY)
   localStorage.removeItem(ACCOUNT_BANNED_KEY)
+  localStorage.removeItem(POST_VERIFICATION_PATH_KEY)
   deleteSessionCookie()
   notifyStorageSubscribers()
 }
