@@ -194,7 +194,7 @@ test('a reset link sets the new password, then opens the login page', async ({ p
   await page.goto(`/auth/reset-password#token=${RESET_TOKEN}`)
 
   await heading(page, 'New password')
-  expect(new URL(page.url()).hash).toBe('')
+  await expect(page).toHaveURL('/auth/reset-password')
   await page.getByLabel('New password').fill(PASSWORD)
   await page.getByLabel('Confirm').fill(PASSWORD)
   await page.getByRole('button', { name: 'Save and log in' }).click()
