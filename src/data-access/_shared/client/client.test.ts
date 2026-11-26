@@ -1,12 +1,15 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { ApiError, ClientErrorCode } from '@keimelion/sdk/client'
 import { ErrorCode } from '@keimelion/sdk/enums'
+import type { UserDetailParsed } from '@keimelion/sdk/schemas'
 import { apiErrorBody, createApiMock, type ApiMock } from '@/test/api-mock'
 
 vi.stubEnv('NEXT_PUBLIC_API_URL', 'http://localhost:3000')
 
 const { apiClient, refreshAccessToken } = await import('./client')
 const { useLocaleStore } = await import('@/lib/i18n/locale-store')
+const { SESSION_COOKIE_NAME, SessionStates, getSessionState, saveSession } =
+  await import('@/data-access/_shared/auth-storage')
 
 const ACCESS_TOKEN_KEY = 'keimelion_access_token'
 const REFRESH_TOKEN_KEY = 'keimelion_refresh_token'
@@ -31,6 +34,15 @@ const USER_RESPONSE = {
   },
 }
 
+const OWNER_USER: UserDetailParsed = {
+  ...USER_RESPONSE.user,
+  authProvider: 'email',
+  role: 'user',
+  defaultCurrency: 'EUR',
+  createdAt: new Date(USER_RESPONSE.user.createdAt),
+  updatedAt: new Date(USER_RESPONSE.user.updatedAt),
+}
+
 const UNAUTHORIZED_BODY = apiErrorBody('UNAUTHORIZED', 'Unauthorized')
 
 let mock: ApiMock
@@ -51,6 +63,7 @@ function failFirstRequestWithUnauthorized(): void {
 
 beforeEach(() => {
   localStorage.clear()
+  document.cookie = `${SESSION_COOKIE_NAME}=; path=/; max-age=0`
   useLocaleStore.setState({ locale: 'en' })
   mock = createApiMock()
   originalLocationDescriptor = Object.getOwnPropertyDescriptor(window, 'location')
@@ -161,14 +174,30 @@ describe('apiClient session recovery', () => {
     expect(assignMock).toHaveBeenCalledWith('/auth/login?next=%2Flists%2Fabc%3Ftab%3Dguests')
   })
 
-  it('clears the session and redirects when no refresh token is stored', async () => {
-    localStorage.setItem(ACCESS_TOKEN_KEY, 'stale-access')
+  it('clears the session and redirects when the refresh token is invalid', async () => {
+    storeTokens('stale-access', 'refresh-1')
+    mock.onGet('/users/me').reply(401, UNAUTHORIZED_BODY)
+    mock
+      .onPost('/auth/refresh')
+      .reply(401, apiErrorBody(ErrorCode.INVALID_REFRESH_TOKEN, 'Invalid refresh token'))
+
+    await expect(apiClient.users.getProfile()).rejects.toMatchObject({ status: 401 })
+
+    expect(localStorage.getItem(ACCESS_TOKEN_KEY)).toBeNull()
+    expect(localStorage.getItem(REFRESH_TOKEN_KEY)).toBeNull()
+    expect(assignMock).toHaveBeenCalledWith('/auth/login?next=%2Flists%2Fabc%3Ftab%3Dguests')
+  })
+
+  it('rejects a guest with the original error without attempting a refresh', async () => {
     mock.onGet('/users/me').reply(401, UNAUTHORIZED_BODY)
 
-    await expect(apiClient.users.getProfile()).rejects.toBeInstanceOf(ApiError)
+    await expect(apiClient.users.getProfile()).rejects.toMatchObject({
+      status: 401,
+      code: 'UNAUTHORIZED',
+    })
 
     expect(mock.history.post).toHaveLength(0)
-    expect(assignMock).toHaveBeenCalledWith('/auth/login?next=%2Flists%2Fabc%3Ftab%3Dguests')
+    expect(assignMock).not.toHaveBeenCalled()
   })
 
   it('does not attempt a refresh when login returns 401', async () => {
@@ -181,6 +210,84 @@ describe('apiClient session recovery', () => {
     ).rejects.toMatchObject({ code: ErrorCode.INVALID_CREDENTIALS, status: 401 })
 
     expect(mock.history.post).toHaveLength(1)
+    expect(assignMock).not.toHaveBeenCalled()
+  })
+})
+
+describe('apiClient refresh rejected by account status', () => {
+  function rejectRefreshWith(code: string, message: string): void {
+    mock.onPost('/auth/refresh').reply(403, apiErrorBody(code, message))
+  }
+
+  it('keeps the refresh token and the session cookie when the email is not verified', async () => {
+    saveSession('stale-access', 'refresh-1', OWNER_USER)
+    mock.onGet('/users/me').reply(401, UNAUTHORIZED_BODY)
+    rejectRefreshWith(ErrorCode.EMAIL_NOT_VERIFIED, 'Email address has not been verified')
+
+    const error: unknown = await apiClient.users.getProfile().catch((caught: unknown) => caught)
+
+    expect(error).toBeInstanceOf(ApiError)
+    expect(error).toMatchObject({ status: 403, code: ErrorCode.EMAIL_NOT_VERIFIED })
+    expect(localStorage.getItem(REFRESH_TOKEN_KEY)).toBe('refresh-1')
+    expect(localStorage.getItem(ACCESS_TOKEN_KEY)).toBeNull()
+    expect(getSessionState()).toBe(SessionStates.EMAIL_NOT_VERIFIED)
+    expect(document.cookie).toContain(`${SESSION_COOKIE_NAME}=user`)
+    expect(assignMock).not.toHaveBeenCalled()
+  })
+
+  it('coalesces concurrent 401s into one refresh and rejects each with EMAIL_NOT_VERIFIED', async () => {
+    storeTokens('stale-access', 'refresh-1')
+    mock.onGet('/users/me').reply(401, UNAUTHORIZED_BODY)
+    rejectRefreshWith(ErrorCode.EMAIL_NOT_VERIFIED, 'Email address has not been verified')
+
+    const results = await Promise.allSettled([
+      apiClient.users.getProfile(),
+      apiClient.users.getProfile(),
+      apiClient.users.getProfile(),
+    ])
+
+    expect(mock.history.post).toHaveLength(1)
+    for (const result of results) {
+      expect(result).toMatchObject({
+        status: 'rejected',
+        reason: { status: 403, code: ErrorCode.EMAIL_NOT_VERIFIED },
+      })
+    }
+  })
+
+  it('stores the tokens and clears the unverified state once a later refresh succeeds', async () => {
+    storeTokens('stale-access', 'refresh-1')
+    failFirstRequestWithUnauthorized()
+    rejectRefreshWith(ErrorCode.EMAIL_NOT_VERIFIED, 'Email address has not been verified')
+    await expect(apiClient.users.getProfile()).rejects.toMatchObject({
+      code: ErrorCode.EMAIL_NOT_VERIFIED,
+    })
+
+    mock
+      .onPost('/auth/refresh')
+      .reply(200, { accessToken: 'fresh-access', refreshToken: 'fresh-refresh' })
+    const { user } = await apiClient.users.getProfile()
+
+    expect(user.email).toBe('admin@keimelion.app')
+    expect(mock.history.post).toHaveLength(2)
+    expect(localStorage.getItem(ACCESS_TOKEN_KEY)).toBe('fresh-access')
+    expect(localStorage.getItem(REFRESH_TOKEN_KEY)).toBe('fresh-refresh')
+    expect(getSessionState()).toBe(SessionStates.ACTIVE)
+  })
+
+  it('clears the tokens and rethrows ACCOUNT_BANNED without redirecting', async () => {
+    storeTokens('stale-access', 'refresh-1')
+    mock.onGet('/users/me').reply(401, UNAUTHORIZED_BODY)
+    rejectRefreshWith(ErrorCode.ACCOUNT_BANNED, 'This account has been suspended')
+
+    await expect(apiClient.users.getProfile()).rejects.toMatchObject({
+      status: 403,
+      code: ErrorCode.ACCOUNT_BANNED,
+    })
+
+    expect(localStorage.getItem(ACCESS_TOKEN_KEY)).toBeNull()
+    expect(localStorage.getItem(REFRESH_TOKEN_KEY)).toBeNull()
+    expect(getSessionState()).toBe(SessionStates.NONE)
     expect(assignMock).not.toHaveBeenCalled()
   })
 })

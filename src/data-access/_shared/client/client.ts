@@ -1,10 +1,11 @@
 import { ApiError, createClient } from '@keimelion/sdk/client'
 import type { KeimelionClient } from '@keimelion/sdk/client'
-import { HttpStatus } from '@keimelion/sdk/enums'
+import { ErrorCode, HttpStatus } from '@keimelion/sdk/enums'
 import {
   clearSession,
   getAccessToken,
   getRefreshToken,
+  markEmailNotVerified,
   rotateTokens,
 } from '@/data-access/_shared/auth-storage'
 import { buildLoginPathFromCurrentPage } from '@/lib/login-return-path'
@@ -40,6 +41,7 @@ function fetchWithAppLocale(url: string, init: RequestInit): Promise<Response> {
 }
 
 async function renewSession(): Promise<boolean> {
+  if (getRefreshToken() === null) return false
   await refreshAccessToken()
   return true
 }
@@ -54,8 +56,24 @@ async function executeTokenRefresh(): Promise<string> {
     rotateTokens(tokens.accessToken, tokens.refreshToken)
     return tokens.accessToken
   } catch (cause: unknown) {
-    return endSession(REFRESH_FAILED_CODE, 'Session expired, please log in again', cause)
+    return handleRefreshFailure(cause)
   }
+}
+
+function handleRefreshFailure(cause: unknown): never {
+  if (isForbiddenWithCode(cause, ErrorCode.EMAIL_NOT_VERIFIED)) {
+    markEmailNotVerified()
+    throw cause
+  }
+  if (isForbiddenWithCode(cause, ErrorCode.ACCOUNT_BANNED)) {
+    clearSession()
+    throw cause
+  }
+  return endSession(REFRESH_FAILED_CODE, 'Session expired, please log in again', cause)
+}
+
+function isForbiddenWithCode(error: unknown, code: ErrorCode): error is ApiError {
+  return error instanceof ApiError && error.status === HttpStatus.FORBIDDEN && error.code === code
 }
 
 function endSession(code: string, message: string, cause?: unknown): never {
