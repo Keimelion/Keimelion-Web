@@ -1,21 +1,38 @@
 [data-sonner-toaster] [data-sonner-toast][data-styled='true'] {
-  position: relative;
-  overflow: hidden;
-  padding: 16px 44px 16px 16px;
-  min-height: 68px;
-  border-radius: 12px;
-  gap: 12px;
-  align-items: flex-start;
-  background: var(--inverse);
-  color: var(--on-inverse);
-  border-color: var(--inverse);
+  --toast-bg: var(--inverse);
+  --toast-fg: var(--on-inverse);
+  --normal-bg: var(--toast-bg);
+  --normal-bg-hover: color-mix(in srgb, var(--toast-fg) 12%, var(--toast-bg));
+  --normal-border: transparent;
+  --normal-border-hover: transparent;
+  --normal-text: var(--toast-fg);
+  --gray2: var(--normal-bg-hover);
+  --gray5: transparent;
+  padding: 12px 44px 12px 12px;
+  min-height: 48px;
+  border-radius: 24px;
+  gap: 10px;
+  align-items: center;
+  background-color: var(--toast-bg);
+  background-image: linear-gradient(
+    color-mix(in srgb, currentColor 60%, transparent),
+    color-mix(in srgb, currentColor 60%, transparent)
+  );
+  background-repeat: no-repeat;
+  background-position: left bottom;
+  background-size: 100% 3px;
+  animation: keimelion-toast-shrink var(--toast-lifetime, 4000ms) linear forwards;
+  color: var(--toast-fg);
+  border-color: var(--toast-bg);
   box-shadow: var(--elevation-float);
+  transition-timing-function: var(--motion-ease-spring);
 
   [data-icon] {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 20px;
+    width: 24px;
+    height: 24px;
     margin: 0;
     color: currentColor;
 
@@ -55,31 +72,45 @@
       width: 16px;
       height: 16px;
     }
+
+    @media (width < 64rem) {
+      &::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 44px;
+        height: 44px;
+        transform: translate(-50%, -50%);
+      }
+    }
   }
 
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: currentColor;
-    opacity: 0.6;
-    transform-origin: left;
-    animation: keimelion-toast-shrink 5000ms linear forwards;
-  }
-
-  &:hover::after {
+  &[data-expanded='true'],
+  &:active {
     animation-play-state: paused;
+  }
+
+  &[data-type='error'] {
+    --toast-bg: var(--danger);
+    --toast-fg: var(--on-danger);
+  }
+
+  &[data-type='warning'] {
+    --toast-bg: var(--warning);
+    --toast-fg: var(--on-warning);
+  }
+
+  &[data-expanded='false'][data-front='false'] {
+    background-image: none;
   }
 }
 
 @keyframes keimelion-toast-shrink {
   from {
-    transform: scaleX(1);
+    background-size: 100% 3px;
   }
   to {
-    transform: scaleX(0);
+    background-size: 0% 3px;
   }
 }

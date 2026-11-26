@@ -1,0 +1,2 @@
+export const FIELD_CONTROL_CLASS_NAME =
+  'w-full min-w-0 max-w-full rounded-field bg-raised px-4 text-base text-ink shadow-[inset_0_0_0_1.5px_var(--rule)] outline-none transition-shadow duration-200 placeholder:text-muted-foreground hover:shadow-[inset_0_0_0_1.5px_var(--rule-strong)] focus-visible:shadow-[inset_0_0_0_2px_var(--ink),0_0_0_4px_color-mix(in_srgb,var(--focus)_18%,transparent)] disabled:cursor-not-allowed disabled:bg-sunken disabled:text-muted-foreground disabled:shadow-none aria-invalid:shadow-[inset_0_0_0_2px_var(--danger)]'

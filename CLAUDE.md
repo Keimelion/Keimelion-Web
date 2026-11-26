@@ -57,7 +57,13 @@ Design boards are exported as HTML and dropped in `temp/design/` (git-ignored, n
 
 ### Design tokens
 
-Brand tokens live in `src/styles/tokens.css` (`:root, .light` by day, `.dark` at night) and are exposed through `@theme inline` in `globals.css`: `surface`, `raised`, `sunken`, `rule`, `rule-strong`, `ink`, `muted` (as `text-muted-foreground`), `brand`, `brand-deep`, `hand`, `danger`, `success`, `focus`, `on-brand`, `on-danger`, `inverse`/`on-inverse` (toasts, selected chip, Edit/Guest knob), `paper-*` (occasion papers), `gift-*` + `gift-ribbon` (wrapped gifts), `shadow-card`/`shadow-float` (none at night), `opacity-(--reserved-opacity)` and `brightness-(--photo-brightness)`. Type scale: `text-display-xl`, `text-display-m`, `text-title`, `text-body`, `text-small`, `text-label`, `text-kicker`. Radii: `rounded-card` (22), `rounded-t-sheet` (28), `rounded-field` (16), `rounded-thumb` (16), `rounded-pill`. Map an occasion slug to its paper with `getOccasionPaper()` (`src/lib/occasions/occasion-paper.ts`). Hex colours are forbidden outside `tokens.css` (ESLint `no-restricted-syntax` + `scripts/check-no-hex-colors.mjs`, both in `npm run lint`). Run `npm run dev` and open `/dev/tokens` to see every token in both themes.
+Brand tokens live in `src/styles/tokens.css` (`:root, .light` by day, `.dark` at night) and are exposed through `@theme inline` in `globals.css`: `surface`, `raised`, `sunken`, `rule`, `rule-strong`, `ink`, `muted` (as `text-muted-foreground`), `brand`, `brand-deep`, `hand`, `hand-on-paper` (handwriting on an occasion paper, readable on every night paper), `danger`, `danger-deep` (button bottom edge), `warning`/`on-warning` (warning toasts), `success`, `focus`, `on-brand`, `on-danger`, `inverse`/`on-inverse` (toasts), `brand-soft`/`on-brand-soft` (soft tags); selected chips, the tab knob, radio dots, checkboxes and the selected radio card use `brand`/`on-brand`, `paper-*` (occasion papers), `gift-*` + `gift-ribbon` (wrapped gifts), `shadow-card`/`shadow-float` (none at night), `opacity-(--reserved-opacity)`, `brightness-(--photo-brightness)` and `bg-scrim` (overlay behind dialogs and sheets). Easings: `ease-spring` (arrivals), `ease-soft-out` (sheets, unfolding), `ease-standard` (exits, wrap); `animate-shimmer` for skeletons. Type scale: `text-display-xl`, `text-display-m`, `text-title`, `text-body`, `text-small`, `text-label`, `text-kicker`. Radii: `rounded-card` (22), `rounded-t-sheet` (28), `rounded-field` (16), `rounded-thumb` (16), `rounded-pill`. Map an occasion slug to its paper with `getOccasionPaper()` (`src/lib/occasions/occasion-paper.ts`). Hex colours are forbidden outside `tokens.css` (ESLint `no-restricted-syntax` + `scripts/check-no-hex-colors.mjs`, both in `npm run lint`). Run `npm run dev` and open `/dev/tokens` to see every token in both themes.
+
+### UI kit and motion
+
+**Before building any UI, read `.claude/ui-kit.md`** — the catalog of every reusable component (where it lives, its API in one line, when to use it) and the contracts they all follow. See them live with `npm run dev` → `/dev/kit`. Extend an existing component (new prop or variant) rather than writing a look-alike in a feature, and add any new reusable component to `/dev/kit` and to the catalog in the same PR.
+
+In short: restyled primitives live in `src/components/ui`, composed components in `src/components/shared`, brand icons in `src/components/icons`, motion presets in `src/lib/motion`. Every form control drops into `FormControl`; every control keeps a 44 px touch target below `lg` (`touch-target`); selection is `brand`; animations play once and honour reduced motion through `useShouldReduceMotion()`. `src/components/` never imports from `src/features/` or `src/data-access/` (ESLint).
 
 ## Coding standards
 
@@ -122,7 +128,7 @@ src/
     (auth)/auth/        # Account pages: /auth/login, /auth/verify-email, /auth/reset-password…
     (app)/              # Signed-in pages (owners, editors): /lists… — gated by src/middlewares/require-session.ts
   components/
-    ui/                 # shadcn/ui generated components — do not edit manually
+    ui/                 # Our restyled primitives (shadcn + Radix) — owned code, see .claude/ui-kit.md
     shared/             # Reusable app-level components (site-shell, locale-picker, theme-picker…)
   data-access/          # All API calls — mirrors db/ in the API
     _shared/            # Shared infra used across resources (not itself a resource)

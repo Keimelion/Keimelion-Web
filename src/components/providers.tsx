@@ -6,6 +6,7 @@ import { ThemeProvider } from 'next-themes'
 import { Toaster } from '@/components/ui/sonner'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { I18nProvider } from '@/lib/i18n/i18n-provider'
+import { TOAST_LIFETIME_MS } from '@/lib/motion'
 import type { Locale } from '@/lib/i18n/locale'
 import { queryClient } from '@/lib/query-client'
 
@@ -13,8 +14,6 @@ interface ProvidersProps {
   requestLocale: Locale
   children: React.ReactNode
 }
-
-const TOAST_DURATION_MS = 5000
 
 export function Providers({ requestLocale, children }: ProvidersProps): React.JSX.Element {
   return (
@@ -24,7 +23,7 @@ export function Providers({ requestLocale, children }: ProvidersProps): React.JS
           <QueryClientProvider client={queryClient}>
             <I18nProvider requestLocale={requestLocale}>
               {children}
-              <Toaster position="top-right" closeButton duration={TOAST_DURATION_MS} />
+              <Toaster position="bottom-center" closeButton duration={TOAST_LIFETIME_MS} />
             </I18nProvider>
           </QueryClientProvider>
         </TooltipProvider>

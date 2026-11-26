@@ -44,12 +44,19 @@
   --color-ink: var(--ink);
   --color-brand: var(--brand);
   --color-brand-deep: var(--brand-deep);
+  --color-brand-soft: var(--brand-soft);
+  --color-on-brand-soft: var(--on-brand-soft);
   --color-hand: var(--hand);
+  --color-hand-on-paper: var(--hand-on-paper);
   --color-danger: var(--danger);
+  --color-danger-deep: var(--danger-deep);
+  --color-warning: var(--warning);
   --color-success: var(--success);
   --color-focus: var(--focus);
   --color-on-brand: var(--on-brand);
   --color-on-danger: var(--on-danger);
+  --color-on-warning: var(--on-warning);
+  --color-on-success: var(--on-success);
   --color-inverse: var(--inverse);
   --color-on-inverse: var(--on-inverse);
 
@@ -88,6 +95,23 @@
   --shadow-card: var(--elevation-card);
   --shadow-float: var(--elevation-float);
 
+  --color-scrim: var(--scrim);
+
+  --ease-spring: var(--motion-ease-spring);
+  --ease-soft-out: var(--motion-ease-soft-out);
+  --ease-standard: var(--motion-ease-standard);
+
+  --animate-shimmer: shimmer 1.6s linear infinite;
+
+  @keyframes shimmer {
+    from {
+      background-position: 100% 0;
+    }
+    to {
+      background-position: -200% 0;
+    }
+  }
+
   --radius-card: 22px;
   --radius-sheet: 28px;
   --radius-field: 16px;
@@ -97,6 +121,35 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+}
+
+@utility transition-press {
+  transition-property: background-color, color, box-shadow, transform;
+  transition-duration: 200ms;
+  transition-timing-function:
+    var(--ease-standard), var(--ease-standard), var(--ease-standard), var(--ease-spring);
+}
+
+@layer components {
+  .touch-target {
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: max(100%, 44px);
+      height: max(100%, 44px);
+      transform: translate(-50%, -50%);
+    }
+
+    @media (width >= 64rem) {
+      &::before {
+        content: none;
+      }
+    }
+  }
 }
 
 @layer base {
