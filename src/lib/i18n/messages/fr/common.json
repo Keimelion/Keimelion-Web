@@ -56,7 +56,7 @@
   "common.footer.affiliate_links": "Liens affiliés",
   "common.footer.cookies": "Cookies",
   "common.footer.feedback": "Votre avis",
-  "common.footer.copyright": "© {year} Keimêlion · Fabriqué en France",
+  "common.footer.copyright": "© {year} Keimêlion · v{version}",
   "common.error_state.try_again": "Réessayer",
   "common.error_state.report": "Racontez-nous ce qui s'est passé"
 }

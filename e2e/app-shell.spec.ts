@@ -89,7 +89,7 @@ test.describe('desktop', () => {
     await expect(page.getByRole('menuitem', { name: 'Log out' })).toBeVisible()
   })
 
-  test('the footer carries the five legal links, Feedback, © and Made in France', async ({
+  test('the footer carries the five legal links, Feedback, © and the app version', async ({
     page,
   }) => {
     await page.goto('/')
@@ -103,7 +103,7 @@ test.describe('desktop', () => {
       'Cookies',
       'Feedback',
     ])
-    await expect(footer).toContainText('Made in France')
+    await expect(footer).toContainText(/© \d{4} Keimêlion · v\d+\.\d+\.\d+/)
   })
 })
 

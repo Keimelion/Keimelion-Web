@@ -49,7 +49,10 @@ export async function SiteFooter({ className }: SiteFooterProps): Promise<React.
           </ul>
         </nav>
         <p className="font-mono text-[11px] text-on-footer-muted lg:text-xs">
-          {t('common.footer.copyright', { year: String(new Date().getFullYear()) })}
+          {t('common.footer.copyright', {
+            year: String(new Date().getFullYear()),
+            version: process.env.NEXT_PUBLIC_APP_VERSION ?? '',
+          })}
         </p>
       </div>
     </footer>

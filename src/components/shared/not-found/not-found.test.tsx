@@ -9,6 +9,10 @@ vi.mock('@/lib/i18n/server-translate', () => ({
   getServerTranslate: () => Promise.resolve(createEnglishServerTranslate()),
 }))
 
+const navigation = vi.hoisted(() => ({ pathname: '/wishlist' }))
+
+vi.mock('next/navigation', () => ({ usePathname: () => navigation.pathname }))
+
 vi.mock('motion/react', async (importOriginal) => {
   const { mockMotionWithReducedMotionPreference } = await import('@/test/reduced-motion-mock')
   return mockMotionWithReducedMotionPreference(importOriginal)
@@ -16,6 +20,7 @@ vi.mock('motion/react', async (importOriginal) => {
 
 beforeEach(() => {
   reducedMotionPreference.isReduced = false
+  navigation.pathname = '/wishlist'
 })
 
 function findStamp(): Element | null {
@@ -33,6 +38,26 @@ describe('NotFound', () => {
     const parcel = container.querySelector('svg[aria-hidden="true"]')
     expect(parcel).toHaveTextContent('404')
     expect(parcel).toHaveTextContent('ADDRESS UNKNOWN')
+  })
+
+  it('writes the requested address on the parcel label', async () => {
+    const { container } = renderWithIntl(await NotFound({ isSignedIn: false }))
+
+    expect(container.querySelector('svg')).toHaveTextContent('wishlist')
+  })
+
+  it('truncates a long address on the parcel label', async () => {
+    navigation.pathname = '/lists/birthday-party-2026'
+    const { container } = renderWithIntl(await NotFound({ isSignedIn: false }))
+
+    expect(container.querySelector('svg')).toHaveTextContent('lists/bir…')
+  })
+
+  it('falls back to this-page when the address is empty', async () => {
+    navigation.pathname = '/'
+    const { container } = renderWithIntl(await NotFound({ isSignedIn: false }))
+
+    expect(container.querySelector('svg')).toHaveTextContent('this-page')
   })
 
   it('offers home and creating a list to a guest', async () => {

@@ -1,8 +1,8 @@
 import Link from 'next/link'
-import { LostParcel } from '@/components/shared/lost-parcel'
 import { Button } from '@/components/ui/button'
 import { AppPaths } from '@/lib/app-paths'
 import { getServerTranslate } from '@/lib/i18n/server-translate'
+import { NotFoundParcel } from './not-found-parcel'
 
 interface NotFoundProps {
   isSignedIn: boolean
@@ -13,10 +13,10 @@ export async function NotFound({ isSignedIn }: NotFoundProps): Promise<React.JSX
   return (
     <section className="flex flex-1 flex-col items-center justify-center gap-3 py-10 text-center lg:grid lg:grid-cols-2 lg:gap-x-16 lg:py-16 lg:text-left">
       <div className="flex flex-col items-center gap-3">
-        <LostParcel
+        <NotFoundParcel
           stampLabel={t('error.not_found.stamp')}
           addressLabel={t('error.not_found.label_to')}
-          pageLabel={t('error.not_found.label_page')}
+          fallbackPageLabel={t('error.not_found.label_page')}
           className="w-[285px] lg:w-[510px]"
         />
         <p className="font-hand text-kicker text-hand lg:text-[34px]">

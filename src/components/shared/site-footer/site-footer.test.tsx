@@ -1,5 +1,5 @@
 import { screen, within } from '@testing-library/react'
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createEnglishServerTranslate } from '@/test/server-translate-mock'
 import { renderWithIntl } from '@/test/test-utils'
 import { SiteFooter } from './site-footer'
@@ -7,6 +7,12 @@ import { SiteFooter } from './site-footer'
 vi.mock('@/lib/i18n/server-translate', () => ({
   getServerTranslate: () => Promise.resolve(createEnglishServerTranslate()),
 }))
+
+const TEST_APP_VERSION = '1.2.3'
+
+afterEach(() => {
+  vi.unstubAllEnvs()
+})
 
 describe('SiteFooter', () => {
   it('lists the five legal pages and the feedback link', async () => {
@@ -24,12 +30,13 @@ describe('SiteFooter', () => {
     ])
   })
 
-  it('signs off with the current year and Made in France', async () => {
+  it('signs off with the current year and the app version', async () => {
+    vi.stubEnv('NEXT_PUBLIC_APP_VERSION', TEST_APP_VERSION)
     renderWithIntl(await SiteFooter({}))
 
     const year = String(new Date().getFullYear())
     expect(screen.getByRole('contentinfo')).toHaveTextContent(
-      `© ${year} Keimêlion · Made in France`,
+      `© ${year} Keimêlion · v${TEST_APP_VERSION}`,
     )
   })
 })

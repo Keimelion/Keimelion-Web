@@ -13,6 +13,7 @@ const STAMP_TILT = 'rotate(-7 55 84)'
 const ADDRESS_HOST = 'keimelion.app/'
 const STATUS_CODE = '404'
 const STAMPED: MotionPreset = { ...stamp, initial: false }
+const FLOATING: MotionPreset = { ...bob, transition: { ...bob.transition, repeat: Infinity } }
 
 interface LostParcelProps {
   stampLabel: string
@@ -34,7 +35,7 @@ export function LostParcel({
       className={cn('h-auto overflow-visible', className)}
     >
       <ellipse cx="160" cy="232" rx="118" ry="12" className="fill-parcel-shadow" />
-      <motion.g {...bob}>
+      <motion.g {...FLOATING}>
         <ParcelBox />
         <g transform={LEFT_FACE_SKEW}>
           <AddressLabel addressLabel={addressLabel} pageLabel={pageLabel} />

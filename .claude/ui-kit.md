@@ -19,7 +19,7 @@ The single list of reusable building blocks. **Check it before building any UI**
 - **Form controls** forward `ref`, `id`, `aria-describedby`, `aria-invalid` and `disabled`, so they drop into `<FormControl>`; help text and error are both announced.
 - **Touch targets** are ≥ 44 × 44 px below `lg`: add the `touch-target` class to anything visually smaller. Inline controls carry `w-fit` so a flex or grid parent never stretches them.
 - **Colours** come from tokens only (hex is a lint error). Selection is `brand`/`on-brand`; toasts are `inverse`.
-- **Motion** plays once on its trigger, never loops (`bob` included), and jumps to the end state under reduced motion.
+- **Motion** plays once on its trigger, never loops (one deliberate exception: the 404 parcel floats with `bob` on repeat), and jumps to the end state under reduced motion.
 - **Copy**: components only carry generic labels (Cancel, Close, Show password…) from `common.*`; every other string is a prop.
 
 ## Primitives — `src/components/ui/`
@@ -83,7 +83,7 @@ The single list of reusable building blocks. **Check it before building any UI**
 | `GuestShell`                       | Frame of guest pages reached from a shared link (no bottom bar, no top nav)          | `children`; logo, EN · FR, theme, footer                                                                                                                                                                                              |
 | `TopNav`                           | Desktop top nav (server)                                                             | `isSignedIn, accountMenu`; active link underlined in brand (`aria-current`)                                                                                                                                                           |
 | `BottomBar`                        | Mobile bottom bar                                                                    | `isSignedIn`; Home, Browse, My lists, Profile / Home, Browse, Log in; active tab in brand                                                                                                                                             |
-| `SiteFooter`                       | Legal links, Feedback, © and "Made in France" (server)                               | `className`                                                                                                                                                                                                                           |
+| `SiteFooter`                       | Legal links, Feedback, © year and app version (server)                               | `className`                                                                                                                                                                                                                           |
 | `BrandHeader`                      | Logo + language and theme pickers (server)                                           | `className`                                                                                                                                                                                                                           |
 
 ## Helpers
