@@ -12,7 +12,6 @@ const VERIFY_EMAIL_ROUTE = 'POST /v1/auth/verify-email'
 const RESEND_VERIFICATION_ROUTE = 'POST /v1/auth/resend-verification'
 const REFRESH_ROUTE = 'POST /v1/auth/refresh'
 const VALID_TOKEN = '3f2b8c1e-5d4a-4e6f-9a7b-1c2d3e4f5a6b'
-const SESSION_COOKIE_NAME = 'keimelion_web_session'
 const MOBILE_VIEWPORT = { width: 390, height: 844 }
 const DESKTOP_VIEWPORT = { width: 1440, height: 900 }
 const COLOR_SCHEMES = ['light', 'dark'] as const
@@ -53,11 +52,7 @@ function errorBody(code: string): ApiErrorBodyInput {
   return { message: code, code, metadata: {} }
 }
 
-async function storeUnverifiedSession(
-  context: BrowserContext,
-  baseURL: string | undefined,
-): Promise<void> {
-  await context.addCookies([{ name: SESSION_COOKIE_NAME, value: 'user', url: baseURL ?? '' }])
+async function storeUnverifiedSession(context: BrowserContext): Promise<void> {
   await context.addInitScript((user) => {
     if (sessionStorage.getItem('seeded') !== null) return
     sessionStorage.setItem('seeded', 'true')
@@ -86,10 +81,9 @@ for (const colorScheme of COLOR_SCHEMES) {
       test(`check your inbox shows the email and the resend form at ${size}`, async ({
         page,
         context,
-        baseURL,
       }) => {
         await page.setViewportSize(viewport)
-        await storeUnverifiedSession(context, baseURL)
+        await storeUnverifiedSession(context)
         await page.goto('/auth/check-inbox')
 
         await heading(page, 'Check your inbox')
@@ -125,7 +119,7 @@ for (const colorScheme of COLOR_SCHEMES) {
         api.respond(VERIFY_EMAIL_ROUTE, { status: HTTP_OK, body: VERIFIED_RESPONSE })
         await page.goto(`/auth/verify-email#token=${VALID_TOKEN}`)
 
-        await heading(page, 'Email verified')
+        await heading(page, 'Email confirmed')
         await expect(page.getByRole('link', { name: 'Log in' }).last()).toHaveAttribute(
           'href',
           '/auth/login',
@@ -151,10 +145,9 @@ test('a link without a token shows the invalid state without calling the API', a
 test('a valid link with a stored session signs the user in and opens the onboarding', async ({
   page,
   context,
-  baseURL,
   api,
 }) => {
-  await storeUnverifiedSession(context, baseURL)
+  await storeUnverifiedSession(context)
   api.respond(VERIFY_EMAIL_ROUTE, { status: HTTP_OK, body: VERIFIED_RESPONSE })
   api.respond(REFRESH_ROUTE, { status: HTTP_OK, body: REFRESHED_TOKENS })
   await page.goto(`/auth/verify-email#token=${VALID_TOKEN}`)
@@ -166,11 +159,10 @@ test('a valid link with a stored session signs the user in and opens the onboard
 test('"I\'ve verified" keeps the session while the email is still unverified', async ({
   page,
   context,
-  baseURL,
   api,
   consoleErrors,
 }) => {
-  await storeUnverifiedSession(context, baseURL)
+  await storeUnverifiedSession(context)
   api.respond(REFRESH_ROUTE, { status: HTTP_FORBIDDEN, body: errorBody('EMAIL_NOT_VERIFIED') })
   await page.goto('/auth/check-inbox')
 
@@ -191,10 +183,9 @@ test('"I\'ve verified" keeps the session while the email is still unverified', a
 test('"I\'ve verified" opens the onboarding once the email is verified', async ({
   page,
   context,
-  baseURL,
   api,
 }) => {
-  await storeUnverifiedSession(context, baseURL)
+  await storeUnverifiedSession(context)
   api.respond(REFRESH_ROUTE, { status: HTTP_OK, body: REFRESHED_TOKENS })
   await page.goto('/auth/check-inbox')
 

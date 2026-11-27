@@ -13,9 +13,9 @@ export function ConfirmEmailVerifiedButton(): React.JSX.Element {
   const confirmation = useConfirmEmailVerified()
   const hintId = confirmation.error === null ? null : resolveHintId(confirmation.error)
   return (
-    <div className="mt-2 flex w-full flex-col items-center gap-2">
+    <div className="flex w-full flex-col items-center gap-2">
       <Button
-        className="w-full lg:w-fit"
+        className="w-full"
         isLoading={confirmation.isPending}
         onClick={() => {
           confirmation.mutate()

@@ -12,7 +12,7 @@ export function useLogout(): UseMutationResult<void, Error, void> {
   const router = useRouter()
   return useMutation({
     mutationFn: () => logout(getRefreshToken()),
-    meta: { silent: true, skipUnauthorizedRedirect: true },
+    meta: { silent: true, skipUnauthorizedRedirect: true, skipEmailNotVerifiedRedirect: true },
     onSettled: () => {
       clearSession()
       queryClient.clear()

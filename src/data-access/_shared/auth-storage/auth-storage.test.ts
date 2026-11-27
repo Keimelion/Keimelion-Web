@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   SESSION_COOKIE_NAME,
   SessionStates,
@@ -6,14 +6,17 @@ import {
   getAccessToken,
   getRefreshToken,
   getSessionState,
+  getPostVerificationPath,
   getStoredUser,
   isKnownRole,
   markAccountBanned,
   markEmailNotVerified,
   rotateTokens,
   saveSession,
+  saveUnverifiedSession,
 } from '@/data-access/_shared/auth-storage'
 import type { UserDetailParsed } from '@keimelion/sdk/schemas'
+import { subscribeToStorage } from '@/lib/subscribe-to-storage'
 
 const STORED_USER_KEY = 'keimelion_user'
 const REFRESH_TOKEN_KEY = 'keimelion_refresh_token'
@@ -91,6 +94,57 @@ describe('saveSession / clearSession', () => {
   })
 })
 
+describe('saveUnverifiedSession', () => {
+  it('keeps the refresh token and user without an access token or cookie, marked unverified', () => {
+    saveSession('old-access', 'old-refresh', OWNER_USER)
+    saveUnverifiedSession('refresh-unverified', OWNER_USER, null)
+    expect(getAccessToken()).toBeNull()
+    expect(getRefreshToken()).toBe('refresh-unverified')
+    expect(getStoredUser()).toEqual(OWNER_USER)
+    expect(readSessionCookie()).toBeNull()
+    expect(getSessionState()).toBe(SessionStates.EMAIL_NOT_VERIFIED)
+  })
+})
+
+describe('getPostVerificationPath', () => {
+  it('keeps the signup return path through the token rotation that follows verification', () => {
+    saveUnverifiedSession('refresh', OWNER_USER, '/invites/accept')
+    rotateTokens('access', 'new-refresh')
+    expect(getPostVerificationPath()).toBe('/invites/accept')
+  })
+
+  it('forgets it on a new sign-up without one, a login or a logout', () => {
+    saveUnverifiedSession('refresh', OWNER_USER, '/invites/accept')
+    saveUnverifiedSession('refresh', OWNER_USER, null)
+    expect(getPostVerificationPath()).toBeNull()
+
+    saveUnverifiedSession('refresh', OWNER_USER, '/invites/accept')
+    saveSession('access', 'refresh', OWNER_USER)
+    expect(getPostVerificationPath()).toBeNull()
+
+    saveUnverifiedSession('refresh', OWNER_USER, '/invites/accept')
+    clearSession()
+    expect(getPostVerificationPath()).toBeNull()
+  })
+})
+
+describe('same-tab notification', () => {
+  it('tells the subscribers of this tab, after the call returns, when the session changes', async () => {
+    const onChange = vi.fn()
+    const unsubscribe = subscribeToStorage(onChange)
+
+    saveSession('access', 'refresh', OWNER_USER)
+    expect(onChange).not.toHaveBeenCalled()
+    await Promise.resolve()
+    expect(onChange).toHaveBeenCalledOnce()
+
+    clearSession()
+    await Promise.resolve()
+    expect(onChange).toHaveBeenCalledTimes(2)
+    unsubscribe()
+  })
+})
+
 describe('rotateTokens', () => {
   it('updates both tokens without touching the stored user or cookie', () => {
     saveSession('old-access', 'old-refresh', OWNER_USER)
@@ -133,11 +187,11 @@ describe('getSessionState', () => {
     expect(readSessionCookie()).toBe('user')
   })
 
-  it('goes back to active when the tokens rotate', () => {
-    saveSession('access', 'refresh', OWNER_USER)
-    markEmailNotVerified()
+  it('goes back to active, cookie restored, when the tokens rotate', () => {
+    saveUnverifiedSession('refresh', OWNER_USER, null)
     rotateTokens('new-access', 'new-refresh')
     expect(getSessionState()).toBe(SessionStates.ACTIVE)
+    expect(readSessionCookie()).toBe('user')
   })
 
   it('is account_banned after markAccountBanned, with the session cleared', () => {
@@ -170,23 +224,16 @@ describe('getStoredUser', () => {
     expect(getStoredUser()).toBeNull()
   })
 
-  it('returns null and clears the session when stored JSON is tampered', () => {
+  it.each([
+    ['is tampered', '{not valid json at all!!!}'],
+    ['has the wrong shape', JSON.stringify({ foo: 'bar' })],
+  ])('returns null without touching the session when stored JSON %s', (_case, storedUser) => {
     saveSession('tok', 'refresh-tok', OWNER_USER)
-    localStorage.setItem(STORED_USER_KEY, '{not valid json at all!!!}')
+    localStorage.setItem(STORED_USER_KEY, storedUser)
     expect(getStoredUser()).toBeNull()
-    expect(localStorage.getItem(STORED_USER_KEY)).toBeNull()
-    expect(getAccessToken()).toBeNull()
-    expect(getRefreshToken()).toBeNull()
-    expect(readSessionCookie()).toBeNull()
-  })
-
-  it('returns null and clears the session when stored JSON has wrong shape', () => {
-    saveSession('tok', 'refresh-tok', OWNER_USER)
-    localStorage.setItem(STORED_USER_KEY, JSON.stringify({ foo: 'bar' }))
-    expect(getStoredUser()).toBeNull()
-    expect(localStorage.getItem(STORED_USER_KEY)).toBeNull()
-    expect(getAccessToken()).toBeNull()
-    expect(getRefreshToken()).toBeNull()
-    expect(readSessionCookie()).toBeNull()
+    expect(localStorage.getItem(STORED_USER_KEY)).toBe(storedUser)
+    expect(getAccessToken()).toBe('tok')
+    expect(getRefreshToken()).toBe('refresh-tok')
+    expect(readSessionCookie()).toBe('user')
   })
 })

@@ -5,6 +5,7 @@ import type { UseMutationResult } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 import { getRefreshToken } from '@/data-access/_shared/auth-storage'
 import { refreshAccessToken } from '@/data-access/_shared/client'
+import { resolvePostVerificationPath } from '@/features/auth/post-verification-path'
 import { AppPaths } from '@/lib/app-paths'
 
 export function useConfirmEmailVerified(): UseMutationResult<boolean, Error, void> {
@@ -13,7 +14,7 @@ export function useConfirmEmailVerified(): UseMutationResult<boolean, Error, voi
     mutationFn: resumeVerifiedSession,
     meta: { silent: true },
     onSuccess: (isSessionResumed) => {
-      router.replace(isSessionResumed ? AppPaths.NEW_LIST : AppPaths.LOGIN)
+      router.replace(isSessionResumed ? resolvePostVerificationPath() : AppPaths.LOGIN)
     },
   })
 }

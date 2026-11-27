@@ -19,7 +19,17 @@ const ADD_KEYS = new Set(['Enter', ','])
 
 export const TagInput = React.forwardRef<HTMLInputElement, TagInputProps>(
   (
-    { value, onValueChange, maxTags, maxTagLength, className, disabled, onBlur, ...inputProps },
+    {
+      value,
+      onValueChange,
+      maxTags,
+      maxTagLength,
+      className,
+      disabled,
+      onBlur,
+      onKeyDown,
+      ...inputProps
+    },
     ref,
   ) => {
     const [draft, setDraft] = React.useState('')
@@ -33,6 +43,8 @@ export const TagInput = React.forwardRef<HTMLInputElement, TagInputProps>(
     }
 
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>): void => {
+      onKeyDown?.(event)
+      if (event.defaultPrevented || event.nativeEvent.isComposing) return
       if (ADD_KEYS.has(event.key)) {
         event.preventDefault()
         commitDraft()
@@ -62,6 +74,7 @@ export const TagInput = React.forwardRef<HTMLInputElement, TagInputProps>(
           />
         ))}
         <input
+          {...inputProps}
           ref={ref}
           type="text"
           value={draft}
@@ -77,7 +90,6 @@ export const TagInput = React.forwardRef<HTMLInputElement, TagInputProps>(
             onBlur?.(event)
           }}
           className="h-11 min-w-24 flex-1 bg-transparent px-1 text-base outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed"
-          {...inputProps}
         />
       </div>
     )

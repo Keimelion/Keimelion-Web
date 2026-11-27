@@ -242,6 +242,23 @@ describe('QueryClient on 403 EMAIL_NOT_VERIFIED', () => {
     expect(localStorage.getItem('keimelion_refresh_token')).toBe('refresh')
   })
 
+  it('lets a mutation handle the error itself when meta.skipEmailNotVerifiedRedirect is true', async () => {
+    const { createQueryClient, notifyError } = await freshQueryClientModule()
+    const client = createQueryClient()
+
+    await client
+      .getMutationCache()
+      .build(client, {
+        mutationFn: () => Promise.reject(emailNotVerifiedError()),
+        meta: { silent: true, skipEmailNotVerifiedRedirect: true },
+      })
+      .execute(undefined)
+      .catch(() => undefined)
+
+    expect(mockAssign).not.toHaveBeenCalled()
+    expect(notifyError).not.toHaveBeenCalled()
+  })
+
   it('stays put when the user is already on an email verification screen', async () => {
     const { createQueryClient } = await freshQueryClientModule()
     const client = createQueryClient()
@@ -298,5 +315,26 @@ describe('QueryClient on 403 ACCOUNT_BANNED', () => {
     expect(client.getQueryData(['lists', 'abc'])).toBeUndefined()
     expect(notifyError).toHaveBeenCalledWith(accountBannedError())
     expect(mockAssign).not.toHaveBeenCalled()
+  })
+
+  it('drops the cached data again when another user is banned after a successful login', async () => {
+    const { createQueryClient } = await freshQueryClientModule()
+    const client = createQueryClient()
+    const failWithBan = (): Promise<never> => Promise.reject(accountBannedError())
+
+    await expect(
+      client.query({ queryKey: ['profile', 'first'], queryFn: failWithBan }),
+    ).rejects.toMatchObject({ code: ErrorCode.ACCOUNT_BANNED })
+    await client
+      .getMutationCache()
+      .build(client, { mutationFn: () => Promise.resolve('logged in') })
+      .execute(undefined)
+    client.setQueryData(['lists', 'abc'], { title: 'Birthday' })
+
+    await expect(
+      client.query({ queryKey: ['profile', 'second'], queryFn: failWithBan }),
+    ).rejects.toMatchObject({ code: ErrorCode.ACCOUNT_BANNED })
+
+    expect(client.getQueryData(['lists', 'abc'])).toBeUndefined()
   })
 })

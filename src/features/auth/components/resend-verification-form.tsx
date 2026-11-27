@@ -1,18 +1,8 @@
 'use client'
 
-import type { UseFormReturn } from 'react-hook-form'
 import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import type { ResendVerificationInput } from '@/features/auth/auth.input-schemas'
+import { Form } from '@/components/ui/form'
+import { AuthTextField } from '@/features/auth/components/auth-fields'
 import { AuthStatusMessage } from '@/features/auth/components/auth-status-message'
 import { useResendVerificationForm } from '@/features/auth/hooks/use-resend-verification-form'
 import { useTranslate } from '@/lib/i18n/use-translate'
@@ -29,46 +19,27 @@ export function ResendVerificationForm({
     useResendVerificationForm(defaultEmail)
   return (
     <Form {...form}>
-      <Card className="mt-6 w-full p-4 text-left">
-        <form
-          noValidate
-          className="flex flex-col gap-3"
-          onSubmit={(event) => {
-            void form.handleSubmit(submit)(event)
-          }}
-        >
-          <h2 className="text-title">{t('auth.resend_verification.title')}</h2>
-          <p className="text-small text-muted-foreground">{t('auth.resend_verification.hint')}</p>
-          <ResendEmailField form={form} isDisabled={isPending} />
-          <ResendSubmitButton remainingSeconds={remainingSeconds} isPending={isPending} />
-          <AuthStatusMessage message={outcomeId === null ? null : t(outcomeId)} />
-        </form>
-      </Card>
+      <form
+        noValidate
+        className="mt-2 flex flex-col gap-3 border-t border-rule pt-5"
+        onSubmit={(event) => {
+          void form.handleSubmit(submit)(event)
+        }}
+      >
+        <h2 className="text-title">{t('auth.resend_verification.title')}</h2>
+        <p className="text-small text-muted-foreground">{t('auth.resend_verification.hint')}</p>
+        <AuthTextField
+          control={form.control}
+          name="email"
+          type="email"
+          label={t('auth.fields.email_label')}
+          description={null}
+          inputProps={{ autoComplete: 'email', disabled: isPending }}
+        />
+        <ResendSubmitButton remainingSeconds={remainingSeconds} isPending={isPending} />
+        <AuthStatusMessage message={outcomeId === null ? null : t(outcomeId)} />
+      </form>
     </Form>
-  )
-}
-
-interface ResendEmailFieldProps {
-  form: UseFormReturn<ResendVerificationInput>
-  isDisabled: boolean
-}
-
-function ResendEmailField({ form, isDisabled }: ResendEmailFieldProps): React.JSX.Element {
-  const t = useTranslate()
-  return (
-    <FormField
-      control={form.control}
-      name="email"
-      render={({ field }) => (
-        <FormItem>
-          <FormLabel required>{t('auth.resend_verification.email_label')}</FormLabel>
-          <FormControl>
-            <Input type="email" autoComplete="email" disabled={isDisabled} {...field} />
-          </FormControl>
-          <FormMessage />
-        </FormItem>
-      )}
-    />
   )
 }
 
@@ -87,7 +58,7 @@ function ResendSubmitButton({
     <Button
       type="submit"
       variant="ghost"
-      className="w-full lg:w-fit"
+      className="w-full"
       disabled={isCoolingDown}
       isLoading={isPending}
     >

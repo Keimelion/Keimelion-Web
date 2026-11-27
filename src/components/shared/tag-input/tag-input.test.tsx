@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { fireEvent, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { useState } from 'react'
 import { describe, expect, it, vi } from 'vitest'
@@ -8,13 +8,19 @@ import { TagInput } from './tag-input'
 interface CategoriesProps {
   initialValue: string[]
   onValueChange: (value: string[]) => void
+  onKeyDown: React.KeyboardEventHandler<HTMLInputElement>
 }
 
-function Categories({ initialValue, onValueChange }: CategoriesProps): React.JSX.Element {
+function Categories({
+  initialValue,
+  onValueChange,
+  onKeyDown,
+}: CategoriesProps): React.JSX.Element {
   const [value, setValue] = useState(initialValue)
   return (
     <TagInput
       aria-label="Categories"
+      onKeyDown={onKeyDown}
       value={value}
       maxTags={3}
       maxTagLength={12}
@@ -26,9 +32,14 @@ function Categories({ initialValue, onValueChange }: CategoriesProps): React.JSX
   )
 }
 
-function renderCategories(initialValue: string[] = []): ReturnType<typeof vi.fn> {
+function renderCategories(
+  initialValue: string[] = [],
+  onKeyDown: React.KeyboardEventHandler<HTMLInputElement> = vi.fn(),
+): ReturnType<typeof vi.fn> {
   const onValueChange = vi.fn()
-  renderWithIntl(<Categories initialValue={initialValue} onValueChange={onValueChange} />)
+  renderWithIntl(
+    <Categories initialValue={initialValue} onValueChange={onValueChange} onKeyDown={onKeyDown} />,
+  )
   return onValueChange
 }
 
@@ -82,5 +93,27 @@ describe('TagInput', () => {
     await user.keyboard('{Backspace}')
 
     expect(onValueChange).toHaveBeenLastCalledWith(['kitchen', 'garden'])
+  })
+
+  it('does not add a tag when Enter confirms an IME composition', () => {
+    const onValueChange = renderCategories()
+    const input = screen.getByRole('textbox')
+
+    fireEvent.change(input, { target: { value: 'にほん' } })
+    fireEvent.keyDown(input, { key: 'Enter', isComposing: true })
+
+    expect(onValueChange).not.toHaveBeenCalled()
+    expect(input).toHaveValue('にほん')
+  })
+
+  it('runs the onKeyDown of the consumer and still adds tags', async () => {
+    const user = userEvent.setup()
+    const onKeyDown = vi.fn()
+    const onValueChange = renderCategories([], onKeyDown)
+
+    await user.type(screen.getByRole('textbox'), 'kitchen{Enter}')
+
+    expect(onKeyDown).toHaveBeenCalled()
+    expect(onValueChange).toHaveBeenLastCalledWith(['kitchen'])
   })
 })

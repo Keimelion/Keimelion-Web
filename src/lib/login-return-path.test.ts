@@ -26,6 +26,9 @@ describe('resolveLoginReturnPath', () => {
     '//evil.example/lists',
     '/\\evil.example',
     '/\t/evil.example',
+    '/..//evil.example',
+    '/lists/../..//evil.example',
+    '/.//evil.example',
     'javascript:alert(1)',
     'lists',
   ])('rejects %s as an open redirect', (rawReturnPath) => {

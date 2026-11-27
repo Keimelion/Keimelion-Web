@@ -20,8 +20,13 @@ const mockLocalStorage = (() => {
 
 Object.defineProperty(global, 'localStorage', { value: mockLocalStorage, writable: true })
 
+function clearLocaleCookie(): void {
+  document.cookie = `${LOCALE_COOKIE_NAME}=; path=/; max-age=0`
+}
+
 beforeEach(() => {
   mockLocalStorage.clear()
+  clearLocaleCookie()
   vi.unstubAllGlobals()
 })
 
@@ -72,6 +77,28 @@ describe('resolveInitialLocale', () => {
   it('storage precedence: stored locale wins over browser locale', async () => {
     mockLocalStorage.setItem(LOCALE_STORAGE_KEY, 'en')
     vi.stubGlobal('navigator', { language: 'fr-FR', languages: ['fr-FR'] })
+    const { resolveInitialLocale } = await importFresh()
+    expect(resolveInitialLocale()).toBe('en')
+  })
+
+  it('uses the locale cookie over the browser language when nothing is stored', async () => {
+    document.cookie = `${LOCALE_COOKIE_NAME}=fr; path=/`
+    vi.stubGlobal('navigator', { language: 'en-US', languages: ['en-US'] })
+    const { resolveInitialLocale } = await importFresh()
+    expect(resolveInitialLocale()).toBe('fr')
+    expect(mockLocalStorage.getItem(LOCALE_STORAGE_KEY)).toBe('fr')
+  })
+
+  it('ignores an unsupported locale cookie and falls back to the browser language', async () => {
+    document.cookie = `${LOCALE_COOKIE_NAME}=de; path=/`
+    vi.stubGlobal('navigator', { language: 'fr-FR', languages: ['fr-FR'] })
+    const { resolveInitialLocale } = await importFresh()
+    expect(resolveInitialLocale()).toBe('fr')
+  })
+
+  it('stored locale wins over the locale cookie', async () => {
+    mockLocalStorage.setItem(LOCALE_STORAGE_KEY, 'en')
+    document.cookie = `${LOCALE_COOKIE_NAME}=fr; path=/`
     const { resolveInitialLocale } = await importFresh()
     expect(resolveInitialLocale()).toBe('en')
   })

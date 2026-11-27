@@ -4,6 +4,7 @@ import type { Locale } from './locale'
 const LOCALE_COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 365
 const ACCEPT_LANGUAGE_SEPARATOR = ','
 const ACCEPT_LANGUAGE_PARAMETER_SEPARATOR = ';'
+const COOKIE_SEPARATOR = ';'
 
 function extractLanguageCode(browserLocale: string): string {
   return browserLocale.split('-')[0]?.trim().toLowerCase() ?? ''
@@ -38,6 +39,18 @@ function readStoredLocale(): Locale | null {
   return null
 }
 
+function readCookieLocale(): Locale | null {
+  if (typeof document === 'undefined') return null
+  const cookiePrefix = `${LOCALE_COOKIE_NAME}=`
+  const entry = document.cookie
+    .split(COOKIE_SEPARATOR)
+    .map((cookie) => cookie.trim())
+    .find((cookie) => cookie.startsWith(cookiePrefix))
+  if (entry === undefined) return null
+  const value = entry.slice(cookiePrefix.length)
+  return isValidLocale(value) ? value : null
+}
+
 function writeLocaleCookie(locale: Locale): void {
   const secureFlag = window.location.protocol === 'https:' ? '; secure' : ''
   document.cookie = `${LOCALE_COOKIE_NAME}=${locale}; path=/; samesite=lax${secureFlag}; max-age=${String(LOCALE_COOKIE_MAX_AGE_SECONDS)}`
@@ -55,6 +68,12 @@ export function persistLocale(locale: Locale): void {
 export function resolveInitialLocale(): Locale {
   const stored = readStoredLocale()
   if (stored !== null) return stored
+
+  const cookieLocale = readCookieLocale()
+  if (cookieLocale !== null) {
+    persistLocale(cookieLocale)
+    return cookieLocale
+  }
 
   const browserLocales =
     typeof navigator !== 'undefined'
